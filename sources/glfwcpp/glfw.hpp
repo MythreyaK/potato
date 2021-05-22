@@ -8,9 +8,12 @@
 
 extern "C" {
     struct GLFWwindow;
+    struct VkSurfaceKHR_T;
+    struct VkInstance_T;
+    typedef GLFWwindow      glfw_handle;
+    typedef VkInstance_T*   VkInstance;
+    typedef VkSurfaceKHR_T* VkSurfaceKHR;
 }
-
-typedef GLFWwindow glfw_handle;
 
 namespace glfw {
 
@@ -20,22 +23,28 @@ namespace glfw {
 
         bool init_glfw(int w, int h, const std::string& title);
 
-        static void _on_scroll(glfw_handle* window, double xoffset, double yoffset);
+        static void _on_scroll(glfw_handle* window,
+                               double       xoffset,
+                               double       yoffset);
         static void _on_codepoint(glfw_handle* window, unsigned int codepoint);
         static void _on_window_resize(glfw_handle* w, int width, int height);
 
         static window* get_instance(glfw_handle* ptr);
 
       public:
-        window(int w = 300, int h = 300, const std::string& title = std::string("Window"));
+        window(int                w     = 300,
+               int                h     = 300,
+               const std::string& title = std::string("Window"));
         window(window&)  = delete;
         window(window&&) = default;
         ~window();
 
-        std::vector<const char*> required_extns();
+        std::vector<std::string> required_extns();
 
         window& operator=(const window&) = delete;
         window& operator=(window&&) = default;
+
+        VkSurfaceKHR create_surface(const VkInstance&);
 
         void poll_events();
         void wait_events();

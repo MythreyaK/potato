@@ -3,7 +3,11 @@
 
 #include "GLFW.hpp"
 
+// clang-format off
+// Vulkan needs to be included before GLFW
+#include <vulkan/vulkan.h>
 #include <GLFW/glfw3.h>
+// clang-format on
 
 namespace glfw {
 
@@ -25,14 +29,17 @@ namespace glfw {
         return true;
     }
 
-    window::window(int w, int h, const std::string& title) try : window_handle(nullptr)
+    window::window(int w, int h, const std::string& title) try
+      : window_handle(nullptr)
     {
-        if ( !init_glfw(w, h, title) ) throw std::runtime_error("GLFW initialization Error");
+        if ( !init_glfw(w, h, title) )
+            throw std::runtime_error("GLFW initialization Error");
 
         // hook up callbacks
         glfwSetCharCallback(window_handle, window::_on_codepoint);
         glfwSetScrollCallback(window_handle, window::_on_scroll);
-        glfwSetFramebufferSizeCallback(window_handle, window::_on_window_resize);
+        glfwSetFramebufferSizeCallback(window_handle,
+                                       window::_on_window_resize);
     }
     catch ( const std::exception& ) {
     }
@@ -43,10 +50,22 @@ namespace glfw {
 
     // Other functions
 
-    std::vector<const char*> window::required_extns() {
+    std::vector<std::string> window::required_extns() {
         auto glfwExtCount { 0u };
         auto glfwExt { glfwGetRequiredInstanceExtensions(&glfwExtCount) };
         return { glfwExt, glfwExt + glfwExtCount };
+    }
+
+    VkSurfaceKHR window::create_surface(const VkInstance& instance) {
+        VkSurfaceKHR surface {};
+        if ( glfwCreateWindowSurface(instance, window_handle, nullptr, &surface)
+             == VK_SUCCESS )
+        {
+            return surface;
+        }
+        else {
+            return nullptr;
+        }
     }
 
     bool window::keep_window_open() {
