@@ -7,7 +7,8 @@ file(GLOB_RECURSE RENDER_CPP RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} CONFIGURE_DEPE
 add_library(render STATIC ${RENDER_CPP} ${RENDER_HPP})
 
 target_include_directories(render
-                        PUBLIC      "${Vulkan_INCLUDE_DIR}"
+                        PRIVATE     "${PROJECT_BINARY_DIR}/sources/version"
+                        PUBLIC     "${Vulkan_INCLUDE_DIR}"
                         PRIVATE     "${CMAKE_CURRENT_SOURCE_DIR}"
                         INTERFACE   "${CMAKE_CURRENT_SOURCE_DIR}/.."
 )

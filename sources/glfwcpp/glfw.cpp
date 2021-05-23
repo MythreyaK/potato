@@ -18,7 +18,7 @@ namespace glfw {
         }
 
         glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-        glfw_handle* window = glfwCreateWindow(w, h, title.c_str(), NULL, NULL);
+        GLFWwindow* window = glfwCreateWindow(w, h, title.c_str(), NULL, NULL);
 
         if ( !window ) {
             return false;
@@ -50,13 +50,13 @@ namespace glfw {
 
     // Other functions
 
-    std::vector<std::string> window::required_extns() {
+    std::vector<std::string> window::required_extns() const {
         auto glfwExtCount { 0u };
         auto glfwExt { glfwGetRequiredInstanceExtensions(&glfwExtCount) };
         return { glfwExt, glfwExt + glfwExtCount };
     }
 
-    VkSurfaceKHR window::create_surface(const VkInstance& instance) {
+    VkSurfaceKHR window::create_surface(const VkInstance& instance) const {
         VkSurfaceKHR surface {};
         if ( glfwCreateWindowSurface(instance, window_handle, nullptr, &surface)
              == VK_SUCCESS )
@@ -68,19 +68,23 @@ namespace glfw {
         }
     }
 
-    bool window::keep_window_open() {
+    GLFWwindow* window::get_handle() {
+        return window_handle;
+    }
+
+    bool window::keep_window_open() const {
         return !static_cast<bool>(glfwWindowShouldClose(window_handle));
     }
 
-    void window::poll_events() {
+    void window::poll_events() const {
         glfwPollEvents();
     }
 
-    void window::wait_events() {
+    void window::wait_events() const {
         glfwWaitEvents();
     }
 
-    void window::wait_events(std::chrono::milliseconds t) {
+    void window::wait_events(std::chrono::milliseconds t) const {
         // Takes seconds
         glfwWaitEventsTimeout(t.count() / 1000);
     }
@@ -101,19 +105,19 @@ namespace glfw {
 
     // ** C to C++ functions callbacks mapping **
 
-    void window::_on_scroll(glfw_handle* wd, double xoffset, double yoffset) {
+    void window::_on_scroll(GLFWwindow* wd, double xoffset, double yoffset) {
         get_instance(wd)->on_scroll(xoffset, yoffset);
     }
 
-    void window::_on_codepoint(glfw_handle* wd, unsigned int codepoint) {
+    void window::_on_codepoint(GLFWwindow* wd, unsigned int codepoint) {
         get_instance(wd)->on_codepoint(codepoint);
     }
 
-    void window::_on_window_resize(glfw_handle* wd, int w, int h) {
+    void window::_on_window_resize(GLFWwindow* wd, int w, int h) {
         get_instance(wd)->on_window_resized(w, h);
     }
 
-    window* window::get_instance(glfw_handle* handle) {
+    window* window::get_instance(GLFWwindow* handle) {
         return reinterpret_cast<window*>(glfwGetWindowUserPointer(handle));
     }
 

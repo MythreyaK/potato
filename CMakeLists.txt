@@ -7,6 +7,25 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 find_package(Vulkan REQUIRED FATAL_ERROR)
 
+string(TOUPPER ${CMAKE_BUILD_TYPE} UC_CMAKE_BUILD_TYPE)
+set(BUILD_TYPE_STRING ${CMAKE_BUILD_TYPE})
+
+if (UC_CMAKE_BUILD_TYPE MATCHES "DEBUG")
+    set(DEBUG_WINDOW TRUE)
+    set(BUILD_TYPE "Debug")
+    set(POTATO_DEBUG TRUE)
+    message(STATUS "${PROJECT_NAME}: Debug window enabled")
+
+    elseif(UC_CMAKE_BUILD_TYPE MATCHES "RELEASE")
+    set(DEBUG_WINDOW FALSE)
+    set(BUILD_TYPE "Release")
+
+    elseif(UC_CMAKE_BUILD_TYPE MATCHES "RELWITHDEBINFO")
+    set(DEBUG_WINDOW FALSE)
+    set(BUILD_TYPE "ReleaseWithDebugInfo")
+    set(POTATO_DEBUG TRUE)
+
+endif()
 
 # Include sub-projects.
 set(SOURCES_SUB_DIR "${PROJECT_SOURCE_DIR}/sources")
