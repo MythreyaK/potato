@@ -1,4 +1,4 @@
-cmake_minimum_required (VERSION 3.18)
+cmake_minimum_required (VERSION 3.20)
 
 project ("Potato")
 
@@ -8,7 +8,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 find_package(Vulkan REQUIRED FATAL_ERROR)
 
 string(TOUPPER ${CMAKE_BUILD_TYPE} UC_CMAKE_BUILD_TYPE)
-set(BUILD_TYPE_STRING ${CMAKE_BUILD_TYPE})
 
 if (UC_CMAKE_BUILD_TYPE MATCHES "DEBUG")
     set(DEBUG_WINDOW TRUE)
