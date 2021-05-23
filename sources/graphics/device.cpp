@@ -130,9 +130,9 @@ namespace potato::render {
         }
     }
 
-    std::optional<device_info> get_device_suitable(
-      const vk::PhysicalDevice& device,
-      const vk::SurfaceKHR&     surface) {
+    std::optional<device_info>
+    get_device_suitable(const vk::PhysicalDevice& device,
+                        const vk::SurfaceKHR&     surface) {
 
         using qfb = vk::QueueFlagBits;
 
@@ -176,7 +176,9 @@ namespace potato::render {
             supported_extns.push_back(ext.extensionName);
         }
 
-        if ( !has_required_items("Device extensions", supported_extns, required_device_extensions) )
+        if ( !has_required_items("Device extensions",
+                                 supported_extns,
+                                 required_device_extensions) )
         {
             return {};
         }
@@ -235,10 +237,7 @@ namespace potato::render {
                                   GLFWwindow*         window_handle) {
 
         VkSurfaceKHR vksurface;
-        if ( glfwCreateWindowSurface(instance,
-                                     window_handle,
-                                     nullptr,
-                                     &vksurface)
+        if ( glfwCreateWindowSurface(instance, window_handle, nullptr, &vksurface)
              != VK_SUCCESS )
         {
             throw std::runtime_error("Cannot create surface");

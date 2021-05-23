@@ -8,8 +8,9 @@
 namespace potato::render {
 
     vk::UniqueInstance create_instance(std::vector<std::string> extensions);
-    std::vector<std::string>         get_supported_extensions();
-    vk::UniqueDebugUtilsMessengerEXT register_debug_callabck(const vk::Instance&);
+    std::vector<std::string> get_supported_extensions();
+    vk::UniqueDebugUtilsMessengerEXT
+    register_debug_callabck(const vk::Instance&);
 
 }  // namespace potato::render
 

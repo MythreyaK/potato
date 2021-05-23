@@ -23,8 +23,8 @@ namespace glfw {
         bool init_glfw(int w, int h, const std::string& title);
 
         static void _on_scroll(GLFWwindow* window,
-                               double       xoffset,
-                               double       yoffset);
+                               double      xoffset,
+                               double      yoffset);
         static void _on_codepoint(GLFWwindow* window, unsigned int codepoint);
         static void _on_window_resize(GLFWwindow* w, int width, int height);
 
@@ -44,7 +44,7 @@ namespace glfw {
         window& operator=(window&&) = default;
 
         VkSurfaceKHR create_surface(const VkInstance&) const;
-        GLFWwindow* get_handle();
+        GLFWwindow*  get_handle();
 
         void poll_events() const;
         void wait_events() const;

@@ -38,8 +38,7 @@ namespace glfw {
         // hook up callbacks
         glfwSetCharCallback(window_handle, window::_on_codepoint);
         glfwSetScrollCallback(window_handle, window::_on_scroll);
-        glfwSetFramebufferSizeCallback(window_handle,
-                                       window::_on_window_resize);
+        glfwSetFramebufferSizeCallback(window_handle, window::_on_window_resize);
     }
     catch ( const std::exception& ) {
     }

@@ -59,11 +59,16 @@ namespace potato::render {
 
         // adds other extensions we need
         add_required_extensions(required_extensions);
-        if ( !has_required_items("Instance extensions", supported_extensions, required_extensions) ) {
+        if ( !has_required_items("Instance extensions",
+                                 supported_extensions,
+                                 required_extensions) )
+        {
             throw std::runtime_error("Required extensions not present");
         }
 
-        if ( !has_required_items("Instance layers", supported_layers, required_layers) ) {
+        if ( !has_required_items("Instance layers",
+                                 supported_layers,
+                                 required_layers) ) {
             throw std::runtime_error("Required layers not present");
         }
 
@@ -127,8 +132,8 @@ namespace potato::render {
         return extns;
     }
 
-    vk::UniqueDebugUtilsMessengerEXT register_debug_callabck(
-      const vk::Instance& inst) {
+    vk::UniqueDebugUtilsMessengerEXT
+    register_debug_callabck(const vk::Instance& inst) {
 
         using mtype = vk::DebugUtilsMessageTypeFlagBitsEXT;
         using msevr = vk::DebugUtilsMessageSeverityFlagBitsEXT;
