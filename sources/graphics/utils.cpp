@@ -4,36 +4,52 @@
 
 #include <iostream>
 
-bool has_required_items(const std::string&              name,
-                        const std::vector<std::string>& supported_items,
-                        const std::vector<std::string>& required_items) {
+namespace potato::render {
 
-    int found_extns { 0 };
+    bool has_required_items(const std::string&              name,
+                            const std::vector<std::string>& supported_items,
+                            const std::vector<std::string>& required_items) {
 
-    std::cout << name << '\n';
+        int found_extns { 0 };
 
-    for ( const auto& supported_item : supported_items ) {
+        std::cout << name << '\n';
 
-        bool ext_present { false };
+        for ( const auto& supported_item : supported_items ) {
 
-        for ( const auto& required_item : required_items ) {
+            bool ext_present { false };
 
-            if ( supported_item == required_item ) {
-                found_extns += 1;
-                ext_present = true;
-                break;
+            for ( const auto& required_item : required_items ) {
+
+                if ( supported_item == required_item ) {
+                    found_extns += 1;
+                    ext_present = true;
+                    break;
+                }
+            }
+
+            const auto prnt { "[%s] %s\n" };
+            if ( ext_present ) {
+
+                std::printf(prnt, "Enabled ", supported_item.c_str());
+            }
+            else {
+                std::printf(prnt, "Disabled", supported_item.c_str());
             }
         }
-
-        const auto prnt { "[%s] %s\n" };
-        if ( ext_present ) {
-
-            std::printf(prnt, "Enabled ", supported_item.c_str());
-        }
-        else {
-            std::printf(prnt, "Disabled", supported_item.c_str());
-        }
+        std::cout << '\n';
+        return found_extns == required_items.size();
     }
-    std::cout << '\n';
-    return found_extns == required_items.size();
-}
+
+    // Make sure not to pass temporaries! Argument
+    // MUST outlive the return value
+    std::vector<const char*> to_vecchar(const std::vector<std::string>& s) {
+        std::vector<const char*> ret {};
+        ret.reserve(s.size());
+
+        for ( const auto& i : s ) {
+            ret.push_back(i.c_str());
+        }
+
+        return ret;
+    }
+}  // namespace potato::render
