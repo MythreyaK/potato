@@ -50,6 +50,7 @@ namespace potato::render {
     using vecchr  = std::vector<const char*>;
 
     strings supported_layers();
+    strings required_extensions();
 
     constexpr dbci debug_create_info() {
 
@@ -89,6 +90,12 @@ namespace potato::render {
         if constexpr ( potato::build::is_debug() ) {
             extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
         }
+
+        // Push in required extensions
+        auto rqx { required_extensions() };
+        extensions.insert(extensions.end(),
+                          std::make_move_iterator(rqx.begin()),
+                          std::make_move_iterator(rqx.end()));
 
         if ( !has_required_items("Instance extensions",
                                  supported_extensions(),
@@ -142,10 +149,17 @@ namespace potato::render {
         return extns;
     }
 
+    const vk::Instance& context::get_instance() {
+        return instance.get();
+    }
+
     strings required_extensions() {
-        auto glfwExtCount { 0u };
-        auto glfwExt { glfwGetRequiredInstanceExtensions(&glfwExtCount) };
-        return { glfwExt, glfwExt + glfwExtCount };
+        strings ret { _required_extensions };
+
+        auto ext_count { 0u };
+        auto ext_charptr { glfwGetRequiredInstanceExtensions(&ext_count) };
+        ret.insert(ret.end(), ext_charptr, ext_charptr + ext_count);
+        return ret;
     }
 
     strings supported_layers() {
