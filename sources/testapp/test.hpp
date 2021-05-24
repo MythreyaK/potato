@@ -13,8 +13,8 @@ class testapp : public glfw::window {
 
   public:
     testapp(int w, int h, const std::string& title)
-      : glfw::window(w, h, title),
-        renderer(required_extns(), get_handle()) {}
+      : glfw::window(w, h, title)
+      , renderer(required_extns(), get_handle()) {}
 
     void window_loop() override {
 

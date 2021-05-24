@@ -48,8 +48,8 @@ BraceWrapping:
 BreakBeforeBinaryOperators: NonAssignment
 BreakBeforeConceptDeclarations: true
 BreakBeforeTernaryOperators: true
-BreakConstructorInitializers: BeforeColon
-BreakInheritanceList: BeforeColon
+BreakConstructorInitializers: BeforeComma
+BreakInheritanceList: BeforeComma
 BreakStringLiterals: true
 ColumnLimit:     80
 CommentPragmas:  '^ IWYU pragma:'
