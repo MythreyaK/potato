@@ -2,6 +2,8 @@
 
 #include "utils.hpp"
 
+#include <format>
+#include <iostream>
 #include <optional>
 #include <set>
 #include <utility>
@@ -134,17 +136,21 @@ namespace potato::render {
     get_device_suitable(const vk::PhysicalDevice& device,
                         const vk::SurfaceKHR&     surface) {
 
-        using qfb = vk::QueueFlagBits;
+        using qfb        = vk::QueueFlagBits;
+        using vkdevprops = vk::PhysicalDeviceProperties2;
+        using vkdvrprops = vk::PhysicalDeviceDriverProperties;
 
         device_info info {};
 
-        const auto features { device.getFeatures2() };
-        const auto properties { device.getProperties2() };
+        const auto all_props { device.getProperties2<vkdevprops, vkdvrprops>() };
+        const auto& dev_props { all_props.get<vkdevprops>().properties };
+        const auto& drv_props { all_props.get<vkdvrprops>() };
 
+        const auto features { device.getFeatures2() };
         const auto queues { device.getQueueFamilyProperties2() };
 
         // device
-        info.device_type = properties.properties.deviceType;
+        info.device_type = dev_props.deviceType;
         info.device      = device;
 
         // Get the queues
@@ -225,6 +231,26 @@ namespace potato::render {
                 surface_complete = true;
             }
         }
+
+        // clang-format off
+        std::cout << std::format(\
+            "Device Name: {}      \n"
+            "\t Type:           {}\n"
+            "\t Texture limit:  {}\n"
+            "\t Driver name:    {}\n"
+            "\t Driver make:    {}\n"
+            "\t Driver version: {}\n"
+            "\t Vulkan version: {}\n"
+            ,
+            vk::to_string(dev_props.deviceType) ,
+            vk::to_string(dev_props.deviceType) ,
+            dev_props.limits.maxImageDimension2D,
+            drv_props.driverName                ,
+            vk::to_string(drv_props.driverID)   ,
+            drv_props.driverInfo                ,
+            vk::to_string(drv_props.conformanceVersion)
+        );
+        // clang-format on
 
         if ( can_present && surface_complete && info.queues.is_suitable() ) {
             return info;
