@@ -9,7 +9,12 @@
 #define VULKAN_HPP_NO_SPACESHIP_OPERATOR   // using <=> is apparently slow and
                                            // incomplete. See docs
 
+#include <string>
 #include <vulkan/vulkan.hpp>
+
+namespace VULKAN_HPP_NAMESPACE {
+    std::string to_string(const vk::ConformanceVersion&);
+}
 
 static vk::DynamicLoader dynamicLoader;
 
