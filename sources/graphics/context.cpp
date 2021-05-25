@@ -58,7 +58,7 @@ namespace potato::render {
         mtf mess_types { mtfb::ePerformance };
 
         if constexpr ( potato::build::is_debug() ) {
-            mess_severity |= msfb::eInfo | msfb::eVerbose | msfb::eWarning;
+            mess_severity |= msfb::eWarning;
             mess_types |= mtfb::eValidation | mtfb::eGeneral;
         }
 
