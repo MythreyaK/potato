@@ -38,6 +38,7 @@ namespace potato::render {
 
     struct device_info {
         q_info                 queues;
+        std::string            name;
         vk::PhysicalDevice     device;
         vk::PhysicalDeviceType device_type;
         swapchain_info         swapchain_info;
@@ -50,6 +51,7 @@ namespace potato::render {
     vk::UniqueDevice create_device(device_info device);
     device_info      pick_device(const vk::Instance&, const vk::SurfaceKHR&);
     vk::SurfaceKHR   create_surface(const vk::Instance&, GLFWwindow*);
+    vkqueues         get_queues(const vk::Device& dev, const device_info& inf);
     std::optional<device_info> get_device_suitable(const vk::PhysicalDevice&,
                                                    const vk::SurfaceKHR&);
 
@@ -64,10 +66,23 @@ namespace potato::render {
         auto picked_device = pick_device(instance, surface);
         physical_device    = picked_device.device;
         logical_device     = create_device(picked_device);
+        queues             = get_queues(logical_device.get(), picked_device);
+
+        // Init device-specific pointers
+        VULKAN_HPP_DEFAULT_DISPATCHER.init(logical_device.get());
     }
 
     device::~device() {
         instance.destroySurfaceKHR(surface);
+    }
+
+    vkqueues get_queues(const vk::Device& dev, const device_info& inf) {
+        // TODO: Update to be more flexible, use queues as needed
+        auto gf = dev.getQueue2(vk::DeviceQueueInfo2 {
+          .queueFamilyIndex = inf.queues.graphics_queue_inx.value(),
+          .queueIndex       = 0 });
+
+        return { { vk::QueueFlagBits::eGraphics, gf } };
     }
 
     vk::UniqueDevice create_device(device_info device_info) {
@@ -77,12 +92,18 @@ namespace potato::render {
             device_info.queues.present_queue_inx.value()
         };
 
-        std::vector<vk::DeviceQueueCreateInfo> queue_create_infos {};
+        // TODO: Ensure we have only one queue for now.
+        if ( queues.size() != 1 ) {
+            throw std::runtime_error(
+              "Graphics queue does not support presentation");
+        }
+
+        std::vector<vk::DeviceQueueCreateInfo> q_create_infos {};
 
         const auto queuePriority = 1.0f;
         for ( auto queue : queues ) {
 
-            queue_create_infos.emplace_back(vk::DeviceQueueCreateInfo {
+            q_create_infos.emplace_back(vk::DeviceQueueCreateInfo {
               .queueFamilyIndex = queue,
               .queueCount       = 1,
               .pQueuePriorities = &queuePriority,
@@ -97,10 +118,9 @@ namespace potato::render {
 
         // TODO: Device features, and optional extensions
         const auto create_info { vk::DeviceCreateInfo {
-          .queueCreateInfoCount =
-            static_cast<uint32_t>(queue_create_infos.size()),
-          .pQueueCreateInfos       = queue_create_infos.data(),
-          .enabledExtensionCount   = static_cast<uint32_t>(extns.size()),
+          .queueCreateInfoCount  = static_cast<uint32_t>(q_create_infos.size()),
+          .pQueueCreateInfos     = q_create_infos.data(),
+          .enabledExtensionCount = static_cast<uint32_t>(extns.size()),
           .ppEnabledExtensionNames = extns.data(),
           .pEnabledFeatures        = {},
         } };
@@ -128,6 +148,7 @@ namespace potato::render {
             throw std::runtime_error("Failed to find suitable gpu");
         }
         else {
+            std::cout << "Picked " << suitable_devices[0].name;
             return suitable_devices[0];
         }
     }
@@ -152,11 +173,47 @@ namespace potato::render {
         // device
         info.device_type = dev_props.deviceType;
         info.device      = device;
+        info.name        = std::format("{}", dev_props.deviceName);
+
+        // clang-format off
+        std::cout << std::format(\
+            "Device Name: {}      \n"
+            "  Type:           {}\n"
+            "  Texture limit:  {}\n"
+            "  Driver name:    {}\n"
+            "  Driver make:    {}\n"
+            "  Driver version: {}\n"
+            "  Vulkan version: {}\n"
+            ,
+            dev_props.deviceName                ,
+            vk::to_string(dev_props.deviceType) ,
+            dev_props.limits.maxImageDimension2D,
+            drv_props.driverName                ,
+            vk::to_string(drv_props.driverID)   ,
+            drv_props.driverInfo                ,
+            vk::to_string(drv_props.conformanceVersion)
+        );
+        // clang-format on
 
         // Get the queues
-        uint32_t i = 0;
+        uint32_t i { std::numeric_limits<uint32_t>::max() };
         for ( const auto& queue : queues ) {
             const auto props { queue.queueFamilyProperties };
+            ++i;
+
+            // clang-format off
+            std::cout << std::format(
+                "  Queue family {}\n"
+                "    Flags: {}\n"
+                "    Count: {}\n",
+                i,
+                vk::to_string(props.queueFlags),
+                props.queueCount
+            );
+            // clang-format on
+
+            // If the queues we need have been found, just log
+            if ( info.queues.is_suitable() ) continue;
 
             if ( props.queueFlags & qfb::eGraphics
                  && !info.queues.graphics_queue_inx.has_value() )
@@ -167,10 +224,6 @@ namespace potato::render {
             if ( device.getSurfaceSupportKHR(i, surface) ) {
                 info.queues.present_queue_inx = i;
             }
-
-            if ( info.queues.is_suitable() ) break;
-
-            ++i;
         }
 
         // get extensions
@@ -231,26 +284,6 @@ namespace potato::render {
                 surface_complete = true;
             }
         }
-
-        // clang-format off
-        std::cout << std::format(\
-            "Device Name: {}      \n"
-            "\t Type:           {}\n"
-            "\t Texture limit:  {}\n"
-            "\t Driver name:    {}\n"
-            "\t Driver make:    {}\n"
-            "\t Driver version: {}\n"
-            "\t Vulkan version: {}\n"
-            ,
-            vk::to_string(dev_props.deviceType) ,
-            vk::to_string(dev_props.deviceType) ,
-            dev_props.limits.maxImageDimension2D,
-            drv_props.driverName                ,
-            vk::to_string(drv_props.driverID)   ,
-            drv_props.driverInfo                ,
-            vk::to_string(drv_props.conformanceVersion)
-        );
-        // clang-format on
 
         if ( can_present && surface_complete && info.queues.is_suitable() ) {
             return info;

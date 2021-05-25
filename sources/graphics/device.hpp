@@ -3,11 +3,14 @@
 
 #include "vkinclude/vulkan.hpp"
 
+#include <map>
+
 extern "C" {
     struct GLFWwindow;
 }
 
 namespace potato::render {
+    using vkqueues = std::map<vk::QueueFlagBits, vk::Queue>;
 
     class device {
 
@@ -16,6 +19,7 @@ namespace potato::render {
         vk::SurfaceKHR      surface {};
         vk::PhysicalDevice  physical_device {};
         vk::UniqueDevice    logical_device {};
+        vkqueues            queues {};
 
       public:
         device(const vk::Instance& instance, GLFWwindow* window_handle);
