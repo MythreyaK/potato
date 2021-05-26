@@ -4,11 +4,12 @@
 
 #include <format>
 #include <iostream>
-#include <optional>
 #include <set>
 #include <utility>
 
 extern "C" {
+    // TODO: Maybe replace with callbacks? std::function?
+
     VkResult glfwCreateWindowSurface(VkInstance,
                                      GLFWwindow*,
                                      const VkAllocationCallbacks*,
@@ -16,33 +17,9 @@ extern "C" {
 }
 
 namespace potato::render {
+    using namespace potato::render::detail;
 
 #pragma region FWD_DECLARE
-    using optional_uint32_t = std::optional<uint32_t>;
-
-    struct q_info {
-        optional_uint32_t graphics_queue_inx {};
-        optional_uint32_t present_queue_inx {};
-
-        bool is_suitable() {
-            return graphics_queue_inx.has_value()
-                && present_queue_inx.has_value();
-        }
-    };
-
-    struct swapchain_info {
-        vk::Format         surface_format;
-        vk::ColorSpaceKHR  color_space;
-        vk::PresentModeKHR present_mode;
-    };
-
-    struct device_info {
-        q_info                 queues;
-        std::string            name;
-        vk::PhysicalDevice     device;
-        vk::PhysicalDeviceType device_type;
-        swapchain_info         swapchain_info;
-    };
 
     const std::vector<std::string> required_device_extensions {
         VK_KHR_SWAPCHAIN_EXTENSION_NAME
@@ -52,7 +29,7 @@ namespace potato::render {
     device_info      pick_device(const vk::Instance&, const vk::SurfaceKHR&);
     vk::SurfaceKHR   create_surface(const vk::Instance&, GLFWwindow*);
     vkqueues         get_queues(const vk::Device& dev, const device_info& inf);
-    std::optional<device_info> get_device_suitable(const vk::PhysicalDevice&,
+    std::optional<device_info> get_suitable_device(const vk::PhysicalDevice&,
                                                    const vk::SurfaceKHR&);
 
 #pragma endregion FWD_DECLARE
@@ -60,26 +37,32 @@ namespace potato::render {
     /**** device class ****/
 
     device::device(const vk::Instance& instance, GLFWwindow* window_handle)
-      : instance(instance) {
+      : window_handle(window_handle)
+      , instance(instance) {
 
-        surface            = create_surface(instance, window_handle);
-        auto picked_device = pick_device(instance, surface);
-        physical_device    = picked_device.device;
-        logical_device     = create_device(picked_device);
-        queues             = get_queues(logical_device.get(), picked_device);
+        surface         = create_surface(instance, window_handle);
+        device_info     = pick_device(instance, surface);
+        physical_device = device_info.device;
+        logical_device  = create_device(device_info);
 
         // Init device-specific pointers
         VULKAN_HPP_DEFAULT_DISPATCHER.init(logical_device.get());
+
+        queues = get_queues(logical_device.get(), device_info);
+        create_swapchain();
     }
 
     device::~device() {
+        destroy_swapchain_stuff();
+        logical_device->destroySwapchainKHR(swapchain);
         instance.destroySurfaceKHR(surface);
     }
 
+#pragma region UTILS
     vkqueues get_queues(const vk::Device& dev, const device_info& inf) {
         // TODO: Update to be more flexible, use queues as needed
         auto gf = dev.getQueue2(vk::DeviceQueueInfo2 {
-          .queueFamilyIndex = inf.queues.graphics_queue_inx.value(),
+          .queueFamilyIndex = inf.queues.graphics_inx.value(),
           .queueIndex       = 0 });
 
         return { { vk::QueueFlagBits::eGraphics, gf } };
@@ -87,10 +70,8 @@ namespace potato::render {
 
     vk::UniqueDevice create_device(device_info device_info) {
 
-        std::set<uint32_t> queues {
-            device_info.queues.graphics_queue_inx.value(),
-            device_info.queues.present_queue_inx.value()
-        };
+        std::set<uint32_t> queues { device_info.queues.graphics_inx.value(),
+                                    device_info.queues.present_inx.value() };
 
         // TODO: Ensure we have only one queue for now.
         if ( queues.size() != 1 ) {
@@ -128,8 +109,6 @@ namespace potato::render {
         return device_info.device.createDeviceUnique(create_info);
     }
 
-#pragma region UTILS
-
     device_info pick_device(const vk::Instance&   inst,
                             const vk::SurfaceKHR& srf) {
 
@@ -138,7 +117,7 @@ namespace potato::render {
         std::vector<device_info> suitable_devices {};
 
         for ( auto& d : devices ) {
-            auto info { get_device_suitable(d, srf) };
+            auto info { get_suitable_device(d, srf) };
             if ( info.has_value() ) {
                 suitable_devices.emplace_back(info.value());
             }
@@ -148,13 +127,13 @@ namespace potato::render {
             throw std::runtime_error("Failed to find suitable gpu");
         }
         else {
-            std::cout << "Picked " << suitable_devices[0].name;
+            std::cout << std::format("Picked [{}]\n", suitable_devices[0].name);
             return suitable_devices[0];
         }
     }
 
     std::optional<device_info>
-    get_device_suitable(const vk::PhysicalDevice& device,
+    get_suitable_device(const vk::PhysicalDevice& device,
                         const vk::SurfaceKHR&     surface) {
 
         using qfb        = vk::QueueFlagBits;
@@ -216,13 +195,13 @@ namespace potato::render {
             if ( info.queues.is_suitable() ) continue;
 
             if ( props.queueFlags & qfb::eGraphics
-                 && !info.queues.graphics_queue_inx.has_value() )
+                 && !info.queues.graphics_inx.has_value() )
             {
-                info.queues.graphics_queue_inx = i;
+                info.queues.graphics_inx = i;
             }
 
             if ( device.getSurfaceSupportKHR(i, surface) ) {
-                info.queues.present_queue_inx = i;
+                info.queues.present_inx = i;
             }
         }
 
@@ -251,21 +230,28 @@ namespace potato::render {
         const auto surf_capabs { device.getSurfaceCapabilities2KHR(
           surface_info) };
 
+        const auto min_image { surf_capabs.surfaceCapabilities.minImageCount };
+        const auto max_image { surf_capabs.surfaceCapabilities.maxImageCount };
+
         bool mailbox_found { std::find(present_modes.cbegin(),
                                        present_modes.cend(),
                                        vk::PresentModeKHR::eMailbox)
                              != present_modes.cend() };
 
-        if ( mailbox_found
-             && surf_capabs.surfaceCapabilities.minImageCount >= 3 ) {
-            info.swapchain_info.present_mode = vk::PresentModeKHR::eMailbox;
-        }
-        else if ( surf_capabs.surfaceCapabilities.minImageCount >= 1 ) {
-            info.swapchain_info.present_mode = vk::PresentModeKHR::eFifo;
+        // swapchain image count, present modes
+        if ( max_image == 0 || max_image >= 3 ) {
+            // max_image eq 0 means no upper bound
+            info.swapchain.image_count = std::max<uint32_t>(min_image, 3);
         }
         else {
-            can_present = false;
+            // max-image is either 1 or 2, since least value of min_image is 1
+            info.swapchain.image_count = std::max(min_image, max_image);
         }
+
+        if ( mailbox_found )
+            info.swapchain.present_mode = vk::PresentModeKHR::eMailbox;
+        else
+            info.swapchain.present_mode = vk::PresentModeKHR::eFifo;
 
         // Surface formats
         bool surface_complete { false };
@@ -278,10 +264,9 @@ namespace potato::render {
                    == vk::ColorSpaceKHR::eSrgbNonlinear
                  && format.surfaceFormat.format == vk::Format::eB8G8R8A8Srgb )
             {
-                info.swapchain_info.surface_format = vk::Format::eB8G8R8A8Srgb,
-                info.swapchain_info.color_space =
-                  vk::ColorSpaceKHR::eSrgbNonlinear;
-                surface_complete = true;
+                info.swapchain.surface_format = vk::Format::eB8G8R8A8Srgb,
+                info.swapchain.color_space = vk::ColorSpaceKHR::eSrgbNonlinear;
+                surface_complete           = true;
             }
         }
 
