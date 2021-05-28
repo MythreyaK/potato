@@ -25,12 +25,12 @@ namespace potato::render {
         VK_KHR_SWAPCHAIN_EXTENSION_NAME
     };
 
-    vk::UniqueDevice create_device(device_info device);
-    device_info      pick_device(const vk::Instance&, const vk::SurfaceKHR&);
+    vk::UniqueDevice create_device(device_settings device);
+    device_settings  pick_device(const vk::Instance&, const vk::SurfaceKHR&);
     vk::SurfaceKHR   create_surface(const vk::Instance&, GLFWwindow*);
-    vkqueues         get_queues(const vk::Device& dev, const device_info& inf);
-    std::optional<device_info> get_suitable_device(const vk::PhysicalDevice&,
-                                                   const vk::SurfaceKHR&);
+    vkqueues get_queues(const vk::Device& dev, const device_settings& inf);
+    std::optional<device_settings> get_suitable_device(const vk::PhysicalDevice&,
+                                                       const vk::SurfaceKHR&);
 
 #pragma endregion FWD_DECLARE
 
@@ -49,26 +49,29 @@ namespace potato::render {
         VULKAN_HPP_DEFAULT_DISPATCHER.init(logical_device.get());
 
         queues = get_queues(logical_device.get(), device_info);
-        create_swapchain();
     }
 
-    const vk::Device& device::get() const {
+    const device_settings& device::info() const {
+        return device_info;
+    }
+
+    const vk::Device& device::logical() const {
         return *logical_device;
     }
+    const vk::PhysicalDevice& device::physical() const {
+        return physical_device;
+    }
 
-    vk::Format device::format() const {
-        return device_info.swapchain.surface_format;
+    const vk::SurfaceKHR& device::get_surface() const {
+        return surface;
     }
 
     device::~device() {
-        destroy_framebuffers();
-        destroy_swapchain_stuff();
-        logical_device->destroySwapchainKHR(swapchain);
         instance.destroySurfaceKHR(surface);
     }
 
 #pragma region UTILS
-    vkqueues get_queues(const vk::Device& dev, const device_info& inf) {
+    vkqueues get_queues(const vk::Device& dev, const device_settings& inf) {
         // TODO: Update to be more flexible, use queues as needed
         auto gf = dev.getQueue2(vk::DeviceQueueInfo2 {
           .queueFamilyIndex = inf.queues.graphics_inx.value(),
@@ -77,7 +80,7 @@ namespace potato::render {
         return { { vk::QueueFlagBits::eGraphics, gf } };
     }
 
-    vk::UniqueDevice create_device(device_info device_info) {
+    vk::UniqueDevice create_device(device_settings device_info) {
 
         std::set<uint32_t> queues { device_info.queues.graphics_inx.value(),
                                     device_info.queues.present_inx.value() };
@@ -118,12 +121,12 @@ namespace potato::render {
         return device_info.device.createDeviceUnique(create_info);
     }
 
-    device_info pick_device(const vk::Instance&   inst,
-                            const vk::SurfaceKHR& srf) {
+    device_settings pick_device(const vk::Instance&   inst,
+                                const vk::SurfaceKHR& srf) {
 
         auto devices { inst.enumeratePhysicalDevices() };
 
-        std::vector<device_info> suitable_devices {};
+        std::vector<device_settings> suitable_devices {};
 
         for ( auto& d : devices ) {
             auto info { get_suitable_device(d, srf) };
@@ -141,7 +144,7 @@ namespace potato::render {
         }
     }
 
-    std::optional<device_info>
+    std::optional<device_settings>
     get_suitable_device(const vk::PhysicalDevice& device,
                         const vk::SurfaceKHR&     surface) {
 
@@ -149,7 +152,7 @@ namespace potato::render {
         using vkdevprops = vk::PhysicalDeviceProperties2;
         using vkdvrprops = vk::PhysicalDeviceDriverProperties;
 
-        device_info info {};
+        device_settings info {};
 
         const auto all_props { device.getProperties2<vkdevprops, vkdvrprops>() };
         const auto& dev_props { all_props.get<vkdevprops>().properties };

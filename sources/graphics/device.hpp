@@ -29,20 +29,18 @@ namespace potato::render::detail {
         uint32_t           image_count;
     };
 
-    struct device_info {
-        _queue                 queues;
-        std::string            name;
-        vk::PhysicalDevice     device;
-        vk::PhysicalDeviceType device_type;
-        _swapchain             swapchain;
-    };
 }  // namespace potato::render::detail
 
 namespace potato::render {
-    using vkqueues         = std::map<vk::QueueFlagBits, vk::Queue>;
-    using vkswapimages     = std::vector<vk::Image>;
-    using vkswapimageviews = std::vector<vk::ImageView>;
-    using vkframebuffers   = std::vector<vk::Framebuffer>;
+    using vkqueues = std::map<vk::QueueFlagBits, vk::Queue>;
+
+    struct device_settings {
+        detail::_queue         queues;
+        std::string            name;
+        vk::PhysicalDevice     device;
+        vk::PhysicalDeviceType device_type;
+        detail::_swapchain     swapchain;
+    };
 
     class device {
 
@@ -50,30 +48,10 @@ namespace potato::render {
         GLFWwindow*         window_handle {};
         const vk::Instance& instance {};
         vk::SurfaceKHR      surface {};
-        detail::device_info device_info {};
+        device_settings     device_info {};
         vk::PhysicalDevice  physical_device {};
         vk::UniqueDevice    logical_device {};
         vkqueues            queues {};
-        vk::SwapchainKHR    swapchain {};
-        vkswapimages        swapimages {};
-        vkswapimageviews    swapimageviews {};
-        vkframebuffers      framebuffers {};
-
-        void create_swapchain();
-        void recreate_swapchain();
-        void create_swapchain_stuff();
-        void destroy_swapchain_stuff();
-        void destroy_framebuffers();
-
-        vk::ShaderModule create_shader(const std::string& filepath) const;
-
-        vk::SwapchainCreateInfoKHR
-        swapchain_create_info(const std::vector<uint32_t>&) const;
-
-        vk::SwapchainCreateInfoKHR
-        swapchain_create_info(const std::vector<uint32_t>&,
-                              const vk::SwapchainKHR&) const;
-        // vk::trans current_transform() const
 
       public:
         device(const vk::Instance& instance, GLFWwindow* window_handle);
@@ -83,12 +61,11 @@ namespace potato::render {
         device(const device&) = delete;
         device& operator=(const device&) = delete;
 
-        void create_framebuffers(const vk::RenderPass&);
-
-        vk::SurfaceTransformFlagBitsKHR current_transform() const;
-        const vk::Device&               get() const;
-        vk::Extent2D                    current_extent() const;
-        vk::Format                      format() const;
+        const vk::Device&         logical() const;
+        const vk::PhysicalDevice& physical() const;
+        const device_settings&    info() const;
+        const vk::SurfaceKHR&     get_surface() const;
+        vk::ShaderModule create_shader(const std::string& file_path) const;
     };
 
 }  // namespace potato::render
