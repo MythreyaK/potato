@@ -10,6 +10,8 @@ extern "C" {
 
 namespace potato::render {
 
+    using attachments = std::vector<vk::ImageView>;
+
     void device::create_swapchain() {
 
         std::set<uint32_t> _queues { device_info.queues.graphics_inx.value(),
@@ -138,6 +140,32 @@ namespace potato::render {
     void device::destroy_swapchain_stuff() {
         for ( auto& i : swapimageviews )
             logical_device->destroyImageView(i);
+    }
+
+    void device::create_framebuffers(const vk::RenderPass& renderpass) {
+
+        const auto extents { current_extent() };
+
+        vk::FramebufferCreateInfo framebuffer_ci {
+            .renderPass      = renderpass,
+            .attachmentCount = 1u,
+            .width           = extents.width,
+            .height          = extents.height,
+            .layers          = 1,  // Q: same as swapchain layers?
+        };
+
+        framebuffers.reserve(swapimages.size());
+        for ( const auto& swp_img : swapimageviews ) {
+            framebuffer_ci.pAttachments = &swp_img;
+            framebuffers.emplace_back(
+              logical_device->createFramebuffer(framebuffer_ci));
+        }
+    }
+
+    void device::destroy_framebuffers() {
+        for ( auto& fb : framebuffers ) {
+            logical_device->destroyFramebuffer(fb);
+        }
     }
 
 }  // namespace potato::render

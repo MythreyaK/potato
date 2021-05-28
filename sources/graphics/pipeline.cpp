@@ -8,7 +8,7 @@
 
 namespace potato::render {
 
-    pipeline::pipeline(const device&      device,
+    pipeline::pipeline(device&            device,
                        const std::string& vert,
                        const std::string& frag,
                        pipeline_info      pinf)
@@ -71,18 +71,18 @@ namespace potato::render {
               .initialLayout  = vk::ImageLayout::eUndefined,
               .finalLayout    = vk::ImageLayout::ePresentSrcKHR,
             },
-            {
-              // depth attachment. TODO: Pick proper format
-              .format         = vk::Format::eD32Sfloat,
-              .samples        = vk::SampleCountFlagBits::e1,
-              .loadOp         = vk::AttachmentLoadOp::eClear,
-              .storeOp        = vk::AttachmentStoreOp::eStore,
-              .stencilLoadOp  = vk::AttachmentLoadOp::eDontCare,
-              .stencilStoreOp = vk::AttachmentStoreOp::eDontCare,
-              .initialLayout  = vk::ImageLayout::eUndefined,
-              .finalLayout    = vk::ImageLayout::eDepthStencilAttachmentOptimal,
+            // {
+            //   // depth attachment. TODO: Pick proper format
+            //   .format         = vk::Format::eD32Sfloat,
+            //   .samples        = vk::SampleCountFlagBits::e1,
+            //   .loadOp         = vk::AttachmentLoadOp::eClear,
+            //   .storeOp        = vk::AttachmentStoreOp::eStore,
+            //   .stencilLoadOp  = vk::AttachmentLoadOp::eDontCare,
+            //   .stencilStoreOp = vk::AttachmentStoreOp::eDontCare,
+            //   .initialLayout  = vk::ImageLayout::eUndefined,
+            //   .finalLayout    = vk::ImageLayout::eDepthStencilAttachmentOptimal,
 
-            }
+            // }
         };
 
         std::vector<vk::AttachmentReference> attachment_refs {
@@ -91,11 +91,11 @@ namespace potato::render {
               .attachment = 0,
               .layout     = vk::ImageLayout::eColorAttachmentOptimal,
             },
-            {
-              // depth attachment
-              .attachment = 1,
-              .layout     = vk::ImageLayout::eDepthStencilAttachmentOptimal,
-            }
+            // {
+            //   // depth attachment
+            //   .attachment = 1,
+            //   .layout     = vk::ImageLayout::eDepthStencilAttachmentOptimal,
+            // }
         };
 
         std::vector<vk::SubpassDescription> subpass_desc { {
@@ -105,7 +105,7 @@ namespace potato::render {
           .colorAttachmentCount = 1,
           .pColorAttachments    = &attachment_refs[0],
           // .pResolveAttachments = {},
-          .pDepthStencilAttachment = &attachment_refs[1],
+        //   .pDepthStencilAttachment = &attachment_refs[1],
           // .preserveAttachmentCount = {},
           // .pPreserveAttachments = {},
         } };
@@ -152,6 +152,9 @@ namespace potato::render {
         }
 
         vkpipeline = std::move(create_result.value);
+
+        // create framebuffers
+        logical_device.create_framebuffers(renderpass);
 
         logical_device.get().destroyShaderModule(vertex_shader);
         logical_device.get().destroyShaderModule(fragment_shader);

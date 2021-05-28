@@ -53,7 +53,7 @@ namespace potato::render {
     class pipeline {
 
       private:
-        const device&                  logical_device;
+        device&                        logical_device;
         pipeline_info                  pipelineinfo;
         vk::ShaderModule               vertex_shader;
         vk::ShaderModule               fragment_shader;
@@ -65,7 +65,7 @@ namespace potato::render {
         vk::ShaderModule create_shader(const std::string& fpath);
 
       public:
-        pipeline(const device&,
+        pipeline(device&,
                  const std::string& vert,
                  const std::string& frag,
                  pipeline_info);

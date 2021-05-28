@@ -42,6 +42,7 @@ namespace potato::render {
     using vkqueues         = std::map<vk::QueueFlagBits, vk::Queue>;
     using vkswapimages     = std::vector<vk::Image>;
     using vkswapimageviews = std::vector<vk::ImageView>;
+    using vkframebuffers   = std::vector<vk::Framebuffer>;
 
     class device {
 
@@ -56,11 +57,13 @@ namespace potato::render {
         vk::SwapchainKHR    swapchain {};
         vkswapimages        swapimages {};
         vkswapimageviews    swapimageviews {};
+        vkframebuffers      framebuffers {};
 
         void create_swapchain();
         void recreate_swapchain();
         void create_swapchain_stuff();
         void destroy_swapchain_stuff();
+        void destroy_framebuffers();
 
         vk::ShaderModule create_shader(const std::string& filepath) const;
 
@@ -79,6 +82,8 @@ namespace potato::render {
         // no copies
         device(const device&) = delete;
         device& operator=(const device&) = delete;
+
+        void create_framebuffers(const vk::RenderPass&);
 
         vk::SurfaceTransformFlagBitsKHR current_transform() const;
         const vk::Device&               get() const;

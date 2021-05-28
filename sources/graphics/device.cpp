@@ -61,6 +61,7 @@ namespace potato::render {
     }
 
     device::~device() {
+        destroy_framebuffers();
         destroy_swapchain_stuff();
         logical_device->destroySwapchainKHR(swapchain);
         instance.destroySurfaceKHR(surface);
