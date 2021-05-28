@@ -7,15 +7,16 @@
 #include "context.hpp"
 #include "device.hpp"
 #include "pipeline.hpp"
+#include "surface.hpp"
 
 #include <vector>
 
 namespace potato::render {
 
     class render_instance {
-        context  render_context;
-        device   render_device;
-        pipeline render_pipeline;
+        context context;
+        device  render_device;
+        surface render_surface;
 
       public:
         render_instance(const std::vector<std::string> required_extensions,
