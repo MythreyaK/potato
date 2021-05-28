@@ -52,6 +52,14 @@ namespace potato::render {
         create_swapchain();
     }
 
+    const vk::Device& device::get() const {
+        return *logical_device;
+    }
+
+    vk::Format device::format() const {
+        return device_info.swapchain.surface_format;
+    }
+
     device::~device() {
         destroy_swapchain_stuff();
         logical_device->destroySwapchainKHR(swapchain);

@@ -62,8 +62,7 @@ namespace potato::render {
         void create_swapchain_stuff();
         void destroy_swapchain_stuff();
 
-        vk::Extent2D                    current_extent() const;
-        vk::SurfaceTransformFlagBitsKHR current_transform() const;
+        vk::ShaderModule create_shader(const std::string& filepath) const;
 
         vk::SwapchainCreateInfoKHR
         swapchain_create_info(const std::vector<uint32_t>&) const;
@@ -80,6 +79,11 @@ namespace potato::render {
         // no copies
         device(const device&) = delete;
         device& operator=(const device&) = delete;
+
+        vk::SurfaceTransformFlagBitsKHR current_transform() const;
+        const vk::Device&               get() const;
+        vk::Extent2D                    current_extent() const;
+        vk::Format                      format() const;
     };
 
 }  // namespace potato::render
