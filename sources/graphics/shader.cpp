@@ -1,38 +1,20 @@
-#include "shader.hpp"
+#include "device.hpp"
+#include "utils.hpp"
 
-#include <fstream>
+#include <cstddef>
 #include <filesystem>
+#include <fstream>
 #include <iostream>
 #include <vector>
-#include <cstddef>
 
 namespace potato::render {
 
-    std::vector<std::byte> load_shader(const std::string& fname) {
+    vk::ShaderModule device::create_shader(const std::string& fname) const {
+        auto data { read_file(fname) };
 
-        namespace fs = std::filesystem;
-
-        const auto file_size{ fs::file_size(fname) };
-        constexpr auto FILE_FAIL_OPEN = static_cast<std::uintmax_t>(-1);
-
-        if (file_size != FILE_FAIL_OPEN) {
-            std::vector<std::byte> shader_buffer(file_size);
-
-            std::ifstream file(fname, std::ios::binary);
-
-            if (!file.is_open()) {
-                throw std::runtime_error("Could not open file");
-            }
-
-            file.read(reinterpret_cast<char*>(shader_buffer.data()), shader_buffer.size());
-            file.close();
-            
-            return shader_buffer;
-        }
-
-        else {
-            throw std::runtime_error("Invalid file path");
-        }
+        return logical_device->createShaderModule(vk::ShaderModuleCreateInfo {
+          .codeSize = data.size(),
+          .pCode    = reinterpret_cast<uint32_t*>(data.data()) });
     }
 
-}
+}  // namespace potato::render

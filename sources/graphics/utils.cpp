@@ -2,9 +2,40 @@
 
 #include "version.hpp"
 
+#include <filesystem>
+#include <fstream>
+#include <ios>
 #include <iostream>
 
 namespace potato::render {
+
+    std::vector<std::byte> read_file(const std::string& fname) {
+
+        namespace fs = std::filesystem;
+
+        const auto     file_size { fs::file_size(fname) };
+        constexpr auto FILE_FAIL_OPEN = static_cast<std::uintmax_t>(-1);
+
+        if ( file_size != FILE_FAIL_OPEN ) {
+            std::vector<std::byte> shader_buffer(file_size);
+
+            std::ifstream file(fname, std::ios::binary);
+
+            if ( !file.is_open() ) {
+                throw std::runtime_error("Could not open file for reading");
+            }
+
+            file.read(reinterpret_cast<char*>(shader_buffer.data()),
+                      shader_buffer.size());
+            file.close();
+
+            return shader_buffer;
+        }
+
+        else {
+            throw std::runtime_error("Invalid file path");
+        }
+    }
 
     bool has_required_items(const std::string&              name,
                             const std::vector<std::string>& supported_items,
