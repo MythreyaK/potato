@@ -65,7 +65,6 @@ namespace potato::render {
         const vk::PhysicalDevice& physical() const;
         const device_settings&    info() const;
         const vk::SurfaceKHR&     get_surface() const;
-        vk::ShaderModule create_shader(const std::string& file_path) const;
     };
 
 }  // namespace potato::render
