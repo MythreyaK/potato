@@ -16,6 +16,12 @@ extern "C" {
 
 namespace glfw {
 
+    struct icon {
+        int                    width {};
+        int                    height {};
+        std::vector<std::byte> pixels {};
+    };
+
     class window {
       private:
         GLFWwindow* window_handle;
@@ -33,7 +39,8 @@ namespace glfw {
       public:
         window(int                w     = 300,
                int                h     = 300,
-               const std::string& title = std::string("Window"));
+               const std::string& title = std::string("Window"),
+               std::vector<icon>  icons = {});
         window(window&)  = delete;
         window(window&&) = default;
         ~window();
@@ -52,6 +59,8 @@ namespace glfw {
         bool keep_window_open() const;
         void set_window_should_close();
         void set_title(const std::string& new_title);
+
+        bool set_icon(std::vector<icon>);
 
         virtual void window_loop();
         virtual void swap_buffers();

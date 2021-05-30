@@ -29,7 +29,7 @@ namespace glfw {
         return true;
     }
 
-    window::window(int w, int h, const std::string& title) try
+    window::window(int w, int h, const std::string& title, std::vector<icon> icons) try
       : window_handle(nullptr)
     {
         if ( !init_glfw(w, h, title) )
@@ -39,6 +39,7 @@ namespace glfw {
         glfwSetCharCallback(window_handle, window::_on_codepoint);
         glfwSetScrollCallback(window_handle, window::_on_scroll);
         glfwSetFramebufferSizeCallback(window_handle, window::_on_window_resize);
+        set_icon(icons);
     }
     catch ( const std::exception& ) {
     }
@@ -64,6 +65,24 @@ namespace glfw {
         }
         else {
             return nullptr;
+        }
+    }
+
+    bool window::set_icon(std::vector<icon> images) {
+        std::vector<GLFWimage> _icons {};
+        for ( auto& icon : images ) {
+            _icons.emplace_back(GLFWimage {
+              .width  = icon.width,
+              .height = icon.height,
+              .pixels = reinterpret_cast<unsigned char*>(icon.pixels.data()) });
+        }
+        glfwSetWindowIcon(window_handle, _icons.size(), _icons.data());
+        if ( glfwGetError(NULL) == GLFW_PLATFORM_ERROR ) {
+            // could not set, return false
+            return false;
+        }
+        else {
+            return true;
         }
     }
 
