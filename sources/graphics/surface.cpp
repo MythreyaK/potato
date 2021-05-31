@@ -41,9 +41,14 @@ namespace potato::render {
     }
 
     surface::~surface() {
-        // destroy_framebuffers();
         destroy_swapchain_stuff();
         potato_device.logical().destroySwapchainKHR(swapchain);
+    }
+
+    void surface::reinitialize() {
+        destroy_swapchain_stuff();
+        potato_device.logical().waitIdle();
+        recreate_swapchain();
     }
 
     vk::SurfaceTransformFlagBitsKHR surface::current_transform() const {
@@ -52,6 +57,7 @@ namespace potato::render {
           .surfaceCapabilities.currentTransform;
     }
 
+    /*
     void surface::create_framebuffers(const vk::RenderPass& renderpass) {
 
         const auto extents { current_extent() };
@@ -77,5 +83,6 @@ namespace potato::render {
             potato_device.logical().destroyFramebuffer(fb);
         }
     }
+    */
 
 }  // namespace potato::render
