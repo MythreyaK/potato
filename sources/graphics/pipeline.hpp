@@ -3,6 +3,8 @@
 
 #include "vkinclude/vulkan.hpp"
 
+#include <memory>
+
 namespace potato::render {
 
     struct _pif {
@@ -21,7 +23,7 @@ namespace potato::render {
         vk::PipelineColorBlendStateCreateInfo    ci_colorblend {};
         vk::PipelineDynamicStateCreateInfo       ci_dynamic {};
         vk::PipelineLayout                       layout {};
-        vk::RenderPass                           renderpass {};
+        std::unique_ptr<vk::RenderPass>          renderpass {};
         uint32_t                                 subpass {};
         vk::Pipeline                             old_pipeline {};
         int32_t                                  pipeline_inx {};
@@ -37,10 +39,13 @@ namespace potato::render {
         pipeline_info(_pif&&);
         pipeline_info(const _pif&);
 
-        pipeline_info(const pipeline_info&);
         pipeline_info(pipeline_info&&) = default;
 
-        pipeline_info& operator=(const pipeline_info&);
+        ~pipeline_info() = default;
+
+        pipeline_info(const pipeline_info&) = delete;
+        pipeline_info& operator=(const pipeline_info&) = delete;
+
         pipeline_info& operator=(pipeline_info&&) = default;
 
       private:
@@ -49,18 +54,14 @@ namespace potato::render {
 
     class device;
 
-    // TOTO: Ughhh... might need to clean this up a little
     class pipeline {
 
       private:
-        device&                        logical_device;
-        pipeline_info                  pipelineinfo;
-        vk::ShaderModule               vertex_shader;
-        vk::ShaderModule               fragment_shader;
-        vk::GraphicsPipelineCreateInfo gp_ci;
-        vk::PipelineLayout             pipeline_layout;
-        vk::RenderPass                 renderpass;
-        vk::Pipeline                   vkpipeline;
+        device&          logical_device;
+        pipeline_info    pipelineinfo;
+        vk::ShaderModule vertex_shader;
+        vk::ShaderModule fragment_shader;
+        vk::Pipeline     vkpipeline;
 
         vk::ShaderModule create_shader(const std::string& fpath);
 
@@ -71,9 +72,9 @@ namespace potato::render {
                  pipeline_info);
         ~pipeline();
 
-        void build();
-        void set_layout(const vk::PipelineLayoutCreateInfo&);
-        void set_renderpass(const vk::RenderPassCreateInfo&);
+        void bind_commandbuffer(const vk::CommandBuffer&);
+
+        const vk::RenderPass& get_renderpass() const;
 
         static pipeline_info default_pipeline_info(const vk::Extent2D&);
 

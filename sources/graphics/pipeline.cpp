@@ -13,7 +13,7 @@ namespace potato::render {
                        const std::string& frag,
                        pipeline_info      pinf)
       : logical_device(device)
-      , pipelineinfo(pinf)
+      , pipelineinfo(std::move(pinf))
       , vertex_shader(create_shader(vert))
       , fragment_shader(create_shader(frag)) {
 
@@ -32,14 +32,6 @@ namespace potato::render {
             },
         };
 
-        info.ci_vertex_input = vk::PipelineVertexInputStateCreateInfo {
-            .flags                           = {},
-            .vertexBindingDescriptionCount   = {},
-            .pVertexBindingDescriptions      = {},
-            .vertexAttributeDescriptionCount = {},
-            .pVertexAttributeDescriptions    = {},
-        };
-
         vk::GraphicsPipelineCreateInfo graphics_pipeline_ci {
             .pVertexInputState   = &info.ci_vertex_input,
             .pInputAssemblyState = &info.ci_input_assembly,
@@ -51,99 +43,19 @@ namespace potato::render {
             .pColorBlendState    = &info.ci_colorblend,
             .pDynamicState       = &info.ci_dynamic,
             .layout              = info.layout,
-            .renderPass          = info.renderpass,
+            .renderPass          = *info.renderpass,
             .subpass             = info.subpass,
             .basePipelineHandle  = info.old_pipeline,
             .basePipelineIndex   = info.pipeline_inx,
-        };
-
-        vk::PipelineLayoutCreateInfo pipeline_layout_ci {};
-
-        std::vector<vk::AttachmentDescription> attachments {
-            {
-              // color attachment
-              .format         = logical_device.format(),
-              .samples        = vk::SampleCountFlagBits::e1,
-              .loadOp         = vk::AttachmentLoadOp::eClear,
-              .storeOp        = vk::AttachmentStoreOp::eStore,
-              .stencilLoadOp  = vk::AttachmentLoadOp::eDontCare,
-              .stencilStoreOp = vk::AttachmentStoreOp::eDontCare,
-              .initialLayout  = vk::ImageLayout::eUndefined,
-              .finalLayout    = vk::ImageLayout::ePresentSrcKHR,
-            },
-            // {
-            //   // depth attachment. TODO: Pick proper format
-            //   .format         = vk::Format::eD32Sfloat,
-            //   .samples        = vk::SampleCountFlagBits::e1,
-            //   .loadOp         = vk::AttachmentLoadOp::eClear,
-            //   .storeOp        = vk::AttachmentStoreOp::eStore,
-            //   .stencilLoadOp  = vk::AttachmentLoadOp::eDontCare,
-            //   .stencilStoreOp = vk::AttachmentStoreOp::eDontCare,
-            //   .initialLayout  = vk::ImageLayout::eUndefined,
-            //   .finalLayout    = vk::ImageLayout::eDepthStencilAttachmentOptimal,
-
-            // }
-        };
-
-        std::vector<vk::AttachmentReference> attachment_refs {
-            {
-              // color attachment
-              .attachment = 0,
-              .layout     = vk::ImageLayout::eColorAttachmentOptimal,
-            },
-            // {
-            //   // depth attachment
-            //   .attachment = 1,
-            //   .layout     = vk::ImageLayout::eDepthStencilAttachmentOptimal,
-            // }
-        };
-
-        std::vector<vk::SubpassDescription> subpass_desc { {
-          .pipelineBindPoint = vk::PipelineBindPoint::eGraphics,
-          // .inputAttachmentCount = {},
-          // .pInputAttachments = {},
-          .colorAttachmentCount = 1,
-          .pColorAttachments    = &attachment_refs[0],
-          // .pResolveAttachments = {},
-        //   .pDepthStencilAttachment = &attachment_refs[1],
-          // .preserveAttachmentCount = {},
-          // .pPreserveAttachments = {},
-        } };
-
-        std::vector<vk::SubpassDependency> subpass_deps { {
-          .srcSubpass      = VK_SUBPASS_EXTERNAL,
-          .dstSubpass      = {},
-          .srcStageMask    = vk::PipelineStageFlagBits::eColorAttachmentOutput,
-          .dstStageMask    = vk::PipelineStageFlagBits::eColorAttachmentOutput,
-          .srcAccessMask   = vk::AccessFlagBits::eNoneKHR,
-          .dstAccessMask   = vk::AccessFlagBits::eColorAttachmentWrite,
-          .dependencyFlags = {},
-        } };
-
-        vk::RenderPassCreateInfo rp_ci {
-            .flags           = {},
-            .attachmentCount = static_cast<uint32_t>(attachments.size()),
-            .pAttachments    = attachments.data(),
-            .subpassCount    = static_cast<uint32_t>(subpass_desc.size()),
-            .pSubpasses      = subpass_desc.data(),
-            .dependencyCount = static_cast<uint32_t>(subpass_deps.size()),
-            .pDependencies   = subpass_deps.data(),
         };
 
         graphics_pipeline_ci.setPStages(shaders.data());
         graphics_pipeline_ci.setStageCount(
           static_cast<uint32_t>(shaders.size()));
 
-        pipeline_layout =
-          logical_device.get().createPipelineLayout(pipeline_layout_ci);
-        renderpass = logical_device.get().createRenderPass(rp_ci);
-
-        graphics_pipeline_ci.setLayout(pipeline_layout);
-        graphics_pipeline_ci.setRenderPass(renderpass);
-
         auto create_result =
-          logical_device.get().createGraphicsPipeline(nullptr,
-                                                      graphics_pipeline_ci);
+          logical_device.logical().createGraphicsPipeline(nullptr,
+                                                          graphics_pipeline_ci);
 
         if ( create_result.result != vk::Result::eSuccess ) {
             throw std::runtime_error(
@@ -153,35 +65,24 @@ namespace potato::render {
 
         vkpipeline = std::move(create_result.value);
 
-        // create framebuffers
-        logical_device.create_framebuffers(renderpass);
-
-        logical_device.get().destroyShaderModule(vertex_shader);
-        logical_device.get().destroyShaderModule(fragment_shader);
+        logical_device.logical().destroyShaderModule(vertex_shader);
+        logical_device.logical().destroyShaderModule(fragment_shader);
     }
-
-    void pipeline::set_layout(const vk::PipelineLayoutCreateInfo& ci) {
-        gp_ci.setLayout(logical_device.get().createPipelineLayout(ci));
-    }
-
-    void pipeline::set_renderpass(const vk::RenderPassCreateInfo& ci) {
-        gp_ci.setRenderPass(logical_device.get().createRenderPass(ci));
-    }
-
-    void pipeline::build() {}
 
     pipeline::~pipeline() {
-        logical_device.get().destroyPipeline(vkpipeline);
-        logical_device.get().destroyPipelineLayout(pipeline_layout);
-        logical_device.get().destroyRenderPass(renderpass);
+        logical_device.logical().destroyPipeline(vkpipeline);
     }
 
     vk::ShaderModule pipeline::create_shader(const std::string& fpath) {
         auto data { read_file(fpath) };
-        return logical_device.get().createShaderModule(
+        return logical_device.logical().createShaderModule(
           vk::ShaderModuleCreateInfo {
             .codeSize = data.size(),
             .pCode    = reinterpret_cast<uint32_t*>(data.data()) });
+    }
+
+    const vk::RenderPass& pipeline::get_renderpass() const {
+        return *pipelineinfo.info.renderpass;
     }
 
     pipeline_info pipeline::default_pipeline_info(const vk::Extent2D& extents) {
@@ -272,26 +173,9 @@ namespace potato::render {
     }
 
 #pragma region PIPELINEINFO_STRUCT
-    // copy-assignment and copy-constructor for pipeline_info
-    pipeline_info& pipeline_info::operator=(const pipeline_info& other) {
-        // do a normal copy
-        this->info = other.info;
-        update_pointers();
-        return *this;
-    }
-
-    pipeline_info::pipeline_info(const pipeline_info& other) {
-        // do a normal copy
-        this->info = other.info;
-        update_pointers();
-    }
 
     pipeline_info::pipeline_info(_pif&& other) {
         this->info = std::move(other);
-        update_pointers();
-    }
-    pipeline_info::pipeline_info(const _pif& other) {
-        this->info = other;
         update_pointers();
     }
 
