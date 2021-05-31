@@ -39,7 +39,7 @@ namespace potato::render {
         auto new_swapchain { potato_device.logical().createSwapchainKHR(
           swapchain_create_info(queues, swapchain)) };
 
-        swapchain = new_swapchain;
+        swapchain = std::move(new_swapchain);
         create_swapchain_stuff();
     }
 
@@ -116,6 +116,8 @@ namespace potato::render {
     void surface::destroy_swapchain_stuff() {
         for ( auto& i : swapimageviews )
             potato_device.logical().destroyImageView(i);
+        swapimageviews.clear();
+        swapimages.clear();
     }
 
 }  // namespace potato::render
