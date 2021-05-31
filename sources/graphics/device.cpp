@@ -25,9 +25,9 @@ namespace potato::render {
         VK_KHR_SWAPCHAIN_EXTENSION_NAME
     };
 
-    vk::UniqueDevice create_device(device_settings device);
-    device_settings  pick_device(const vk::Instance&, const vk::SurfaceKHR&);
-    vk::SurfaceKHR   create_surface(const vk::Instance&, GLFWwindow*);
+    vk::Device      create_device(device_settings device);
+    device_settings pick_device(const vk::Instance&, const vk::SurfaceKHR&);
+    vk::SurfaceKHR  create_surface(const vk::Instance&, GLFWwindow*);
     vkqueues get_queues(const vk::Device& dev, const device_settings& inf);
     std::optional<device_settings> get_suitable_device(const vk::PhysicalDevice&,
                                                        const vk::SurfaceKHR&);
@@ -46,9 +46,9 @@ namespace potato::render {
         logical_device  = create_device(device_info);
 
         // Init device-specific pointers
-        VULKAN_HPP_DEFAULT_DISPATCHER.init(logical_device.get());
+        VULKAN_HPP_DEFAULT_DISPATCHER.init(logical_device);
 
-        queues = get_queues(logical_device.get(), device_info);
+        queues = get_queues(logical_device, device_info);
     }
 
     const device_settings& device::info() const {
@@ -56,7 +56,7 @@ namespace potato::render {
     }
 
     const vk::Device& device::logical() const {
-        return *logical_device;
+        return logical_device;
     }
     const vk::PhysicalDevice& device::physical() const {
         return physical_device;
@@ -68,6 +68,8 @@ namespace potato::render {
 
     device::~device() {
         instance.destroySurfaceKHR(surface);
+        logical_device.waitIdle();
+        logical_device.destroy();
     }
 
 #pragma region UTILS
@@ -80,7 +82,7 @@ namespace potato::render {
         return { { vk::QueueFlagBits::eGraphics, gf } };
     }
 
-    vk::UniqueDevice create_device(device_settings device_info) {
+    vk::Device create_device(device_settings device_info) {
 
         std::set<uint32_t> queues { device_info.queues.graphics_inx.value(),
                                     device_info.queues.present_inx.value() };
@@ -118,7 +120,7 @@ namespace potato::render {
           .pEnabledFeatures        = {},
         } };
 
-        return device_info.device.createDeviceUnique(create_info);
+        return device_info.device.createDevice(create_info);
     }
 
     device_settings pick_device(const vk::Instance&   inst,

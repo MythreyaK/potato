@@ -50,7 +50,7 @@ namespace potato::render {
         vk::SurfaceKHR      surface {};
         device_settings     device_info {};
         vk::PhysicalDevice  physical_device {};
-        vk::UniqueDevice    logical_device {};
+        vk::Device          logical_device {};
         vkqueues            queues {};
 
       public:
