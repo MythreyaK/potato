@@ -6,7 +6,6 @@
 // clang-format on
 #include "context.hpp"
 #include "device.hpp"
-#include "pipeline.hpp"
 #include "surface.hpp"
 
 #include <vector>
@@ -14,13 +13,22 @@
 namespace potato::render {
 
     class render_instance {
-        context context;
-        device  render_device;
-        surface render_surface;
+      private:
+        using vkcmdbuffers = std::vector<vk::CommandBuffer>;
+
+        GLFWwindow*     window_handle;
+        context         context;
+        device          render_device;
+        surface         render_surface;
+        vk::CommandPool cmdpool {};
+        vkcmdbuffers    commandbuffers {};
+
+        void create_command_buffers(uint32_t graphics_queue);
+        void destroy_command_buffers();
 
       public:
-        render_instance(const std::vector<std::string> required_extensions,
-                        GLFWwindow*                    window_handle);
+        render_instance(GLFWwindow* window_handle);
+        void window_resized();
     };
 
 }  // namespace potato::render
