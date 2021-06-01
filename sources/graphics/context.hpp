@@ -21,6 +21,14 @@ namespace potato::render {
         const vk::Instance& get_instance();
 
         static std::vector<std::string> supported_extensions();
+
+        // no copies
+        context(const context&) = delete;
+        context& operator=(const context&) = delete;
+
+        // allow move
+        context(context&&) = default;
+        context& operator=(context&&) = default;
     };
 
 }  // namespace potato::render

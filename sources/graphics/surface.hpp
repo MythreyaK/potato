@@ -45,6 +45,14 @@ namespace potato::render {
         vk::Format                      format() const;
 
         void reinitialize();
+
+        // no copies
+        surface(const surface&) = delete;
+        surface& operator=(const surface&) = delete;
+
+        // allow move
+        surface(surface&&) = default;
+        surface& operator=(surface&&) = default;
     };
 
 }  // namespace potato::render

@@ -81,6 +81,12 @@ namespace potato::render {
         // no copies
         pipeline(const pipeline&) = delete;
         pipeline& operator=(const pipeline&) = delete;
+
+        // allow move
+        pipeline(pipeline&&) = default;
+        pipeline& operator=(pipeline&&) = default;
+
+
     };
 
 }  // namespace potato::render

@@ -63,6 +63,10 @@ namespace potato::render {
         device(const device&) = delete;
         device& operator=(const device&) = delete;
 
+        // allow move
+        device(device&&) = default;
+        device& operator=(device&&) = default;
+
         const vk::Device&         logical() const;
         const vk::PhysicalDevice& physical() const;
         const device_settings&    info() const;
