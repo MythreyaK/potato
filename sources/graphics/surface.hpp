@@ -15,12 +15,12 @@ namespace potato::render {
         using vkswapimageviews = std::vector<vk::ImageView>;
 
       private:
-        GLFWwindow*           window_handle {};
-        const device&         potato_device;
-        const vk::SurfaceKHR& render_surface;
-        vk::SwapchainKHR      swapchain {};
-        vkswapimages          swapimages {};
-        vkswapimageviews      swapimageviews {};
+        GLFWwindow*                   window_handle {};
+        std::shared_ptr<const device> potato_device;
+        const vk::SurfaceKHR&         render_surface;
+        vk::SwapchainKHR              swapchain {};
+        vkswapimages                  swapimages {};
+        vkswapimageviews              swapimageviews {};
 
         void create_swapchain();
         void recreate_swapchain();
@@ -37,7 +37,7 @@ namespace potato::render {
                               const vk::SwapchainKHR&) const;
 
       public:
-        surface(GLFWwindow*, const device&);
+        surface(GLFWwindow*, std::shared_ptr<const device>);
         ~surface();
 
         vk::SurfaceTransformFlagBitsKHR current_transform() const;

@@ -8,10 +8,10 @@
 
 namespace potato::render {
 
-    pipeline::pipeline(device&            device,
-                       const std::string& vert,
-                       const std::string& frag,
-                       pipeline_info      pinf)
+    pipeline::pipeline(std::shared_ptr<const device> device,
+                       const std::string&            vert,
+                       const std::string&            frag,
+                       pipeline_info                 pinf)
       : logical_device(device)
       , pipelineinfo(std::move(pinf))
       , vertex_shader(create_shader(vert))
@@ -54,7 +54,7 @@ namespace potato::render {
           static_cast<uint32_t>(shaders.size()));
 
         auto create_result =
-          logical_device.logical().createGraphicsPipeline(nullptr,
+          logical_device->logical().createGraphicsPipeline(nullptr,
                                                           graphics_pipeline_ci);
 
         if ( create_result.result != vk::Result::eSuccess ) {
@@ -65,17 +65,17 @@ namespace potato::render {
 
         vkpipeline = std::move(create_result.value);
 
-        logical_device.logical().destroyShaderModule(vertex_shader);
-        logical_device.logical().destroyShaderModule(fragment_shader);
+        logical_device->logical().destroyShaderModule(vertex_shader);
+        logical_device->logical().destroyShaderModule(fragment_shader);
     }
 
     pipeline::~pipeline() {
-        logical_device.logical().destroyPipeline(vkpipeline);
+        logical_device->logical().destroyPipeline(vkpipeline);
     }
 
     vk::ShaderModule pipeline::create_shader(const std::string& fpath) {
         auto data { read_file(fpath) };
-        return logical_device.logical().createShaderModule(
+        return logical_device->logical().createShaderModule(
           vk::ShaderModuleCreateInfo {
             .codeSize = data.size(),
             .pCode    = reinterpret_cast<uint32_t*>(data.data()) });

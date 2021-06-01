@@ -65,6 +65,10 @@ namespace potato::render {
         return surface;
     }
 
+    std::shared_ptr<const device> device::make_shared() const {
+        return shared_from_this();
+    }
+
     device::~device() {
         instance.destroySurfaceKHR(surface);
         logical_device.waitIdle();

@@ -42,7 +42,8 @@ namespace potato::render {
         detail::_swapchain     swapchain;
     };
 
-    class device {
+    // TODO: Maybe use a tagged shared_ptr
+    class device : public std::enable_shared_from_this<device> {
 
       private:
         const vk::Instance& instance {};
@@ -55,6 +56,8 @@ namespace potato::render {
       public:
         device(const vk::Instance& instance, GLFWwindow* window_handle);
         ~device();
+
+        std::shared_ptr<const device> make_shared() const;
 
         // no copies
         device(const device&) = delete;

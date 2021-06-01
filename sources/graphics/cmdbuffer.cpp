@@ -5,23 +5,23 @@ namespace potato::render {
     void render_instance::create_command_buffers(uint32_t graphics_queue) {
         using cmdci = vk::CommandPoolCreateInfo;
 
-        const cmdci cmdpool_ci { .queueFamilyIndex = graphics_queue };
+        const cmdci cmd_pool_ci { .queueFamilyIndex = graphics_queue };
 
-        cmdpool = render_device.logical().createCommandPool(cmdpool_ci);
+        cmd_pool = render_device->logical().createCommandPool(cmd_pool_ci);
 
         const vk::CommandBufferAllocateInfo cmd_alloc_ci {
-            .commandPool        = cmdpool,
+            .commandPool        = cmd_pool,
             .level              = vk::CommandBufferLevel::ePrimary,
-            .commandBufferCount = 2,
+            .commandBufferCount = 1,
         };
 
-        commandbuffers = std::move(
-          render_device.logical().allocateCommandBuffers(cmd_alloc_ci));
+        cmd_buffers = std::move(
+          render_device->logical().allocateCommandBuffers(cmd_alloc_ci));
     }
 
     void render_instance::destroy_command_buffers() {
-        render_device.logical().freeCommandBuffers(cmdpool, commandbuffers);
-        render_device.logical().destroyCommandPool(cmdpool);
+        render_device->logical().freeCommandBuffers(cmd_pool, cmd_buffers);
+        render_device->logical().destroyCommandPool(cmd_pool);
     }
 
 }  // namespace potato::render

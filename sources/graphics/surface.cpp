@@ -10,15 +10,15 @@ extern "C" {
 
 namespace potato::render {
 
-    surface::surface(GLFWwindow* window, const device& device)
+    surface::surface(GLFWwindow* window, std::shared_ptr<const device> device)
       : window_handle(window)
       , potato_device(device)
-      , render_surface(device.get_surface()) {
+      , render_surface(device->get_surface()) {
         create_swapchain();
     }
 
     vk::Extent2D surface::current_extent() const {
-        const auto capabs { potato_device.physical()
+        const auto capabs { potato_device->physical()
                               .getSurfaceCapabilities2KHR(
                                 { .surface = render_surface })
                               .surfaceCapabilities };
@@ -42,17 +42,17 @@ namespace potato::render {
 
     surface::~surface() {
         destroy_swapchain_stuff();
-        potato_device.logical().destroySwapchainKHR(swapchain);
+        potato_device->logical().destroySwapchainKHR(swapchain);
     }
 
     void surface::reinitialize() {
         destroy_swapchain_stuff();
-        potato_device.logical().waitIdle();
+        potato_device->logical().waitIdle();
         recreate_swapchain();
     }
 
     vk::SurfaceTransformFlagBitsKHR surface::current_transform() const {
-        return potato_device.physical()
+        return potato_device->physical()
           .getSurfaceCapabilities2KHR({ .surface = render_surface })
           .surfaceCapabilities.currentTransform;
     }
@@ -74,13 +74,13 @@ namespace potato::render {
         for ( const auto& swp_img : swapimageviews ) {
             framebuffer_ci.pAttachments = &swp_img;
             framebuffers.emplace_back(
-              potato_device.logical().createFramebuffer(framebuffer_ci));
+              potato_device->logical().createFramebuffer(framebuffer_ci));
         }
     }
 
     void surface::destroy_framebuffers() {
         for ( auto& fb : framebuffers ) {
-            potato_device.logical().destroyFramebuffer(fb);
+            potato_device->logical().destroyFramebuffer(fb);
         }
     }
     */
