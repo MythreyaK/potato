@@ -37,8 +37,7 @@ namespace potato::render {
     /**** device class ****/
 
     device::device(const vk::Instance& instance, GLFWwindow* window_handle)
-      : window_handle(window_handle)
-      , instance(instance) {
+      : instance(instance) {
 
         surface         = create_surface(instance, window_handle);
         device_info     = pick_device(instance, surface);

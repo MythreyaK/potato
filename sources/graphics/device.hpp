@@ -45,7 +45,6 @@ namespace potato::render {
     class device {
 
       private:
-        GLFWwindow*         window_handle {};
         const vk::Instance& instance {};
         vk::SurfaceKHR      surface {};
         device_settings     device_info {};
