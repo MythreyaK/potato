@@ -36,13 +36,13 @@ namespace potato::render {
         swapchain_create_info(const std::vector<uint32_t>&,
                               const vk::SwapchainKHR&) const;
 
-        vk::SurfaceTransformFlagBitsKHR current_transform() const;
-        vk::Extent2D                    current_extent() const;
-        vk::Format                      format() const;
-
       public:
         surface(GLFWwindow*, const device&);
         ~surface();
+
+        vk::SurfaceTransformFlagBitsKHR current_transform() const;
+        vk::Extent2D                    current_extent() const;
+        vk::Format                      format() const;
 
         void reinitialize();
     };
