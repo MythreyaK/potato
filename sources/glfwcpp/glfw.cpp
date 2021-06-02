@@ -29,7 +29,10 @@ namespace glfw {
         return true;
     }
 
-    window::window(int w, int h, const std::string& title, std::vector<icon> icons) try
+    window::window(int                w,
+                   int                h,
+                   const std::string& title,
+                   std::vector<icon>  icons) try
       : window_handle(nullptr)
     {
         if ( !init_glfw(w, h, title) )
