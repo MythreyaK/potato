@@ -71,6 +71,15 @@ namespace potato::render {
         const vk::PhysicalDevice& physical() const;
         const device_settings&    info() const;
         const vk::SurfaceKHR&     get_surface() const;
+
+        uint32_t find_mem_type(vk::MemoryPropertyFlags props,
+                               uint32_t                bit_flags);
+
+        void create_buffer(vk::DeviceSize,
+                           vk::BufferUsageFlags,
+                           vk::MemoryPropertyFlags,
+                           vk::Buffer&,
+                           vk::DeviceMemory&) const;
     };
 
 }  // namespace potato::render
