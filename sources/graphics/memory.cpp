@@ -3,7 +3,7 @@
 namespace potato::render {
 
     uint32_t device::find_mem_type(vk::MemoryPropertyFlags props,
-                                   uint32_t                bit_flags) {
+                                   vk::MemoryPropertyFlags flags) const {
 
         /*/
          * Quoting from the spec, at
@@ -26,18 +26,13 @@ namespace potato::render {
 
         using mpf = vk::MemoryPropertyFlags;
 
-        auto cast_to_memflag { [](uint32_t f) {
-            return mpf(f);
-        } };
-
-        auto condition { [&mem_props](uint32_t bit_flags, uint32_t i) -> bool {
-            return (mpf(bit_flags) & mpf(1 << i))
-                && ((mem_props.memoryTypes[i].propertyFlags & mpf(bit_flags))
-                    == mpf(bit_flags));
+        auto condition { [&mem_props](mpf flags, uint32_t i) -> bool {
+            return (flags & mpf(1 << i))
+                && ((mem_props.memoryTypes[i].propertyFlags & flags) == flags);
         } };
 
         for ( uint32_t i = 0; i < mem_props.memoryTypeCount; i++ ) {
-            if ( condition(bit_flags, i) ) return i;
+            if ( condition(flags, i) ) return i;
         }
 
         throw std::runtime_error("Failed to find suitable memory type");
@@ -59,25 +54,44 @@ namespace potato::render {
 
         buffer = logical_device.createBuffer(buffer_info);
 
-        // vk::MemoryRequirements memory_requirements {
-        //     logical_device.getBufferMemoryRequirements(buffer)
-        // };
+        vk::MemoryRequirements mem_req {
+            logical_device.getBufferMemoryRequirements(buffer)
+        };
 
-        // vk:MemoryAllocateInfo alloc_info {
-        //     .allocationSize = memRequirements.size;
-        //     .memoryTypeIndex = find_mem_type(memRequirements.memoryTypeBits,
-        //     properties);
+        auto flags { vk::MemoryPropertyFlags(mem_req.memoryTypeBits) };
 
-        // };
+        vk::MemoryAllocateInfo alloc_info {
+            .allocationSize  = mem_req.size,
+            .memoryTypeIndex = find_mem_type(flags, properties),
+        };
 
-        // if ( vkAllocateMemory(device_, &allocInfo, nullptr, &bufferMemory)
-        //      != VK_SUCCESS )
-        // {
-        //     throw std::runtime_error(
-        //       "failed to allocate vertex buffer memory!");
-        // }
+        auto dev_mem { logical_device.allocateMemory(alloc_info) };
 
-        // vkBindBufferMemory(device_, buffer, bufferMemory, 0);
+        logical_device.bindBufferMemory(buffer, dev_mem, 0);
+    }
+
+    vk::Image device::create_image(const vk::ImageCreateInfo& im_ci,
+                                   vk::MemoryPropertyFlags    props,
+                                   vk::DeviceMemory& device_memory) const {
+
+        auto image { logical_device.createImage(im_ci) };
+
+        vk::MemoryRequirements mem_req {
+            logical_device.getImageMemoryRequirements(image)
+        };
+
+        auto flags { vk::MemoryPropertyFlags(mem_req.memoryTypeBits) };
+
+        vk::MemoryAllocateInfo alloc_info {
+            .allocationSize = mem_req.size,
+            .memoryTypeIndex = find_mem_type(flags, props),
+        };
+
+        auto img_mem { logical_device.allocateMemory(alloc_info) };
+
+        logical_device.bindImageMemory(image, img_mem, 0);
+
+        return image;
     }
 
 }  // namespace potato::render

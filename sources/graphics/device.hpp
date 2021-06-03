@@ -72,8 +72,12 @@ namespace potato::render {
         const device_settings&    info() const;
         const vk::SurfaceKHR&     get_surface() const;
 
+        vk::Image create_image(const vk::ImageCreateInfo&,
+                               vk::MemoryPropertyFlags,
+                               vk::DeviceMemory&) const;
+
         uint32_t find_mem_type(vk::MemoryPropertyFlags props,
-                               uint32_t                bit_flags);
+                               vk::MemoryPropertyFlags bit_flags) const;
 
         void create_buffer(vk::DeviceSize,
                            vk::BufferUsageFlags,
