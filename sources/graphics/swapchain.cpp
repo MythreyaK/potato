@@ -66,17 +66,21 @@ namespace potato::render {
         }
     }
 
+    uint32_t surface::swapimage_count() const {
+        return swapimages.size();
+    }
+
     vk::SwapchainCreateInfoKHR
     surface::swapchain_create_info(const std::vector<uint32_t>& queues) const {
 
         constexpr auto exclusive  = vk::SharingMode::eExclusive;
         constexpr auto concurrent = vk::SharingMode::eConcurrent;
 
-        return { .surface       = render_surface,
+        return { .surface       = potato_device->get_surface(),
                  .minImageCount = potato_device->info().swapchain.image_count,
-                 .imageFormat   = potato_device->info().swapchain.surface_format,
-                 .imageColorSpace  = potato_device->info().swapchain.color_space,
-                 .imageExtent      = current_extent(),
+                 .imageFormat = potato_device->info().swapchain.surface_format,
+                 .imageColorSpace = potato_device->info().swapchain.color_space,
+                 .imageExtent     = current_extent(),
                  .imageArrayLayers = 1,  // 2 for streoscopic 3D
                  .imageUsage       = vk::ImageUsageFlagBits::eColorAttachment,
                  .imageSharingMode = queues.size() == 1 ? exclusive : concurrent,
@@ -95,11 +99,11 @@ namespace potato::render {
         constexpr auto exclusive  = vk::SharingMode::eExclusive;
         constexpr auto concurrent = vk::SharingMode::eConcurrent;
 
-        return { .surface       = render_surface,
+        return { .surface       = potato_device->get_surface(),
                  .minImageCount = potato_device->info().swapchain.image_count,
-                 .imageFormat   = potato_device->info().swapchain.surface_format,
-                 .imageColorSpace  = potato_device->info().swapchain.color_space,
-                 .imageExtent      = current_extent(),
+                 .imageFormat = potato_device->info().swapchain.surface_format,
+                 .imageColorSpace = potato_device->info().swapchain.color_space,
+                 .imageExtent     = current_extent(),
                  .imageArrayLayers = 1,  // 2 for streoscopic 3D
                  .imageUsage       = vk::ImageUsageFlagBits::eColorAttachment,
                  .imageSharingMode = queues.size() == 1 ? exclusive : concurrent,

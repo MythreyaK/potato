@@ -17,7 +17,6 @@ namespace potato::render {
       private:
         GLFWwindow*                   window_handle {};
         std::shared_ptr<const device> potato_device;
-        const vk::SurfaceKHR&         render_surface;
         vk::SwapchainKHR              swapchain {};
         vkswapimages                  swapimages {};
         vkswapimageviews              swapimageviews {};
@@ -43,8 +42,7 @@ namespace potato::render {
         vk::SurfaceTransformFlagBitsKHR current_transform() const;
         vk::Extent2D                    current_extent() const;
         vk::Format                      format() const;
-
-        void reinitialize();
+        uint32_t                        swapimage_count() const;
 
         // no copies
         surface(const surface&) = delete;

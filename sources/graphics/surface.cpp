@@ -12,15 +12,14 @@ namespace potato::render {
 
     surface::surface(GLFWwindow* window, std::shared_ptr<const device> device)
       : window_handle(window)
-      , potato_device(device)
-      , render_surface(device->get_surface()) {
+      , potato_device(device) {
         create_swapchain();
     }
 
     vk::Extent2D surface::current_extent() const {
         const auto capabs { potato_device->physical()
                               .getSurfaceCapabilities2KHR(
-                                { .surface = render_surface })
+                                { .surface = potato_device->get_surface() })
                               .surfaceCapabilities };
 
         int fb_w, fb_h;
@@ -45,15 +44,10 @@ namespace potato::render {
         potato_device->logical().destroySwapchainKHR(swapchain);
     }
 
-    void surface::reinitialize() {
-        destroy_swapchain_stuff();
-        potato_device->logical().waitIdle();
-        recreate_swapchain();
-    }
-
     vk::SurfaceTransformFlagBitsKHR surface::current_transform() const {
         return potato_device->physical()
-          .getSurfaceCapabilities2KHR({ .surface = render_surface })
+          .getSurfaceCapabilities2KHR(
+            { .surface = potato_device->get_surface() })
           .surfaceCapabilities.currentTransform;
     }
 
