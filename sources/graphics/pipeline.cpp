@@ -67,6 +67,10 @@ namespace potato::render {
         logical_device->logical().destroyShaderModule(frag_shader);
     }
 
+    void pipeline::bind(const vk::CommandBuffer& cmd_buffer) const {
+        cmd_buffer.bindPipeline(vk::PipelineBindPoint::eGraphics, vkpipeline);
+    }
+
     pipeline::~pipeline() {
         logical_device->logical().destroyPipeline(vkpipeline);
     }

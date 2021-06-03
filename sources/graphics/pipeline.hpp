@@ -53,7 +53,6 @@ namespace potato::render {
     class pipeline {
 
       private:
-        // pipeline_info                 pipelineinfo {};
         std::shared_ptr<const device> logical_device {};
         vk::Pipeline                  vkpipeline {};
 
@@ -67,7 +66,7 @@ namespace potato::render {
                  const vk::RenderPass&);
         ~pipeline();
 
-        void bind(const vk::CommandBuffer&);
+        void bind(const vk::CommandBuffer&) const;
 
         static pipeline_info default_pipeline_info(vk::Extent2D);
 
