@@ -51,7 +51,6 @@ namespace potato::render {
           .surfaceCapabilities.currentTransform;
     }
 
-    /*
     void surface::create_framebuffers(const vk::RenderPass& renderpass) {
 
         const auto extents { current_extent() };
@@ -77,6 +76,5 @@ namespace potato::render {
             potato_device->logical().destroyFramebuffer(fb);
         }
     }
-    */
 
 }  // namespace potato::render

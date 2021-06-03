@@ -13,6 +13,7 @@ namespace potato::render {
     class surface {
         using vkswapimages     = std::vector<vk::Image>;
         using vkswapimageviews = std::vector<vk::ImageView>;
+        using vkframebuffers   = std::vector<vk::Framebuffer>;
 
       private:
         GLFWwindow*                   window_handle {};
@@ -20,6 +21,9 @@ namespace potato::render {
         vk::SwapchainKHR              swapchain {};
         vkswapimages                  swapimages {};
         vkswapimageviews              swapimageviews {};
+        vkswapimages                  depthimages {};
+        vkswapimageviews              depthimageviews {};
+        vkframebuffers                framebuffers {};
 
         void create_swapchain();
         void recreate_swapchain();
@@ -43,6 +47,9 @@ namespace potato::render {
         vk::Extent2D                    current_extent() const;
         vk::Format                      format() const;
         uint32_t                        swapimage_count() const;
+
+        void create_framebuffers(const vk::RenderPass& renderpass);
+        void destroy_framebuffers();
 
         // no copies
         surface(const surface&) = delete;
