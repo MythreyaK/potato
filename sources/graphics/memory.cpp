@@ -83,7 +83,7 @@ namespace potato::render {
         auto flags { vk::MemoryPropertyFlags(mem_req.memoryTypeBits) };
 
         vk::MemoryAllocateInfo alloc_info {
-            .allocationSize = mem_req.size,
+            .allocationSize  = mem_req.size,
             .memoryTypeIndex = find_mem_type(flags, props),
         };
 

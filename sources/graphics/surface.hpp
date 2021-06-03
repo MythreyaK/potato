@@ -11,24 +11,29 @@ namespace potato::render {
     class device;
 
     class surface {
-        using vkswapimages     = std::vector<vk::Image>;
-        using vkswapimageviews = std::vector<vk::ImageView>;
-        using vkframebuffers   = std::vector<vk::Framebuffer>;
+        using vkimages       = std::vector<vk::Image>;
+        using vkimageviews   = std::vector<vk::ImageView>;
+        using vkframebuffers = std::vector<vk::Framebuffer>;
+        using vkdepthmemory  = std::vector<vk::DeviceMemory>;
 
       private:
         GLFWwindow*                   window_handle {};
         std::shared_ptr<const device> potato_device;
         vk::SwapchainKHR              swapchain {};
-        vkswapimages                  swapimages {};
-        vkswapimageviews              swapimageviews {};
-        vkswapimages                  depthimages {};
-        vkswapimageviews              depthimageviews {};
+        vkimages                      swapimages {};
+        vkimageviews                  swapimageviews {};
+        vkdepthmemory                 depthimagesmemory {};
+        vkimages                      depthimages {};
+        vkimageviews                  depthimageviews {};
         vkframebuffers                framebuffers {};
 
         void create_swapchain();
-        void recreate_swapchain();
+        void create_depth_resources();
         void create_swapchain_stuff();
+        void recreate_swapchain();
+
         void destroy_swapchain_stuff();
+        void destroy_framebuffers();
 
         vk::ShaderModule create_shader(const std::string& filepath) const;
 
@@ -49,7 +54,6 @@ namespace potato::render {
         uint32_t                        swapimage_count() const;
 
         void create_framebuffers(const vk::RenderPass& renderpass);
-        void destroy_framebuffers();
 
         // no copies
         surface(const surface&) = delete;

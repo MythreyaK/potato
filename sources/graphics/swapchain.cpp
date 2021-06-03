@@ -64,6 +64,59 @@ namespace potato::render {
               },
             }));
         }
+
+        create_depth_resources();
+    }
+
+    void surface::create_depth_resources() {
+
+        auto extent_2d { current_extent() };
+
+        depthimages.resize(swapimage_count());
+        depthimageviews.resize(swapimage_count());
+
+        for ( int i = 0; i < swapimage_count(); ++i ) {
+            vk::ImageCreateInfo imageInfo {
+                .imageType   = vk::ImageType::e2D,
+                .format      = {},
+                .extent      = {
+                    .width = extent_2d.width,
+                    .height = extent_2d.height,
+                    .depth = 1,
+                },
+                .mipLevels   = 1,
+                .arrayLayers = 1,
+                .samples     = vk::SampleCountFlagBits::e1,
+                .tiling      = vk::ImageTiling::eOptimal,
+                .usage       = vk::ImageUsageFlagBits::eDepthStencilAttachment,
+                .sharingMode = vk::SharingMode::eExclusive,
+                .initialLayout = vk::ImageLayout::eUndefined,
+            };
+
+            // clang-format off
+            depthimages[i] = std::move(
+                potato_device->create_image(imageInfo,
+                    vk::MemoryPropertyFlagBits::eDeviceLocal,
+                    depthimagesmemory[i]));
+
+            vk::ImageViewCreateInfo depthimageview_ci {
+                .image    = depthimages[i],
+                .viewType = vk::ImageViewType::e2D,
+                .format   = vk::Format::eD32Sfloat,
+                .subresourceRange = {
+                    .aspectMask     = vk::ImageAspectFlagBits::eDepth,
+                    .baseMipLevel   = 0,
+                    .levelCount     = 1,
+                    .baseArrayLayer = 0,
+                    .layerCount     = 1,
+                }
+            };
+
+            depthimageviews[i] = std::move(
+                potato_device->logical()
+                .createImageView(depthimageview_ci));
+            // clang-format on
+        }
     }
 
     uint32_t surface::swapimage_count() const {
@@ -118,10 +171,20 @@ namespace potato::render {
 
     // destroy swapimage-views
     void surface::destroy_swapchain_stuff() {
-        for ( auto& i : swapimageviews )
-            potato_device->logical().destroyImageView(i);
+        for ( int i = 0; i < swapimage_count(); ++i ) {
+            potato_device->logical().destroyImageView(swapimageviews[i]);
+            potato_device->logical().destroyImageView(depthimageviews[i]);
+            potato_device->logical().destroyImage(swapimages[i]);
+            potato_device->logical().destroyImage(depthimages[i]);
+            potato_device->logical().freeMemory(depthimagesmemory[i]);
+        }
+
         swapimageviews.clear();
+        depthimagesmemory.clear();
+        depthimageviews.clear();
+        depthimages.clear();
         swapimages.clear();
+        destroy_framebuffers();
     }
 
 }  // namespace potato::render
