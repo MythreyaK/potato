@@ -11,7 +11,8 @@ namespace potato::render {
         vk::Viewport                             viewport {};
         vk::Rect2D                               scissor {};
         vk::PipelineCreateFlags                  flags {};
-        vk::PipelineShaderStageCreateInfo        ci_shaders {};
+        std::string                              vertex_shader {};
+        std::string                              fragment_shader {};
         vk::PipelineVertexInputStateCreateInfo   ci_vertex_input {};
         vk::PipelineInputAssemblyStateCreateInfo ci_input_assembly {};
         vk::PipelineTessellationStateCreateInfo  ci_tessellation {};
@@ -22,11 +23,7 @@ namespace potato::render {
         vk::PipelineColorBlendAttachmentState    colorblend_attachment {};
         vk::PipelineColorBlendStateCreateInfo    ci_colorblend {};
         vk::PipelineDynamicStateCreateInfo       ci_dynamic {};
-        vk::PipelineLayout                       layout {};
-        std::unique_ptr<vk::RenderPass>          renderpass {};
-        uint32_t                                 subpass {};
-        vk::Pipeline                             old_pipeline {};
-        int32_t                                  pipeline_inx {};
+        uint32_t                                 subpass_count {};
     };
 
     struct pipeline_info {
@@ -35,18 +32,17 @@ namespace potato::render {
         // also allow aggregate-initialization of _pif
         _pif info {};
 
-        pipeline_info() = default;
-        pipeline_info(_pif&&);
-        pipeline_info(const _pif&);
-
+        pipeline_info()                = default;
+        ~pipeline_info()               = default;
         pipeline_info(pipeline_info&&) = default;
 
-        ~pipeline_info() = default;
+        pipeline_info(const _pif&);
 
-        pipeline_info(const pipeline_info&) = delete;
-        pipeline_info& operator=(const pipeline_info&) = delete;
+        pipeline_info(const pipeline_info&);
+        pipeline_info& operator=(const pipeline_info&);
 
-        pipeline_info& operator=(pipeline_info&&) = default;
+        pipeline_info(_pif&&)  = delete;
+        pipeline_info& operator=(pipeline_info&&) = delete;
 
       private:
         void update_pointers();
@@ -57,26 +53,23 @@ namespace potato::render {
     class pipeline {
 
       private:
-        device&          logical_device;
-        pipeline_info    pipelineinfo;
-        vk::ShaderModule vertex_shader;
-        vk::ShaderModule fragment_shader;
-        vk::Pipeline     vkpipeline;
+        // pipeline_info                 pipelineinfo {};
+        std::shared_ptr<const device> logical_device {};
+        vk::Pipeline                  vkpipeline {};
 
         vk::ShaderModule create_shader(const std::string& fpath);
 
       public:
-        pipeline(device&,
-                 const std::string& vert,
-                 const std::string& frag,
-                 pipeline_info);
+        pipeline() = default;
+        pipeline(std::shared_ptr<const device>,
+                 const pipeline_info&,
+                 vk::PipelineLayout,
+                 const vk::RenderPass&);
         ~pipeline();
 
-        void bind_commandbuffer(const vk::CommandBuffer&);
+        void bind(const vk::CommandBuffer&);
 
-        const vk::RenderPass& get_renderpass() const;
-
-        static pipeline_info default_pipeline_info(const vk::Extent2D&);
+        static pipeline_info default_pipeline_info(vk::Extent2D);
 
         // no copies
         pipeline(const pipeline&) = delete;
@@ -85,8 +78,6 @@ namespace potato::render {
         // allow move
         pipeline(pipeline&&) = default;
         pipeline& operator=(pipeline&&) = default;
-
-
     };
 
 }  // namespace potato::render

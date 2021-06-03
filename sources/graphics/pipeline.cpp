@@ -9,25 +9,25 @@
 namespace potato::render {
 
     pipeline::pipeline(std::shared_ptr<const device> device,
-                       const std::string&            vert,
-                       const std::string&            frag,
-                       pipeline_info                 pinf)
-      : logical_device(device)
-      , pipelineinfo(std::move(pinf))
-      , vertex_shader(create_shader(vert))
-      , fragment_shader(create_shader(frag)) {
+                       const pipeline_info&          pinf,
+                       vk::PipelineLayout            pipeline_layout,
+                       const vk::RenderPass&         renderpass)
+      : logical_device(device) {
 
-        auto& info = pipelineinfo.info;
+        auto& info = pinf.info;
+
+        auto vert_shader { create_shader(info.vertex_shader) };
+        auto frag_shader { create_shader(info.fragment_shader) };
 
         std::vector<vk::PipelineShaderStageCreateInfo> shaders {
             {
               .stage  = vk::ShaderStageFlagBits::eVertex,
-              .module = vertex_shader,
+              .module = vert_shader,
               .pName  = "main",
             },
             {
               .stage  = vk::ShaderStageFlagBits::eFragment,
-              .module = fragment_shader,
+              .module = frag_shader,
               .pName  = "main",
             },
         };
@@ -42,11 +42,9 @@ namespace potato::render {
             .pDepthStencilState  = &info.ci_depth,
             .pColorBlendState    = &info.ci_colorblend,
             .pDynamicState       = &info.ci_dynamic,
-            .layout              = info.layout,
-            .renderPass          = *info.renderpass,
-            .subpass             = info.subpass,
-            .basePipelineHandle  = info.old_pipeline,
-            .basePipelineIndex   = info.pipeline_inx,
+            .layout              = pipeline_layout,
+            .renderPass          = renderpass,
+            .subpass             = info.subpass_count
         };
 
         graphics_pipeline_ci.setPStages(shaders.data());
@@ -55,7 +53,7 @@ namespace potato::render {
 
         auto create_result =
           logical_device->logical().createGraphicsPipeline(nullptr,
-                                                          graphics_pipeline_ci);
+                                                           graphics_pipeline_ci);
 
         if ( create_result.result != vk::Result::eSuccess ) {
             throw std::runtime_error(
@@ -65,8 +63,8 @@ namespace potato::render {
 
         vkpipeline = std::move(create_result.value);
 
-        logical_device->logical().destroyShaderModule(vertex_shader);
-        logical_device->logical().destroyShaderModule(fragment_shader);
+        logical_device->logical().destroyShaderModule(vert_shader);
+        logical_device->logical().destroyShaderModule(frag_shader);
     }
 
     pipeline::~pipeline() {
@@ -81,11 +79,7 @@ namespace potato::render {
             .pCode    = reinterpret_cast<uint32_t*>(data.data()) });
     }
 
-    const vk::RenderPass& pipeline::get_renderpass() const {
-        return *pipelineinfo.info.renderpass;
-    }
-
-    pipeline_info pipeline::default_pipeline_info(const vk::Extent2D& extents) {
+    pipeline_info pipeline::default_pipeline_info(vk::Extent2D extents) {
 
         using ccfb = vk::ColorComponentFlagBits;
 
@@ -102,7 +96,6 @@ namespace potato::render {
                 .offset = {},
                 .extent = extents,
             },
-            // .ci_shaders  = {},
             // .ci_vertex_input  = {},
             .ci_input_assembly  = {
                 .topology               = vk::PrimitiveTopology::eTriangleList,
@@ -164,9 +157,9 @@ namespace potato::render {
                 .blendConstants = {},
             },
             // .ci_dynamic = {},
-            // .layout = {},
+            // .pipeline_layout = {},
             // .renderpass = {},
-            // .subpass = {},
+            .subpass_count = {},
         };
 
         return { pipelineinfo };
@@ -174,9 +167,20 @@ namespace potato::render {
 
 #pragma region PIPELINEINFO_STRUCT
 
-    pipeline_info::pipeline_info(_pif&& other) {
-        this->info = std::move(other);
+    pipeline_info::pipeline_info(const pipeline_info& other) {
+        this->info = other.info;
         update_pointers();
+    }
+
+    pipeline_info::pipeline_info(const _pif& other) {
+        this->info = other;
+        update_pointers();
+    }
+
+    pipeline_info& pipeline_info::operator=(const pipeline_info& other) {
+        this->info = other.info;
+        update_pointers();
+        return *this;
     }
 
     void pipeline_info::update_pointers() {
