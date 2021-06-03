@@ -54,6 +54,7 @@ namespace potato::render {
 
       private:
         std::shared_ptr<const device> logical_device {};
+        vk::PipelineLayout            vkpipeline_layout {};
         vk::Pipeline                  vkpipeline {};
 
         vk::ShaderModule create_shader(const std::string& fpath);
@@ -62,13 +63,13 @@ namespace potato::render {
         pipeline() = default;
         pipeline(std::shared_ptr<const device>,
                  const pipeline_info&,
-                 vk::PipelineLayout,
+                 vk::PipelineLayout&&,
                  const vk::RenderPass&);
         ~pipeline();
 
         void bind(const vk::CommandBuffer&) const;
 
-        static pipeline_info default_pipeline_info(vk::Extent2D);
+        static pipeline_info default_pipeline_info();
 
         // no copies
         pipeline(const pipeline&) = delete;

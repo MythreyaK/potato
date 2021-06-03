@@ -10,7 +10,7 @@ namespace potato::render {
 
     pipeline::pipeline(std::shared_ptr<const device> device,
                        const pipeline_info&          pinf,
-                       vk::PipelineLayout            pipeline_layout,
+                       vk::PipelineLayout&&          pipeline_layout,
                        const vk::RenderPass&         renderpass)
       : logical_device(device) {
 
@@ -83,7 +83,7 @@ namespace potato::render {
             .pCode    = reinterpret_cast<uint32_t*>(data.data()) });
     }
 
-    pipeline_info pipeline::default_pipeline_info(vk::Extent2D extents) {
+    pipeline_info pipeline::default_pipeline_info() {
 
         using ccfb = vk::ColorComponentFlagBits;
 
@@ -91,14 +91,14 @@ namespace potato::render {
             .viewport = {
                 .x        = 0,
                 .y        = 0,
-                .width    = extents.width / 1.0f,
-                .height   = extents.height / 1.0f,
+                .width    = {},
+                .height   = {},
                 .minDepth = 0.0f,
                 .maxDepth = 1.0f
             },
             .scissor = {
                 .offset = {},
-                .extent = extents,
+                .extent = {},
             },
             // .ci_vertex_input  = {},
             .ci_input_assembly  = {
