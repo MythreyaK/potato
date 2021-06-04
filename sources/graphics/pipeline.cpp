@@ -9,10 +9,11 @@
 namespace potato::render {
 
     pipeline::pipeline(std::shared_ptr<const device> device,
-                       const pipeline_info&          pinf,
-                       vk::PipelineLayout&&          pipeline_layout,
+                       pipeline_info                 pinf,
+                       vk::UniquePipelineLayout&&    pipeline_layout,
                        const vk::RenderPass&         renderpass)
-      : logical_device(device) {
+      : logical_device(device)
+      , vkpipeline_layout(std::move(pipeline_layout)) {
 
         auto& info = pinf.info;
 
@@ -32,8 +33,20 @@ namespace potato::render {
             },
         };
 
+        vk::PipelineVertexInputStateCreateInfo vertex_input_sci {
+            .vertexBindingDescriptionCount =
+              static_cast<uint32_t>(info.binding_descriptions.size()),
+
+            .pVertexBindingDescriptions = info.binding_descriptions.data(),
+
+            .vertexAttributeDescriptionCount =
+              static_cast<uint32_t>(info.attribute_descriptions.size()),
+
+            .pVertexAttributeDescriptions = info.attribute_descriptions.data(),
+        };
+
         vk::GraphicsPipelineCreateInfo graphics_pipeline_ci {
-            .pVertexInputState   = &info.ci_vertex_input,
+            .pVertexInputState   = &vertex_input_sci,
             .pInputAssemblyState = &info.ci_input_assembly,
             .pTessellationState  = &info.ci_tessellation,
             .pViewportState      = &info.ci_viewport,
@@ -42,7 +55,7 @@ namespace potato::render {
             .pDepthStencilState  = &info.ci_depth,
             .pColorBlendState    = &info.ci_colorblend,
             .pDynamicState       = &info.ci_dynamic,
-            .layout              = pipeline_layout,
+            .layout              = *vkpipeline_layout,
             .renderPass          = renderpass,
             .subpass             = info.subpass_count
         };
@@ -52,8 +65,9 @@ namespace potato::render {
           static_cast<uint32_t>(shaders.size()));
 
         auto create_result =
-          logical_device->logical().createGraphicsPipeline(nullptr,
-                                                           graphics_pipeline_ci);
+          logical_device->logical().createGraphicsPipelineUnique(
+            nullptr,
+            graphics_pipeline_ci);
 
         if ( create_result.result != vk::Result::eSuccess ) {
             throw std::runtime_error(
@@ -68,11 +82,7 @@ namespace potato::render {
     }
 
     void pipeline::bind(const vk::CommandBuffer& cmd_buffer) const {
-        cmd_buffer.bindPipeline(vk::PipelineBindPoint::eGraphics, vkpipeline);
-    }
-
-    pipeline::~pipeline() {
-        logical_device->logical().destroyPipeline(vkpipeline);
+        cmd_buffer.bindPipeline(vk::PipelineBindPoint::eGraphics, *vkpipeline);
     }
 
     vk::ShaderModule pipeline::create_shader(const std::string& fpath) {

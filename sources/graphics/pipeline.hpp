@@ -6,6 +6,8 @@
 #include <memory>
 
 namespace potato::render {
+    using vertex_bindings   = std::vector<vk::VertexInputBindingDescription>;
+    using vertex_attributes = std::vector<vk::VertexInputAttributeDescription>;
 
     struct _pif {
         vk::Viewport                             viewport {};
@@ -13,7 +15,8 @@ namespace potato::render {
         vk::PipelineCreateFlags                  flags {};
         std::string                              vertex_shader {};
         std::string                              fragment_shader {};
-        vk::PipelineVertexInputStateCreateInfo   ci_vertex_input {};
+        vertex_bindings                          binding_descriptions {};
+        vertex_attributes                        attribute_descriptions {};
         vk::PipelineInputAssemblyStateCreateInfo ci_input_assembly {};
         vk::PipelineTessellationStateCreateInfo  ci_tessellation {};
         vk::PipelineViewportStateCreateInfo      ci_viewport {};
@@ -54,18 +57,17 @@ namespace potato::render {
 
       private:
         std::shared_ptr<const device> logical_device {};
-        vk::PipelineLayout            vkpipeline_layout {};
-        vk::Pipeline                  vkpipeline {};
+        vk::UniquePipelineLayout      vkpipeline_layout {};
+        vk::UniquePipeline            vkpipeline {};
 
         vk::ShaderModule create_shader(const std::string& fpath);
 
       public:
         pipeline() = default;
         pipeline(std::shared_ptr<const device>,
-                 const pipeline_info&,
-                 vk::PipelineLayout&&,
+                 pipeline_info,
+                 vk::UniquePipelineLayout&&,
                  const vk::RenderPass&);
-        ~pipeline();
 
         void bind(const vk::CommandBuffer&) const;
 
