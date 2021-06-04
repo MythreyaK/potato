@@ -79,6 +79,11 @@ namespace potato::render {
         uint32_t find_mem_type(vk::MemoryPropertyFlags props,
                                vk::MemoryPropertyFlags bit_flags) const;
 
+        vk::Format
+        find_supported_format(const std::vector<vk::Format>& candidates,
+                              vk::ImageTiling                tiling,
+                              vk::FormatFeatureFlags         features) const;
+
         void create_buffer(vk::DeviceSize,
                            vk::BufferUsageFlags,
                            vk::MemoryPropertyFlags,
