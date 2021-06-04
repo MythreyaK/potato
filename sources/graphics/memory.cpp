@@ -2,7 +2,7 @@
 
 namespace potato::render {
 
-    uint32_t device::find_mem_type(vk::MemoryPropertyFlags props,
+    uint32_t device::find_mem_type(vk::MemoryPropertyFlags filter,
                                    vk::MemoryPropertyFlags flags) const {
 
         /*/
@@ -26,13 +26,13 @@ namespace potato::render {
 
         using mpf = vk::MemoryPropertyFlags;
 
-        auto condition { [&mem_props](mpf flags, uint32_t i) -> bool {
-            return (flags & mpf(1 << i))
+        auto condition { [&mem_props](mpf _filter, mpf flags, uint32_t i) -> bool {
+            return (_filter & mpf(1 << i))
                 && ((mem_props.memoryTypes[i].propertyFlags & flags) == flags);
         } };
 
         for ( uint32_t i = 0; i < mem_props.memoryTypeCount; i++ ) {
-            if ( condition(flags, i) ) return i;
+            if ( condition(filter, flags, i) ) return i;
         }
 
         throw std::runtime_error("Failed to find suitable memory type");
