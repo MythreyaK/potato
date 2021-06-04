@@ -70,15 +70,17 @@ namespace potato::render {
 
     void surface::create_depth_resources() {
 
-        auto extent_2d { current_extent() };
+        auto       extent_2d { current_extent() };
+        const auto depth_format { find_depth_format() };
 
         depthimages.resize(swapimage_count());
         depthimageviews.resize(swapimage_count());
+        depthimagesmemory.resize(swapimage_count());
 
         for ( int i = 0; i < swapimage_count(); ++i ) {
             vk::ImageCreateInfo imageInfo {
                 .imageType   = vk::ImageType::e2D,
-                .format      = {},
+                .format      = depth_format,
                 .extent      = {
                     .width = extent_2d.width,
                     .height = extent_2d.height,
@@ -102,7 +104,7 @@ namespace potato::render {
             vk::ImageViewCreateInfo depthimageview_ci {
                 .image    = depthimages[i],
                 .viewType = vk::ImageViewType::e2D,
-                .format   = vk::Format::eD32Sfloat,
+                .format   = depth_format,
                 .subresourceRange = {
                     .aspectMask     = vk::ImageAspectFlagBits::eDepth,
                     .baseMipLevel   = 0,
@@ -185,6 +187,17 @@ namespace potato::render {
         depthimages.clear();
         swapimages.clear();
         destroy_framebuffers();
+    }
+
+    vk::Format surface::find_depth_format() const {
+        return potato_device->find_supported_format(
+          {
+            vk::Format::eD32Sfloat,
+            vk::Format::eD32SfloatS8Uint,
+            vk::Format::eD24UnormS8Uint,
+          },
+          vk::ImageTiling::eOptimal,
+          vk::FormatFeatureFlagBits::eDepthStencilAttachment);
     }
 
 }  // namespace potato::render
