@@ -28,6 +28,7 @@ namespace potato::render {
     }
 
     void surface::recreate_swapchain() {
+        destroy_swapchain_stuff();
 
         std::set<uint32_t> _queues {
             potato_device->info().queues.graphics_inx.value(),
@@ -176,7 +177,7 @@ namespace potato::render {
         for ( int i = 0; i < swapimage_count(); ++i ) {
             potato_device->logical().destroyImageView(swapimageviews[i]);
             potato_device->logical().destroyImageView(depthimageviews[i]);
-            potato_device->logical().destroyImage(swapimages[i]);
+            // potato_device->logical().destroyImage(swapimages[i]);
             potato_device->logical().destroyImage(depthimages[i]);
             potato_device->logical().freeMemory(depthimagesmemory[i]);
         }

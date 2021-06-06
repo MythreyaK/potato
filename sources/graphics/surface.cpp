@@ -40,8 +40,8 @@ namespace potato::render {
     }
 
     surface::~surface() {
-        destroy_swapchain_stuff();
         potato_device->logical().destroySwapchainKHR(swapchain);
+        destroy_swapchain_stuff();
     }
 
     vk::SurfaceTransformFlagBitsKHR surface::current_transform() const {
@@ -55,17 +55,20 @@ namespace potato::render {
 
         const auto extents { current_extent() };
 
-        vk::FramebufferCreateInfo framebuffer_ci {
+        vk::FramebufferCreateInfo framebuffer_ci { // aaarrggghhh need array of dependencies here
             .renderPass      = renderpass,
-            .attachmentCount = 1u,
+            .attachmentCount = 2u,
             .width           = extents.width,
             .height          = extents.height,
             .layers          = 1,  // Q: same as swapchain layers?
         };
 
         framebuffers.reserve(swapimages.size());
-        for ( const auto& swp_img : swapimageviews ) {
-            framebuffer_ci.pAttachments = &swp_img;
+
+        for ( int i = 0; i < swapimage_count(); ++i ) {
+            std::array<vk::ImageView, 2> framebuffer_attachments { swapimageviews[i] , depthimageviews[i]};
+
+            framebuffer_ci.pAttachments = framebuffer_attachments.data();
             framebuffers.emplace_back(
               potato_device->logical().createFramebuffer(framebuffer_ci));
         }
@@ -75,6 +78,7 @@ namespace potato::render {
         for ( auto& fb : framebuffers ) {
             potato_device->logical().destroyFramebuffer(fb);
         }
+        framebuffers.clear();
     }
 
 }  // namespace potato::render

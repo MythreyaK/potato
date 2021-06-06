@@ -30,7 +30,6 @@ namespace potato::render {
         void create_swapchain();
         void create_depth_resources();
         void create_swapchain_stuff();
-        void recreate_swapchain();
 
         void destroy_swapchain_stuff();
         void destroy_framebuffers();
@@ -52,8 +51,10 @@ namespace potato::render {
         vk::Extent2D                    current_extent() const;
         vk::Format                      format() const;
         uint32_t                        swapimage_count() const;
+        vk::Format                      find_depth_format() const;
 
         void create_framebuffers(const vk::RenderPass& renderpass);
+        void recreate_swapchain();
 
         // no copies
         surface(const surface&) = delete;

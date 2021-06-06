@@ -61,6 +61,7 @@ namespace potato::render {
 
     void render_instance::window_resized() {
         destroy_objects();
+        potato_surface.recreate_swapchain();
         recreate_objects();
     }
 
@@ -75,16 +76,12 @@ namespace potato::render {
     void render_instance::recreate_objects() {
         create_command_buffers(
           potato_device->info().queues.graphics_inx.value());
+        create_pipeline();
     }
 
     void render_instance::destroy_objects() {
-        // for ( auto& fb : framebuffers ) {
-        //     potato_device->logical().destroyFramebuffer(fb);
-        // }
-
         // potato_pipeline.~pipeline();
-        // potato_device->logical().destroyPipelineLayout(pipeline_layout);
-        // potato_device->logical().destroyRenderPass(renderpass);
+        potato_device->logical().destroyRenderPass(renderpass);
         potato_device->logical().freeCommandBuffers(cmd_pool, cmd_buffers);
         potato_device->logical().destroyCommandPool(cmd_pool);
     }

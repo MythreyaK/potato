@@ -28,14 +28,15 @@ namespace potato::render {
         pipeline                potato_pipeline {};
 
         void create_command_buffers(uint32_t graphics_queue);
-        void create_pipeline();
+
         void destroy_objects();
         void recreate_objects();
 
       public:
         render_instance(GLFWwindow* window_handle);
-        ~render_instance();
+        virtual ~render_instance();
 
+        void     create_pipeline();
         void     window_resized();
         uint32_t swapimage_count() const;
 
@@ -48,12 +49,14 @@ namespace potato::render {
         render_instance& operator=(render_instance&&) = default;
 
         // Virtual functions
-        virtual pipeline           create_framebuffers(const vk::Device&);
-        virtual vk::PipelineLayout create_pipeline_layout(const vk::Device&);
-        virtual pipeline_info      create_pipeline_info();
+        virtual pipeline_info create_pipeline_info() = 0;
+
+        virtual vk::UniquePipelineLayout
+        create_pipeline_layout(const vk::Device&) = 0;
 
         virtual vk::RenderPass create_renderpass(const vk::Device&,
-                                                 vk::Format color_format);
+                                                 vk::Format color_format,
+                                                 vk::Format depth_format) = 0;
     };
 
 }  // namespace potato::render
