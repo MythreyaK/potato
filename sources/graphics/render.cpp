@@ -25,7 +25,8 @@ namespace potato::render {
         // call virtual functions
         renderpass =
           create_renderpass(potato_device->logical(),
-                            potato_device->info().swapchain.surface_format);
+                            potato_device->info().swapchain.surface_format,
+                            potato_surface.find_depth_format());
 
         auto pipeline_layout { create_pipeline_layout(
           potato_device->logical()) };
