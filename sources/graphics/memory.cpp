@@ -87,9 +87,9 @@ namespace potato::render {
             .memoryTypeIndex = find_mem_type(flags, props),
         };
 
-        auto img_mem { logical_device.allocateMemory(alloc_info) };
+        device_memory = logical_device.allocateMemory(alloc_info);
 
-        logical_device.bindImageMemory(image, img_mem, 0);
+        logical_device.bindImageMemory(image, device_memory, 0);
 
         return image;
     }
