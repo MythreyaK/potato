@@ -26,7 +26,7 @@ namespace potato::render {
         renderpass =
           create_renderpass(potato_device->logical(),
                             potato_device->info().swapchain.surface_format,
-                            potato_surface.find_depth_format());
+                            potato_surface.depth_format());
 
         auto pipeline_layout { create_pipeline_layout(
           potato_device->logical()) };
@@ -62,7 +62,6 @@ namespace potato::render {
 
     void render_instance::window_resized() {
         destroy_objects();
-        potato_surface.recreate_swapchain();
         recreate_objects();
     }
 
@@ -75,6 +74,7 @@ namespace potato::render {
     }
 
     void render_instance::recreate_objects() {
+        potato_surface.recreate_swapchain();
         create_command_buffers(
           potato_device->info().queues.graphics_inx.value());
         create_pipeline();

@@ -49,9 +49,9 @@ namespace potato::render {
 
         vk::SurfaceTransformFlagBitsKHR current_transform() const;
         vk::Extent2D                    current_extent() const;
-        vk::Format                      format() const;
         uint32_t                        swapimage_count() const;
-        vk::Format                      find_depth_format() const;
+        vk::Format                      color_format() const;
+        vk::Format                      depth_format() const;
 
         void create_framebuffers(const vk::RenderPass& renderpass);
         void recreate_swapchain();
