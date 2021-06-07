@@ -44,15 +44,21 @@ namespace potato::render {
         create_swapchain_stuff();
     }
 
-    // creates swapimages, swapimage-views
+    // creates all images, views
     void surface::create_swapchain_stuff() {
-        swapimages = potato_device->logical().getSwapchainImagesKHR(swapchain);
-        swapimageviews.reserve(swapimages.size());
+        const auto extent_2d { current_extent() };
 
-        // Get all image views
-        for ( auto& i : swapimages ) {
+        swapimages = potato_device->logical().getSwapchainImagesKHR(swapchain);
+
+        // swapimageviews.reserve(swapimages.size());
+        // If emplacing, do not resize
+        depthimagesmemory.resize(swapimage_count());
+
+        // Set up all depth, swap images and their views
+        for ( int i = 0; i < swapimage_count(); ++i ) {
+
             swapimageviews.emplace_back(potato_device->logical().createImageView({
-              .image      = i,
+              .image      = swapimages[i],
               .viewType   = vk::ImageViewType::e2D,
               .format     = potato_device->info().swapchain.surface_format,
               .components = {},  // defaults all to vk::ComponentSwizzle::eIdentity
@@ -64,24 +70,10 @@ namespace potato::render {
                 .layerCount     = 1,
               },
             }));
-        }
 
-        create_depth_resources();
-    }
-
-    void surface::create_depth_resources() {
-
-        auto       extent_2d { current_extent() };
-        const auto depth_format { find_depth_format() };
-
-        depthimages.resize(swapimage_count());
-        depthimageviews.resize(swapimage_count());
-        depthimagesmemory.resize(swapimage_count());
-
-        for ( int i = 0; i < swapimage_count(); ++i ) {
-            vk::ImageCreateInfo imageInfo {
+            vk::ImageCreateInfo depthimage_ci {
                 .imageType   = vk::ImageType::e2D,
-                .format      = depth_format,
+                .format      = depth_format(),
                 .extent      = {
                     .width = extent_2d.width,
                     .height = extent_2d.height,
@@ -97,15 +89,15 @@ namespace potato::render {
             };
 
             // clang-format off
-            depthimages[i] = std::move(
-                potato_device->create_image(imageInfo,
+            depthimages.emplace_back(
+                potato_device->create_image(depthimage_ci,
                     vk::MemoryPropertyFlagBits::eDeviceLocal,
                     depthimagesmemory[i]));
 
             vk::ImageViewCreateInfo depthimageview_ci {
                 .image    = depthimages[i],
                 .viewType = vk::ImageViewType::e2D,
-                .format   = depth_format,
+                .format   = depth_format(),
                 .subresourceRange = {
                     .aspectMask     = vk::ImageAspectFlagBits::eDepth,
                     .baseMipLevel   = 0,
@@ -115,7 +107,7 @@ namespace potato::render {
                 }
             };
 
-            depthimageviews[i] = std::move(
+            depthimageviews.emplace_back(
                 potato_device->logical()
                 .createImageView(depthimageview_ci));
             // clang-format on
@@ -190,7 +182,7 @@ namespace potato::render {
         destroy_framebuffers();
     }
 
-    vk::Format surface::find_depth_format() const {
+    vk::Format surface::depth_format() const {
         return potato_device->find_supported_format(
           {
             vk::Format::eD32Sfloat,
