@@ -1,6 +1,7 @@
 #ifndef POTATO_RENDER_SURFACE_HPP
 #define POTATO_RENDER_SURFACE_HPP
 
+#include "pipeline.hpp"
 #include "vkinclude/vulkan.hpp"
 
 extern "C" {
@@ -37,18 +38,24 @@ namespace potato::render {
 
         vksemaphores image_available {};  // pipeline waits for this before write
         vksemaphores render_complete {};
-        vkfences     in_flight {};
-        vkfences     acquire_fence {};
+        vkfences     in_flight_fence {};
+        vkfences     in_flight_image {};
         uint32_t     current_frame { 0 };
+        uint32_t     framebuffer_index { 0 };
+        bool         frame_in_progress { false };
 
+        // methods
         void create_swapchain();
         void create_depth_resources();
         void create_swapchain_stuff();
 
         void destroy_swapchain_stuff();
         void destroy_framebuffers();
+        void acquire_image();
 
         void create_command_buffers(uint32_t graphics_queue);
+
+        const vk::CommandBuffer& current_cmd_buffer() const;
 
         vk::SwapchainCreateInfoKHR
         swapchain_create_info(const std::vector<uint32_t>&) const;
@@ -63,13 +70,16 @@ namespace potato::render {
 
         vk::SurfaceTransformFlagBitsKHR current_transform() const;
         vk::Extent2D                    current_extent() const;
-        uint32_t                        swapimage_count() const;
         vk::Format                      color_format() const;
         vk::Format                      depth_format() const;
+        uint32_t                        swapimage_count() const;
 
-        void     create_framebuffers(const vk::RenderPass& renderpass);
-        void     recreate_swapchain();
-        uint32_t acquire_image();
+        const vk::CommandBuffer& begin_frame(const vk::RenderPass&,
+                                             const pipeline&);
+        void                     end_frame();
+
+        void create_framebuffers(const vk::RenderPass& renderpass);
+        void recreate_swapchain();
 
         // no copies
         surface(const surface&) = delete;
