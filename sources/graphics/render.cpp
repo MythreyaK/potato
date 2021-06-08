@@ -59,8 +59,10 @@ namespace potato::render {
     }
 
     void render_instance::window_resized() {
-        destroy_objects();
-        recreate_objects();
+        potato_device->logical().waitIdle();
+        potato_surface.recreate_swapchain();
+        potato_device->logical().destroyRenderPass(renderpass);
+        create_pipeline();
     }
 
     uint32_t render_instance::swapimage_count() const {
@@ -68,21 +70,24 @@ namespace potato::render {
     }
 
     render_instance::~render_instance() {
-        destroy_objects();
-    }
-
-    void render_instance::recreate_objects() {
-        potato_surface.recreate_swapchain();
-        create_pipeline();
-    }
-
-    void render_instance::destroy_objects() {
-        // potato_pipeline.~pipeline();
+        potato_device->logical().waitIdle();
         potato_device->logical().destroyRenderPass(renderpass);
     }
 
     const pipeline& render_instance::get_pipeline() const {
         return potato_pipeline;
+    }
+
+    const vk::RenderPass& render_instance::get_renderpass() const {
+        return renderpass;
+    }
+
+    surface& render_instance::get_surface() {
+        return potato_surface;
+    }
+
+    std::shared_ptr<const device> render_instance::get_device() const {
+        return potato_device->make_shared();
     }
 
 }  // namespace potato::render

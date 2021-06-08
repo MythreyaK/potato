@@ -22,9 +22,6 @@ namespace potato::render {
         vk::RenderPass          renderpass {};
         pipeline                potato_pipeline {};
 
-        void destroy_objects();
-        void recreate_objects();
-
       public:
         render_instance(GLFWwindow* window_handle);
         virtual ~render_instance();
@@ -38,10 +35,14 @@ namespace potato::render {
         render_instance& operator=(render_instance&&) = default;
 
         /* Functions */
-        void            create_pipeline();
-        void            window_resized();
-        uint32_t        swapimage_count() const;
-        const pipeline& get_pipeline() const;
+        void     create_pipeline();
+        void     window_resized();
+        surface& get_surface();
+
+        uint32_t                      swapimage_count() const;
+        const pipeline&               get_pipeline() const;
+        const vk::RenderPass&         get_renderpass() const;
+        std::shared_ptr<const device> get_device() const;
 
         // Virtual functions
         virtual pipeline_info create_pipeline_info() = 0;
