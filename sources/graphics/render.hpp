@@ -15,19 +15,12 @@ namespace potato::render {
 
     class render_instance {
       private:
-        using vkcmdbuffers   = std::vector<vk::CommandBuffer>;
-        using vkframebuffers = std::vector<vk::Framebuffer>;
-
         GLFWwindow*             window_handle;
         context                 potato_context;
         std::shared_ptr<device> potato_device;
         surface                 potato_surface;
-        vk::CommandPool         cmd_pool {};
-        vkcmdbuffers            cmd_buffers {};
         vk::RenderPass          renderpass {};
         pipeline                potato_pipeline {};
-
-        void create_command_buffers(uint32_t graphics_queue);
 
         void destroy_objects();
         void recreate_objects();
@@ -36,10 +29,6 @@ namespace potato::render {
         render_instance(GLFWwindow* window_handle);
         virtual ~render_instance();
 
-        void     create_pipeline();
-        void     window_resized();
-        uint32_t swapimage_count() const;
-
         // no copies
         render_instance(const render_instance&) = delete;
         render_instance& operator=(const render_instance&) = delete;
@@ -47,6 +36,12 @@ namespace potato::render {
         // allow move
         render_instance(render_instance&&) = default;
         render_instance& operator=(render_instance&&) = default;
+
+        /* Functions */
+        void            create_pipeline();
+        void            window_resized();
+        uint32_t        swapimage_count() const;
+        const pipeline& get_pipeline() const;
 
         // Virtual functions
         virtual pipeline_info create_pipeline_info() = 0;

@@ -1,8 +1,9 @@
-#include "render.hpp"
+#include "device.hpp"
+#include "surface.hpp"
 
 namespace potato::render {
 
-    void render_instance::create_command_buffers(uint32_t graphics_queue) {
+    void surface::create_command_buffers(uint32_t graphics_queue) {
         using cmdci = vk::CommandPoolCreateInfo;
 
         const cmdci cmd_pool_ci { .queueFamilyIndex = graphics_queue };
@@ -12,7 +13,7 @@ namespace potato::render {
         const vk::CommandBufferAllocateInfo cmd_alloc_ci {
             .commandPool        = cmd_pool,
             .level              = vk::CommandBufferLevel::ePrimary,
-            .commandBufferCount = 1,
+            .commandBufferCount = MAX_FRAMES_IN_FLIGHT,
         };
 
         cmd_buffers = std::move(

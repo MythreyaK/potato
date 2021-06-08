@@ -14,8 +14,6 @@ namespace potato::render {
       , potato_surface(window_handle, potato_device->make_shared()) {
 
         // ctor
-        create_command_buffers(
-          potato_device->info().queues.graphics_inx.value());
     }
 
     void render_instance::create_pipeline() {
@@ -75,16 +73,16 @@ namespace potato::render {
 
     void render_instance::recreate_objects() {
         potato_surface.recreate_swapchain();
-        create_command_buffers(
-          potato_device->info().queues.graphics_inx.value());
         create_pipeline();
     }
 
     void render_instance::destroy_objects() {
         // potato_pipeline.~pipeline();
         potato_device->logical().destroyRenderPass(renderpass);
-        potato_device->logical().freeCommandBuffers(cmd_pool, cmd_buffers);
-        potato_device->logical().destroyCommandPool(cmd_pool);
+    }
+
+    const pipeline& render_instance::get_pipeline() const {
+        return potato_pipeline;
     }
 
 }  // namespace potato::render

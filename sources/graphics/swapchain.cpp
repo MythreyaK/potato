@@ -112,6 +112,21 @@ namespace potato::render {
                 .createImageView(depthimageview_ci));
             // clang-format on
         }
+
+        create_command_buffers(
+          potato_device->info().queues.graphics_inx.value());
+
+        for ( int i = 0; i < MAX_FRAMES_IN_FLIGHT; ++i ) {
+            image_available.emplace_back(
+              potato_device->logical().createSemaphore({}));
+
+            render_complete.emplace_back(
+              potato_device->logical().createSemaphore({}));
+
+            in_flight.emplace_back(potato_device->logical().createFence({
+              .flags = vk::FenceCreateFlagBits::eSignaled,
+            }));
+        }
     }
 
     uint32_t surface::swapimage_count() const {
@@ -166,6 +181,20 @@ namespace potato::render {
         depthimages.clear();
         swapimages.clear();
         destroy_framebuffers();
+
+        potato_device->logical().freeCommandBuffers(cmd_pool, cmd_buffers);
+        potato_device->logical().destroyCommandPool(cmd_pool);
+
+        for ( int i = 0; i < MAX_FRAMES_IN_FLIGHT; ++i ) {
+            potato_device->logical().destroySemaphore(image_available[i]);
+            potato_device->logical().destroySemaphore(render_complete[i]);
+            potato_device->logical().destroyFence(in_flight[i]);
+        }
+
+        image_available.clear();
+        render_complete.clear();
+        in_flight.clear();
+        acquire_fence.clear();
     }
 
     vk::Format surface::depth_format() const {
