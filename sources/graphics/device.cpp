@@ -25,10 +25,10 @@ namespace potato::render {
         VK_KHR_SWAPCHAIN_EXTENSION_NAME
     };
 
-    vk::Device      create_device(device_settings device);
+    vk::Device      create_device(device_settings);
     device_settings pick_device(const vk::Instance&, const vk::SurfaceKHR&);
     vk::SurfaceKHR  create_surface(const vk::Instance&, GLFWwindow*);
-    vkqueues get_queues(const vk::Device& dev, const device_settings& inf);
+    vkqueues        _get_queues(const vk::Device&, const device_settings&);
     std::optional<device_settings> get_suitable_device(const vk::PhysicalDevice&,
                                                        const vk::SurfaceKHR&);
 
@@ -47,7 +47,7 @@ namespace potato::render {
         // Init device-specific pointers
         VULKAN_HPP_DEFAULT_DISPATCHER.init(logical_device);
 
-        queues = get_queues(logical_device, device_info);
+        queues = _get_queues(logical_device, device_info);
     }
 
     const device_settings& device::info() const {
@@ -69,6 +69,10 @@ namespace potato::render {
         return shared_from_this();
     }
 
+    const vkqueues& device::get_queues() const {
+        return queues;
+    }
+
     device::~device() {
         instance.destroySurfaceKHR(surface);
         logical_device.waitIdle();
@@ -76,7 +80,7 @@ namespace potato::render {
     }
 
 #pragma region UTILS
-    vkqueues get_queues(const vk::Device& dev, const device_settings& inf) {
+    vkqueues _get_queues(const vk::Device& dev, const device_settings& inf) {
         // TODO: Update to be more flexible, use queues as needed
         auto gf = dev.getQueue2(vk::DeviceQueueInfo2 {
           .queueFamilyIndex = inf.queues.graphics_inx.value(),
