@@ -123,10 +123,12 @@ namespace potato::render {
             render_complete.emplace_back(
               potato_device->logical().createSemaphore({}));
 
-            in_flight.emplace_back(potato_device->logical().createFence({
+            in_flight_fence.emplace_back(potato_device->logical().createFence({
               .flags = vk::FenceCreateFlagBits::eSignaled,
             }));
         }
+
+        in_flight_image.resize(swapimage_count(), {});
     }
 
     uint32_t surface::swapimage_count() const {
@@ -167,6 +169,22 @@ namespace potato::render {
 
     // destroy swapimage-views
     void surface::destroy_swapchain_stuff() {
+        for ( int i = 0; i < MAX_FRAMES_IN_FLIGHT; ++i ) {
+            potato_device->logical().destroySemaphore(image_available[i]);
+            potato_device->logical().destroySemaphore(render_complete[i]);
+            potato_device->logical().destroyFence(in_flight_fence[i]);
+        }
+
+        image_available.clear();
+        render_complete.clear();
+        in_flight_fence.clear();
+        in_flight_image.clear();
+
+        potato_device->logical().freeCommandBuffers(cmd_pool, cmd_buffers);
+        potato_device->logical().destroyCommandPool(cmd_pool);
+
+        destroy_framebuffers();
+
         for ( int i = 0; i < swapimage_count(); ++i ) {
             potato_device->logical().destroyImageView(swapimageviews[i]);
             potato_device->logical().destroyImageView(depthimageviews[i]);
@@ -180,21 +198,6 @@ namespace potato::render {
         depthimageviews.clear();
         depthimages.clear();
         swapimages.clear();
-        destroy_framebuffers();
-
-        potato_device->logical().freeCommandBuffers(cmd_pool, cmd_buffers);
-        potato_device->logical().destroyCommandPool(cmd_pool);
-
-        for ( int i = 0; i < MAX_FRAMES_IN_FLIGHT; ++i ) {
-            potato_device->logical().destroySemaphore(image_available[i]);
-            potato_device->logical().destroySemaphore(render_complete[i]);
-            potato_device->logical().destroyFence(in_flight[i]);
-        }
-
-        image_available.clear();
-        render_complete.clear();
-        in_flight.clear();
-        acquire_fence.clear();
     }
 
     vk::Format surface::depth_format() const {
