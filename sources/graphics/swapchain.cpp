@@ -144,24 +144,10 @@ namespace potato::render {
       const std::vector<uint32_t>& queues,
       const vk::SwapchainKHR&      old_swapchain) const {
 
-        constexpr auto exclusive  = vk::SharingMode::eExclusive;
-        constexpr auto concurrent = vk::SharingMode::eConcurrent;
+        auto info { swapchain_create_info(queues) };
+        info.oldSwapchain = old_swapchain;
 
-        return { .surface       = potato_device->get_surface(),
-                 .minImageCount = potato_device->info().swapchain.image_count,
-                 .imageFormat = potato_device->info().swapchain.surface_format,
-                 .imageColorSpace = potato_device->info().swapchain.color_space,
-                 .imageExtent     = current_extent(),
-                 .imageArrayLayers = 1,  // 2 for streoscopic 3D
-                 .imageUsage       = vk::ImageUsageFlagBits::eColorAttachment,
-                 .imageSharingMode = queues.size() == 1 ? exclusive : concurrent,
-                 .queueFamilyIndexCount = static_cast<uint32_t>(queues.size()),
-                 .pQueueFamilyIndices   = queues.data(),
-                 .preTransform          = current_transform(),
-                 .compositeAlpha = vk::CompositeAlphaFlagBitsKHR::eOpaque,
-                 .presentMode    = potato_device->info().swapchain.present_mode,
-                 .clipped        = true,
-                 .oldSwapchain   = old_swapchain };
+        return info;
     }
 
     // destroy swapimage-views
