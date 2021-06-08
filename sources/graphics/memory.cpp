@@ -42,7 +42,7 @@ namespace potato::render {
                                vk::BufferUsageFlags    usage,
                                vk::MemoryPropertyFlags properties,
                                vk::Buffer&             buffer,
-                               vk::DeviceMemory&       bufferMemory) const {
+                               vk::DeviceMemory&       buffer_memory) const {
 
         // clang-format off
         vk::BufferCreateInfo buffer_info {
@@ -65,9 +65,9 @@ namespace potato::render {
             .memoryTypeIndex = find_mem_type(flags, properties),
         };
 
-        auto dev_mem { logical_device.allocateMemory(alloc_info) };
+        buffer_memory = logical_device.allocateMemory(alloc_info);
 
-        logical_device.bindBufferMemory(buffer, dev_mem, 0);
+        logical_device.bindBufferMemory(buffer, buffer_memory, 0);
     }
 
     vk::Image device::create_image(const vk::ImageCreateInfo& im_ci,
