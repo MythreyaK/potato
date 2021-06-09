@@ -8,7 +8,7 @@ add_library(render STATIC ${RENDER_CPP} ${RENDER_HPP})
 
 target_include_directories(render
                         PRIVATE     "${PROJECT_BINARY_DIR}/sources/version"
-                        PUBLIC     "${Vulkan_INCLUDE_DIR}"
+                        PUBLIC      "${Vulkan_INCLUDE_DIR}"
                         PRIVATE     "${CMAKE_CURRENT_SOURCE_DIR}"
                         INTERFACE   "${CMAKE_CURRENT_SOURCE_DIR}/.."
 )

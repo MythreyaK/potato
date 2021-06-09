@@ -1,8 +1,13 @@
 ﻿cmake_minimum_required (VERSION 3.20)
 
-add_executable(testapp "test.cpp" "test.hpp")
+add_subdirectory("src")
 
-target_link_libraries(testapp
-                        PUBLIC glfwcpp
-                        PUBLIC render
-)
+add_executable(app "main.cpp")
+
+target_link_libraries(app PUBLIC testapp)
+
+configure_file("icon_big.bin" "${CMAKE_CURRENT_BINARY_DIR}/icon.bin" COPYONLY)
+
+# if (MSVC)
+#     set_target_properties(testapp PROPERTIES LINK_FLAGS "/ENTRY:mainCRTStartup /SUBSYSTEM:WINDOWS")
+# endif(MSVC)
