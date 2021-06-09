@@ -100,8 +100,5 @@ ipch/
 # NVidia Nsight GPU debugger configuration file
 *.nvuser
 
-# temporary 3rd party
-third-party
-
-# temporary ignore for testapp
-**/testapp
+# misc
+*.bin
