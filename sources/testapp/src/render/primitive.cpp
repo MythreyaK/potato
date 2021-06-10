@@ -34,7 +34,8 @@ namespace potato {
 
     // class model
     model::model(shared_ptr_device device, const mesh& mesh)
-      : potato_device(device) , vertex_count(mesh.size()) {
+      : potato_device(device)
+      , vertex_count(mesh.size()) {
 
         assert(vertex_count >= 3 && "Vertex count must be at least 3");
 
@@ -46,16 +47,16 @@ namespace potato {
         };
 
         device->create_buffer(buffer_size,
-                             vk::BufferUsageFlagBits::eVertexBuffer,
-                             host_visible_coherent,
-                             vertex_bufer,
-                             vertex_device_mem);
+                              vk::BufferUsageFlagBits::eVertexBuffer,
+                              host_visible_coherent,
+                              vertex_bufer,
+                              vertex_device_mem);
         void* data;
         auto  result = device->logical().mapMemory(vertex_device_mem,
-                                                 0,
-                                                 buffer_size,
-                                                 {},
-                                                 &data);
+                                                  0,
+                                                  buffer_size,
+                                                  {},
+                                                  &data);
         if ( result != vk::Result::eSuccess ) {
             throw std::runtime_error(
               "Failed to map vertex buffer memory to GPU");

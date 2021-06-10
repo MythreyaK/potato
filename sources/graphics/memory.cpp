@@ -26,7 +26,9 @@ namespace potato::render {
 
         using mpf = vk::MemoryPropertyFlags;
 
-        auto condition { [&mem_props](mpf _filter, mpf flags, uint32_t i) -> bool {
+        auto condition { [&mem_props](mpf      _filter,
+                                      mpf      flags,
+                                      uint32_t i) -> bool {
             return (_filter & mpf(1 << i))
                 && ((mem_props.memoryTypes[i].propertyFlags & flags) == flags);
         } };
@@ -97,7 +99,7 @@ namespace potato::render {
     vk::Format
     device::find_supported_format(const std::vector<vk::Format>& candidates,
                                   vk::ImageTiling                tiling,
-                                  vk::FormatFeatureFlags         features) const {
+                                  vk::FormatFeatureFlags features) const {
 
         for ( const auto& format : candidates ) {
             vk::FormatProperties props {

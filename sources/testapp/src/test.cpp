@@ -23,7 +23,7 @@ namespace testpotato {
 
         while ( keep_window_open() ) {
             poll_events();
-            if (!is_minimized())
+            if ( !is_minimized() ) [[likely]]
                 renderer.render_objects(vertex_model);
         }
 
@@ -35,7 +35,7 @@ namespace testpotato {
     }
 
     void testapp::on_window_resized(int new_width, int new_height) {
-        if (!is_minimized())
+        if ( !is_minimized() ) [[likely]]
             renderer.window_resized();
     }
 
@@ -67,4 +67,4 @@ namespace testpotato {
         }
     }
 
-}  // namespace Test
+}  // namespace testpotato
