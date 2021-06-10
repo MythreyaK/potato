@@ -25,14 +25,14 @@ namespace glfw {
     class window {
       private:
         GLFWwindow* window_handle;
+        bool        is_iconified { false };
 
         bool init_glfw(int w, int h, const std::string& title);
 
-        static void _on_scroll(GLFWwindow* window,
-                               double      xoffset,
-                               double      yoffset);
-        static void _on_codepoint(GLFWwindow* window, unsigned int codepoint);
+        static void _on_scroll(GLFWwindow*, double xoffset, double yoffset);
+        static void _on_codepoint(GLFWwindow*, unsigned int codepoint);
         static void _on_window_resize(GLFWwindow* w, int width, int height);
+        static void _on_window_iconify(GLFWwindow* w, int);
 
         static window* get_instance(GLFWwindow* ptr);
 
@@ -57,6 +57,7 @@ namespace glfw {
         void wait_events() const;
         void wait_events(std::chrono::milliseconds t) const;
         bool keep_window_open() const;
+        bool is_minimized() const;
         void set_window_should_close();
         void set_title(const std::string& new_title);
 

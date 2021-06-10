@@ -42,6 +42,7 @@ namespace glfw {
         glfwSetCharCallback(window_handle, window::_on_codepoint);
         glfwSetScrollCallback(window_handle, window::_on_scroll);
         glfwSetFramebufferSizeCallback(window_handle, window::_on_window_resize);
+        glfwSetWindowIconifyCallback(window_handle, window::_on_window_iconify);
         set_icon(icons);
     }
     catch ( const std::exception& ) {
@@ -118,6 +119,10 @@ namespace glfw {
         glfwSetWindowTitle(window_handle, new_title.c_str());
     }
 
+    bool window::is_minimized() const {
+        return is_iconified;
+    }
+
     void window::window_loop() {};
     void window::swap_buffers() {};
     void window::on_scroll(double x, double y) {}
@@ -136,6 +141,10 @@ namespace glfw {
 
     void window::_on_window_resize(GLFWwindow* wd, int w, int h) {
         get_instance(wd)->on_window_resized(w, h);
+    }
+
+    void window::_on_window_iconify(GLFWwindow* wd, int iconify) {
+        get_instance(wd)->is_iconified = iconify == GLFW_TRUE ? true : false;
     }
 
     window* window::get_instance(GLFWwindow* handle) {
