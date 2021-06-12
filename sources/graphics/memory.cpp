@@ -24,12 +24,16 @@ namespace potato::render {
             physical_device.getMemoryProperties2().memoryProperties
         };
 
+        // clang-format off
         using mpf = vk::MemoryPropertyFlags;
 
-        auto condition { [&mem_props](mpf _filter, mpf flags, uint32_t i) -> bool {
-            return (_filter & mpf(1 << i))
-                && ((mem_props.memoryTypes[i].propertyFlags & flags) == flags);
+        auto condition { [&mem_props] // Lambda function to get proper memory index
+            (mpf _filter, mpf flags, uint32_t i) -> bool {
+                return (_filter & mpf(1 << i))
+                    && ((mem_props.memoryTypes[i].propertyFlags & flags) == flags);
         } };
+
+        // clang-format on
 
         for ( uint32_t i = 0; i < mem_props.memoryTypeCount; i++ ) {
             if ( condition(filter, flags, i) ) return i;
