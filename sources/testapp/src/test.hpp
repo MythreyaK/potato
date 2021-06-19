@@ -13,6 +13,7 @@ namespace testpotato {
     class testapp : public glfw::window {
       private:
         testpotato::render renderer;
+        bool               minimized { false };
 
       public:
         testapp(int                     width,

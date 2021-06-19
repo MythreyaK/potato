@@ -231,7 +231,7 @@ namespace potato::render {
             device.enumerateDeviceExtensionProperties()
         };
         std::vector<std::string> supported_extns {};
-        for ( const auto ext : device_extensions ) {
+        for ( const auto& ext : device_extensions ) {
             supported_extns.push_back(ext.extensionName);
         }
 

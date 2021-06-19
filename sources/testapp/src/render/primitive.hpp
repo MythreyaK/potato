@@ -48,9 +48,9 @@ namespace potato {
         void draw(const vk::CommandBuffer& cmdbuffer) const;
     };
 
-    struct PushConstantData {
+    struct push_constants {
         glm::mat2 transform { 1.f };
-        glm::vec2 offset;
+        glm::vec2 offset { .0f };
         alignas(16) glm::vec3 color;
     };
 

@@ -23,8 +23,12 @@ namespace testpotato {
 
         while ( keep_window_open() ) {
             poll_events();
-            if ( !is_minimized() ) [[likely]]
-                renderer.render_objects(vertex_model);
+
+            while ( minimized ) {
+                wait_events();
+            }
+
+            renderer.render_objects(vertex_model);
         }
 
         renderer.get_device()->logical().waitIdle();
@@ -35,8 +39,12 @@ namespace testpotato {
     }
 
     void testapp::on_window_resized(int new_width, int new_height) {
-        if ( !is_minimized() ) [[likely]]
+        // TODO: Maybe suspend all processing when minimized?
+        minimized = is_minimized() || (new_width == 0) || (new_height == 0);
+
+        if ( !minimized ) {
             renderer.window_resized();
+        }
     }
 
     std::vector<std::byte> read_icon(const std::string& fname) {
