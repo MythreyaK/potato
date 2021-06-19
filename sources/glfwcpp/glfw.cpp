@@ -123,6 +123,12 @@ namespace glfw {
         return is_iconified;
     }
 
+    std::pair<int, int> window::framebuffer_size() const {
+        int width, height;
+        glfwGetFramebufferSize(window_handle, &width, &height);
+        return { width, height };
+    }
+
     void window::window_loop() {};
     void window::swap_buffers() {};
     void window::on_scroll(double x, double y) {}

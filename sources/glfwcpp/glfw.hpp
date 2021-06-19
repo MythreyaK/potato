@@ -61,6 +61,8 @@ namespace glfw {
         void set_window_should_close();
         void set_title(const std::string& new_title);
 
+        std::pair<int, int> framebuffer_size() const;
+
         bool set_icon(std::vector<icon>);
 
         virtual void window_loop();
