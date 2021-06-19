@@ -95,11 +95,11 @@ namespace potato::render {
 
         vk::PresentInfoKHR present_info {
             .waitSemaphoreCount = 1,
-            .pWaitSemaphores = &render_complete[current_frame],
-            .swapchainCount = 1,
-            .pSwapchains = &swapchain,
-            .pImageIndices = &framebuffer_index,
-            .pResults = {},
+            .pWaitSemaphores    = &render_complete[current_frame],
+            .swapchainCount     = 1,
+            .pSwapchains        = &swapchain,
+            .pImageIndices      = &framebuffer_index,
+            .pResults           = {},
         };
 
         // get the graphics queue

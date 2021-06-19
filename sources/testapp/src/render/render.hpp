@@ -1,10 +1,10 @@
 #ifndef TESTAPP_RENDER_HPP
 #define TESTAPP_RENDER_HPP
 
+#include "primitive.hpp"
+
 #include <graphics/render.hpp>
 #include <graphics/vkinclude/vulkan.hpp>
-
-#include "primitive.hpp"
 
 namespace testpotato {
 

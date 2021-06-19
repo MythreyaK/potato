@@ -101,7 +101,7 @@ namespace potato::render {
     vk::Format
     device::find_supported_format(const std::vector<vk::Format>& candidates,
                                   vk::ImageTiling                tiling,
-                                  vk::FormatFeatureFlags         features) const {
+                                  vk::FormatFeatureFlags features) const {
 
         for ( const auto& format : candidates ) {
             vk::FormatProperties props {

@@ -55,7 +55,8 @@ namespace potato::render {
 
         const auto extents { current_extent() };
 
-        vk::FramebufferCreateInfo framebuffer_ci { // aaarrggghhh need array of dependencies here
+        vk::FramebufferCreateInfo framebuffer_ci {
+            // aaarrggghhh need array of dependencies here
             .renderPass      = renderpass,
             .attachmentCount = 2u,
             .width           = extents.width,
@@ -66,7 +67,10 @@ namespace potato::render {
         framebuffers.reserve(swapimages.size());
 
         for ( int i = 0; i < swapimage_count(); ++i ) {
-            std::array<vk::ImageView, 2> framebuffer_attachments { swapimageviews[i] , depthimageviews[i]};
+            std::array<vk::ImageView, 2> framebuffer_attachments {
+                swapimageviews[i],
+                depthimageviews[i]
+            };
 
             framebuffer_ci.pAttachments = framebuffer_attachments.data();
             framebuffers.emplace_back(

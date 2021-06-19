@@ -35,7 +35,7 @@ namespace testpotato {
         vk::PushConstantRange push_const_ranges {
             .stageFlags = shader_and_frag,
             .offset     = 0,
-            .size       = sizeof(potato::PushConstantData),
+            .size       = sizeof(potato::push_constants),
         };
 
         vk::PipelineLayoutCreateInfo pipeline_layout_ci {};

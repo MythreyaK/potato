@@ -23,8 +23,7 @@ namespace testpotato {
 
         while ( keep_window_open() ) {
             poll_events();
-            if (!is_minimized())
-                renderer.render_objects(vertex_model);
+            if ( !is_minimized() ) renderer.render_objects(vertex_model);
         }
 
         renderer.get_device()->logical().waitIdle();
@@ -35,8 +34,7 @@ namespace testpotato {
     }
 
     void testapp::on_window_resized(int new_width, int new_height) {
-        if (!is_minimized())
-            renderer.window_resized();
+        if ( !is_minimized() ) renderer.window_resized();
     }
 
     std::vector<std::byte> read_icon(const std::string& fname) {
@@ -67,4 +65,4 @@ namespace testpotato {
         }
     }
 
-}  // namespace Test
+}  // namespace testpotato
