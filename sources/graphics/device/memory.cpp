@@ -21,7 +21,7 @@ namespace potato::render {
         /*/
 
         const auto mem_props {
-            physical_device.getMemoryProperties2().memoryProperties
+            physical.getMemoryProperties2().memoryProperties
         };
 
         // clang-format off
@@ -56,10 +56,10 @@ namespace potato::render {
         };
         // clang-format on
 
-        buffer = logical_device.createBuffer(buffer_info);
+        buffer = logical->createBuffer(buffer_info);
 
         vk::MemoryRequirements mem_req {
-            logical_device.getBufferMemoryRequirements(buffer)
+            logical->getBufferMemoryRequirements(buffer)
         };
 
         auto flags { vk::MemoryPropertyFlags(mem_req.memoryTypeBits) };
@@ -69,19 +69,19 @@ namespace potato::render {
             .memoryTypeIndex = find_mem_type(flags, properties),
         };
 
-        buffer_memory = logical_device.allocateMemory(alloc_info);
+        buffer_memory = logical->allocateMemory(alloc_info);
 
-        logical_device.bindBufferMemory(buffer, buffer_memory, 0);
+        logical->bindBufferMemory(buffer, buffer_memory, 0);
     }
 
     vk::Image device::create_image(const vk::ImageCreateInfo& im_ci,
                                    vk::MemoryPropertyFlags    props,
                                    vk::DeviceMemory& device_memory) const {
 
-        auto image { logical_device.createImage(im_ci) };
+        auto image { logical->createImage(im_ci) };
 
         vk::MemoryRequirements mem_req {
-            logical_device.getImageMemoryRequirements(image)
+            logical->getImageMemoryRequirements(image)
         };
 
         auto flags { vk::MemoryPropertyFlags(mem_req.memoryTypeBits) };
@@ -91,9 +91,9 @@ namespace potato::render {
             .memoryTypeIndex = find_mem_type(flags, props),
         };
 
-        device_memory = logical_device.allocateMemory(alloc_info);
+        device_memory = logical->allocateMemory(alloc_info);
 
-        logical_device.bindImageMemory(image, device_memory, 0);
+        logical->bindImageMemory(image, device_memory, 0);
 
         return image;
     }
@@ -105,7 +105,7 @@ namespace potato::render {
 
         for ( const auto& format : candidates ) {
             vk::FormatProperties props {
-                physical_device.getFormatProperties2(format).formatProperties
+                physical.getFormatProperties2(format).formatProperties
             };
 
             if ( tiling == vk::ImageTiling::eLinear
