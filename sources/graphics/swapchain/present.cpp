@@ -1,38 +1,40 @@
-#include "device.hpp"
-#include "surface.hpp"
+#include "device/device.hpp"
+#include "surface/surface.hpp"
+#include "swapchain/swapchain.hpp"
 
 #include <numeric>
 
 namespace potato::render {
 
-    void surface::acquire_image() {
+    void swapchain::acquire_image() {
         static constexpr auto tmax { std::numeric_limits<uint64_t>::max() };
 
         // wait for the fence for the current frame before trying to acquire it
-        potato_device->logical().waitForFences(in_flight_fence[current_frame],
-                                               true,
-                                               tmax);
+        m_device->logical->waitForFences(m_in_flight_fence[m_current_frame],
+                                          true,
+                                          tmax);
 
-        auto result { potato_device->logical().acquireNextImageKHR(
-          swapchain,                       // swapchain to acquire from
-          tmax,                            // wait timeout
-          image_available[current_frame],  // semaphore to signal
-          {}                               // fences
+        auto result { m_device->logical->acquireNextImageKHR(
+          m_swapchain,                         // swapchain to acquire from
+          tmax,                                // wait timeout
+          m_image_available[m_current_frame],  // semaphore to signal
+          {}                                   // fences
           ) };
 
         if ( result.result == vk::Result::eSuccess ) [[likely]] {
-            framebuffer_index = result.value;
+            m_framebuffer_inx = result.value;
             // Got an index, check if it's still in "in-flight" by checking
             // for its fence
-            if ( in_flight_image[framebuffer_index] != vk::Fence {} ) {
-                potato_device->logical().waitForFences(
-                  in_flight_image[framebuffer_index],
+            if ( m_in_flight_image[m_framebuffer_inx] != vk::Fence {} ) {
+                m_device->logical->waitForFences(
+                  m_in_flight_image[m_framebuffer_inx],
                   true,
                   tmax);
             }
 
             // now we set the fence for this image as "in use"
-            in_flight_image[framebuffer_index] = in_flight_fence[current_frame];
+            m_in_flight_image[m_framebuffer_inx] =
+              m_in_flight_fence[m_current_frame];
         }
 
         else [[unlikely]] {
@@ -41,9 +43,8 @@ namespace potato::render {
     }
 
     const vk::CommandBuffer&
-    surface::begin_frame(const vk::RenderPass& renderpass,
-                         const pipeline&       pipeline) {
-        assert(!frame_in_progress && "Frame must be started");
+    swapchain::begin_frame(const vk::RenderPass& renderpass) {
+        assert(!m_frame_in_progress && "Frame must be started");
 
         static std::array<vk::ClearValue, 2> clr_val {};
 
@@ -62,19 +63,20 @@ namespace potato::render {
 
         vk::RenderPassBeginInfo renderpass_begin_info {
             .renderPass      = renderpass,
-            .framebuffer     = framebuffers[framebuffer_index],
-            .renderArea      = { .offset = {}, .extent = current_extent() },
+            .framebuffer     = m_framebuffers[m_framebuffer_inx],
+            .renderArea      = { .offset = {},
+                            .extent = m_surface->framebuffer_size(
+                              m_device->physical) },
             .clearValueCount = static_cast<uint32_t>(clr_val.size()),
             .pClearValues    = clr_val.data(),
         };
 
         cmd_buffer.beginRenderPass(renderpass_begin_info,
                                    vk::SubpassContents::eInline);
-        pipeline.bind(cmd_buffer);
         return cmd_buffer;
     }
 
-    void surface::end_frame() {
+    void swapchain::end_frame() {
         auto& cmd_buffer { current_cmd_buffer() };
         cmd_buffer.endRenderPass();
         cmd_buffer.end();
@@ -85,35 +87,34 @@ namespace potato::render {
 
         vk::SubmitInfo submit_info {
             .waitSemaphoreCount   = 1,
-            .pWaitSemaphores      = &image_available[current_frame],
+            .pWaitSemaphores      = &m_image_available[m_current_frame],
             .pWaitDstStageMask    = &flags_mask,
             .commandBufferCount   = 1,
             .pCommandBuffers      = &cmd_buffer,
             .signalSemaphoreCount = 1,
-            .pSignalSemaphores    = &render_complete[current_frame],
+            .pSignalSemaphores    = &m_render_complete[m_current_frame],
         };
 
         vk::PresentInfoKHR present_info {
             .waitSemaphoreCount = 1,
-            .pWaitSemaphores    = &render_complete[current_frame],
+            .pWaitSemaphores    = &m_render_complete[m_current_frame],
             .swapchainCount     = 1,
-            .pSwapchains        = &swapchain,
-            .pImageIndices      = &framebuffer_index,
+            .pSwapchains        = &m_swapchain,
+            .pImageIndices      = &m_framebuffer_inx,
             .pResults           = {},
         };
 
         // get the graphics queue
-        auto queue { potato_device->get_queues().at(
-          vk::QueueFlagBits::eGraphics) };
+        auto queue { m_device->queues.at(vk::QueueFlagBits::eGraphics) };
 
-        potato_device->logical().resetFences({ in_flight_fence[current_frame] });
+        m_device->logical->resetFences({ m_in_flight_fence[m_current_frame] });
 
-        queue.submit(submit_info, in_flight_fence[current_frame]);
+        queue.submit(submit_info, m_in_flight_fence[m_current_frame]);
 
         queue.presentKHR(present_info);
 
-        frame_in_progress = false;
-        current_frame     = (current_frame + 1) % MAX_FRAMES_IN_FLIGHT;
+        m_frame_in_progress = false;
+        m_current_frame     = (m_current_frame + 1) % MAX_FRAMES_IN_FLIGHT;
     }
 
 }  // namespace potato::render
