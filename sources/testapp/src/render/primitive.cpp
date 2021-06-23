@@ -1,6 +1,6 @@
 #include "primitive.hpp"
 
-#include <graphics/device.hpp>
+#include <graphics/device/device.hpp>
 
 namespace potato {
 
@@ -52,23 +52,23 @@ namespace potato {
                               vertex_bufer,
                               vertex_device_mem);
         void* data;
-        auto  result = device->logical().mapMemory(vertex_device_mem,
-                                                  0,
-                                                  buffer_size,
-                                                  {},
-                                                  &data);
+        auto  result = device->logical->mapMemory(vertex_device_mem,
+                                                 0,
+                                                 buffer_size,
+                                                 {},
+                                                 &data);
         if ( result != vk::Result::eSuccess ) {
             throw std::runtime_error(
               "Failed to map vertex buffer memory to GPU");
         }
 
         std::memcpy(data, mesh.data(), buffer_size);
-        device->logical().unmapMemory(vertex_device_mem);
+        device->logical->unmapMemory(vertex_device_mem);
     }
 
     model::~model() {
-        potato_device->logical().destroyBuffer(vertex_bufer);
-        potato_device->logical().freeMemory(vertex_device_mem);
+        potato_device->logical->destroyBuffer(vertex_bufer);
+        potato_device->logical->freeMemory(vertex_device_mem);
     }
 
     void model::draw(const vk::CommandBuffer& cmd_buffer) const {

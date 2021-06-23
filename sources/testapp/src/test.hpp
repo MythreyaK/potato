@@ -29,8 +29,6 @@ namespace testpotato {
         vk::RenderPass create_renderpass();
     };
 
-    std::vector<std::byte> read_icon(const std::string& fname);
-
 }  // namespace testpotato
 
 #endif  // !TESTAPP

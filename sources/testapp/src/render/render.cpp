@@ -125,30 +125,14 @@ namespace testpotato {
 
     void render::render_objects(const std::vector<potato::model>& objects) {
 
-        auto command_buffer { get_surface().begin_frame(get_renderpass(),
-                                                        get_pipeline()) };
-
+        auto command_buffer { get_swapchain().begin_frame(get_renderpass()) };
+        get_pipeline().bind(command_buffer);
         for ( auto& obj : objects ) {
-            // obj.transform2d.rotation =
-            //   glm::mod(obj.transform2d.rotation + 0.01f, glm::two_pi<float>());
-
-            // PushConstantData push {};
-            // push.offset    = obj.transform2d.translation;
-            // push.color     = obj.color;
-            // push.transform = obj.transform2d.mat2();
-
-            // vkCmdPushConstants(commandBuffer,
-            //                    pipelineLayout,
-            //                    VK_SHADER_STAGE_VERTEX_BIT
-            //                      | VK_SHADER_STAGE_FRAGMENT_BIT,
-            //                    0,
-            //                    sizeof(SimplePushConstantData),
-            //                    &push);
             obj.bind(command_buffer);
             obj.draw(command_buffer);
         }
 
-        get_surface().end_frame();
+        get_swapchain().end_frame();
     }
 
 }  // namespace testpotato
