@@ -1,13 +1,11 @@
 #include "utils.hpp"
 
-#include "version.hpp"
-
 #include <filesystem>
 #include <fstream>
 #include <ios>
 #include <iostream>
 
-namespace potato::render {
+namespace potato::utils {
 
     std::vector<std::byte> read_file(const std::string& fname) {
 
@@ -17,19 +15,20 @@ namespace potato::render {
         constexpr auto FILE_FAIL_OPEN = static_cast<std::uintmax_t>(-1);
 
         if ( file_size != FILE_FAIL_OPEN ) {
-            std::vector<std::byte> shader_buffer(file_size);
+            std::vector<std::byte> file_buffer { file_size };
 
-            std::ifstream file(fname, std::ios::binary);
+            std::ifstream file { fname, std::ios::binary };
 
             if ( !file.is_open() ) {
                 throw std::runtime_error("Could not open file for reading");
             }
 
-            file.read(reinterpret_cast<char*>(shader_buffer.data()),
-                      shader_buffer.size());
+            file.read(reinterpret_cast<char*>(file_buffer.data()),
+                      file_buffer.size());
+
             file.close();
 
-            return shader_buffer;
+            return file_buffer;
         }
 
         else {
@@ -83,4 +82,4 @@ namespace potato::render {
 
         return ret;
     }
-}  // namespace potato::render
+}  // namespace potato::utils

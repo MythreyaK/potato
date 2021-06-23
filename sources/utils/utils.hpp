@@ -1,10 +1,10 @@
-#ifndef POTATO_RENDER_UTILS_HPP
-#define POTATO_RENDER_UTILS_HPP
+#ifndef POTATO_UTILS_HPP
+#define POTATO_UTILS_HPP
 
 #include <string>
 #include <vector>
 
-namespace potato::render {
+namespace potato::utils {
     std::vector<const char*> to_vecchar(const std::vector<std::string>& s);
 
     // Reads file in binary mode
@@ -13,6 +13,7 @@ namespace potato::render {
     bool has_required_items(const std::string&              info,
                             const std::vector<std::string>& supported_items,
                             const std::vector<std::string>& required_items);
-}  // namespace potato::render
+
+}  // namespace potato::utils
 
 #endif
