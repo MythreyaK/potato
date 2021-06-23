@@ -10,3 +10,6 @@ target_link_libraries(testapp
                         PUBLIC glm::glm
                         PUBLIC render
 )
+
+
+target_precompile_headers(testapp REUSE_FROM render)
