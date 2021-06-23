@@ -2,12 +2,13 @@
 #define POTATO_RENDER_HPP
 
 // clang-format off
-#include "vkinclude/vulkan.hpp"
+// #include "vkinclude/vulkan.hpp"
 // clang-format on
-#include "context.hpp"
-#include "device.hpp"
+#include "device/device.hpp"
+#include "instance.hpp"
 #include "pipeline.hpp"
-#include "surface.hpp"
+#include "surface/surface.hpp"
+#include "swapchain/swapchain.hpp"
 
 #include <vector>
 
@@ -15,12 +16,13 @@ namespace potato::render {
 
     class render_instance {
       private:
-        GLFWwindow*             window_handle;
-        context                 potato_context;
-        std::shared_ptr<device> potato_device;
-        surface                 potato_surface;
-        vk::RenderPass          renderpass {};
-        pipeline                potato_pipeline {};
+        GLFWwindow*              window_handle;
+        instance                 potato_instance;
+        std::shared_ptr<surface> potato_surface;
+        std::shared_ptr<device>  potato_device;
+        swapchain                potato_swapchain;
+        vk::RenderPass           renderpass {};
+        pipeline                 potato_pipeline {};
 
       public:
         render_instance(GLFWwindow* window_handle);
@@ -35,11 +37,12 @@ namespace potato::render {
         render_instance& operator=(render_instance&&) = default;
 
         /* Functions */
-        void     create_pipeline();
-        void     window_resized();
-        surface& get_surface();
+        void create_pipeline();
+        void window_resized();
 
-        uint32_t                      swapimage_count() const;
+        swapchain& get_swapchain();
+
+        const surface&                get_surface() const;
         const pipeline&               get_pipeline() const;
         const vk::RenderPass&         get_renderpass() const;
         std::shared_ptr<const device> get_device() const;

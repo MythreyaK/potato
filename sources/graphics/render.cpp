@@ -1,5 +1,7 @@
 #include "render.hpp"
 
+#include "surface/surface.hpp"
+
 #include <format>
 #include <iostream>
 #include <vector>
@@ -7,27 +9,32 @@
 namespace potato::render {
 
     render_instance::render_instance(GLFWwindow* window_handle)
-      : window_handle(window_handle)
-      , potato_context(window_handle)
-      , potato_device(std::make_shared<device>(potato_context.get_instance(),
-                                               window_handle))
-      , potato_surface(window_handle, potato_device->make_shared()) {
+      : window_handle { window_handle }
+      , potato_instance {}
+      , potato_surface { std::make_shared<surface>(potato_instance.get(),
+                                                   window_handle) }
+      , potato_device { std::make_shared<device>(potato_instance.get(),
+                                                 *potato_surface) }
+      , potato_swapchain { potato_device->shared_from_this(),
+                           potato_device->create_info,
+                           potato_surface->shared_from_this() } {
 
         // ctor
     }
 
     void render_instance::create_pipeline() {
 
-        const auto curr_extent { potato_surface.current_extent() };
+        const auto curr_extent { potato_surface->framebuffer_size(
+          potato_device->physical) };
 
         // call virtual functions
         renderpass =
-          create_renderpass(potato_device->logical(),
-                            potato_device->info().swapchain.surface_format,
-                            potato_surface.depth_format());
+          create_renderpass(potato_device->logical.get(),
+                            potato_device->create_info.surface_format,
+                            potato_swapchain.depth_format());
 
         auto pipeline_layout { create_pipeline_layout(
-          potato_device->logical()) };
+          potato_device->logical.get()) };
 
         auto pipeline_create_info { create_pipeline_info() };
 
@@ -50,28 +57,24 @@ namespace potato::render {
         };
         // clang-format on
 
-        potato_pipeline = pipeline(potato_device->make_shared(),
+        potato_pipeline = pipeline(potato_device->shared_from_this(),
                                    pipeline_create_info,
                                    std::move(pipeline_layout),
                                    renderpass);
 
-        potato_surface.create_framebuffers(renderpass);
+        potato_swapchain.create_framebuffers(renderpass);
     }
 
     void render_instance::window_resized() {
-        potato_device->logical().waitIdle();
-        potato_surface.recreate_swapchain();
-        potato_device->logical().destroyRenderPass(renderpass);
+        potato_device->logical->waitIdle();
+        potato_swapchain.recreate_swapchain();
+        potato_device->logical->destroyRenderPass(renderpass);
         create_pipeline();
     }
 
-    uint32_t render_instance::swapimage_count() const {
-        return potato_surface.swapimage_count();
-    }
-
     render_instance::~render_instance() {
-        potato_device->logical().waitIdle();
-        potato_device->logical().destroyRenderPass(renderpass);
+        potato_device->logical->waitIdle();
+        potato_device->logical->destroyRenderPass(renderpass);
     }
 
     const pipeline& render_instance::get_pipeline() const {
@@ -82,12 +85,16 @@ namespace potato::render {
         return renderpass;
     }
 
-    surface& render_instance::get_surface() {
-        return potato_surface;
+    const surface& render_instance::get_surface() const {
+        return *potato_surface;
+    }
+
+    swapchain& render_instance::get_swapchain() {
+        return potato_swapchain;
     }
 
     std::shared_ptr<const device> render_instance::get_device() const {
-        return potato_device->make_shared();
+        return potato_device->shared_from_this();
     }
 
 }  // namespace potato::render

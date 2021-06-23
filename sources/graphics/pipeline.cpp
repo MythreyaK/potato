@@ -1,12 +1,13 @@
 #include "pipeline.hpp"
 
-#include "device.hpp"
-#include "utils.hpp"
+#include "device/device.hpp"
+#include "utils/utils.hpp"
 
 #include <format>
 #include <iostream>
 
 namespace potato::render {
+    using namespace potato::utils;
 
     pipeline::pipeline(std::shared_ptr<const device> device,
                        pipeline_info                 pinf,
@@ -65,7 +66,7 @@ namespace potato::render {
           static_cast<uint32_t>(shaders.size()));
 
         auto create_result =
-          logical_device->logical().createGraphicsPipelineUnique(
+          logical_device->logical->createGraphicsPipelineUnique(
             nullptr,
             graphics_pipeline_ci);
 
@@ -77,8 +78,8 @@ namespace potato::render {
 
         vkpipeline = std::move(create_result.value);
 
-        logical_device->logical().destroyShaderModule(vert_shader);
-        logical_device->logical().destroyShaderModule(frag_shader);
+        logical_device->logical->destroyShaderModule(vert_shader);
+        logical_device->logical->destroyShaderModule(frag_shader);
     }
 
     void pipeline::bind(const vk::CommandBuffer& cmd_buffer) const {
@@ -87,7 +88,7 @@ namespace potato::render {
 
     vk::ShaderModule pipeline::create_shader(const std::string& fpath) {
         auto data { read_file(fpath) };
-        return logical_device->logical().createShaderModule(
+        return logical_device->logical->createShaderModule(
           vk::ShaderModuleCreateInfo {
             .codeSize = data.size(),
             .pCode    = reinterpret_cast<uint32_t*>(data.data()) });
