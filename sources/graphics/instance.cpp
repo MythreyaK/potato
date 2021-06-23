@@ -1,6 +1,6 @@
-#include "context.hpp"
+#include "instance.hpp"
 
-#include "utils.hpp"
+#include "utils/utils.hpp"
 #include "version.hpp"
 
 #include <format>
@@ -71,8 +71,8 @@ namespace potato::render {
 
 #pragma endregion FWD_DECLARE_MISC
 
-    context::context(GLFWwindow*              window_handle,
-                     std::vector<std::string> extensions) {
+    instance::instance(std::vector<std::string> extensions) {
+        using namespace potato::utils;
 
         // Initialize the dynamic loader
         VULKAN_HPP_DEFAULT_DISPATCHER.init(
@@ -128,13 +128,13 @@ namespace potato::render {
             debug_crinf
         };
 
-        instance = vk::createInstanceUnique(
+        vkinstance = vk::createInstanceUnique(
           inst_create_info.get<vk::InstanceCreateInfo>());
 
-        VULKAN_HPP_DEFAULT_DISPATCHER.init(instance.get());
+        VULKAN_HPP_DEFAULT_DISPATCHER.init(vkinstance.get());
     }
 
-    strings context::supported_extensions() {
+    strings instance::supported_extensions() {
 
         const auto supported_extns { vk::enumerateInstanceExtensionProperties(
           nullptr) };
@@ -149,8 +149,8 @@ namespace potato::render {
         return extns;
     }
 
-    const vk::Instance& context::get_instance() {
-        return instance.get();
+    const vk::Instance& instance::get() {
+        return vkinstance.get();
     }
 
     strings required_extensions() {
