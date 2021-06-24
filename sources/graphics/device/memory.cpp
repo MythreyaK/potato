@@ -58,9 +58,8 @@ namespace potato::render {
 
         buffer = logical->createBuffer(buffer_info);
 
-        vk::MemoryRequirements mem_req {
-            logical->getBufferMemoryRequirements(buffer)
-        };
+        vk::MemoryRequirements mem_req { logical->getBufferMemoryRequirements(
+          buffer) };
 
         auto flags { vk::MemoryPropertyFlags(mem_req.memoryTypeBits) };
 
@@ -80,9 +79,8 @@ namespace potato::render {
 
         auto image { logical->createImage(im_ci) };
 
-        vk::MemoryRequirements mem_req {
-            logical->getImageMemoryRequirements(image)
-        };
+        vk::MemoryRequirements mem_req { logical->getImageMemoryRequirements(
+          image) };
 
         auto flags { vk::MemoryPropertyFlags(mem_req.memoryTypeBits) };
 
