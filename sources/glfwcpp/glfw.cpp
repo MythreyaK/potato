@@ -1,5 +1,6 @@
 #ifndef GLFW_CPP
 #define GLFW_CPP
+#define GLFW_INCLUDE_NONE
 
 #include "GLFW.hpp"
 
@@ -43,6 +44,7 @@ namespace glfw {
         glfwSetScrollCallback(window_handle, window::_on_scroll);
         glfwSetFramebufferSizeCallback(window_handle, window::_on_window_resize);
         glfwSetWindowIconifyCallback(window_handle, window::_on_window_iconify);
+        glfwSetWindowRefreshCallback(window_handle, _on_window_refresh);
         set_icon(icons);
     }
     catch ( const std::exception& ) {
@@ -134,6 +136,7 @@ namespace glfw {
     void window::on_scroll(double x, double y) {}
     void window::on_codepoint(unsigned int codepoint) {}
     void window::on_window_resized(int new_width, int new_height) {}
+    void window::on_window_refresh() {}
 
     // ** C to C++ functions callbacks mapping **
 
@@ -151,6 +154,10 @@ namespace glfw {
 
     void window::_on_window_iconify(GLFWwindow* wd, int iconify) {
         get_instance(wd)->is_iconified = iconify == GLFW_TRUE ? true : false;
+    }
+
+    void window::_on_window_refresh(GLFWwindow* wd) {
+        get_instance(wd)->on_window_refresh();
     }
 
     window* window::get_instance(GLFWwindow* handle) {

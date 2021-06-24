@@ -31,8 +31,9 @@ namespace glfw {
 
         static void _on_scroll(GLFWwindow*, double xoffset, double yoffset);
         static void _on_codepoint(GLFWwindow*, unsigned int codepoint);
-        static void _on_window_resize(GLFWwindow* w, int width, int height);
-        static void _on_window_iconify(GLFWwindow* w, int);
+        static void _on_window_resize(GLFWwindow*, int width, int height);
+        static void _on_window_refresh(GLFWwindow*);
+        static void _on_window_iconify(GLFWwindow*, int);
 
         static window* get_instance(GLFWwindow* ptr);
 
@@ -70,6 +71,7 @@ namespace glfw {
         virtual void on_scroll(double x, double y);
         virtual void on_codepoint(unsigned int codepoint);
         virtual void on_window_resized(int new_width, int new_height);
+        virtual void on_window_refresh();
     };
 }  // namespace glfw
 
