@@ -25,7 +25,7 @@ namespace potato::render {
         vk::PipelineDepthStencilStateCreateInfo  ci_depth {};
         vk::PipelineColorBlendAttachmentState    colorblend_attachment {};
         vk::PipelineColorBlendStateCreateInfo    ci_colorblend {};
-        vk::PipelineDynamicStateCreateInfo       ci_dynamic {};
+        std::vector<vk::DynamicState>            ci_dynamic {};
         uint32_t                                 subpass_count {};
     };
 

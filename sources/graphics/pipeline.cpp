@@ -9,6 +9,7 @@
 namespace potato::render {
     using namespace potato::utils;
 
+    // TODO: Make pipeline moveable to retain pointers
     pipeline::pipeline(std::shared_ptr<const device> device,
                        pipeline_info                 pinf,
                        vk::UniquePipelineLayout&&    pipeline_layout,
@@ -46,6 +47,11 @@ namespace potato::render {
             .pVertexAttributeDescriptions = info.attribute_descriptions.data(),
         };
 
+        vk::PipelineDynamicStateCreateInfo dynamic_info_ci {
+            .dynamicStateCount = static_cast<uint32_t>(info.ci_dynamic.size()),
+            .pDynamicStates    = info.ci_dynamic.data()
+        };
+
         vk::GraphicsPipelineCreateInfo graphics_pipeline_ci {
             .pVertexInputState   = &vertex_input_sci,
             .pInputAssemblyState = &info.ci_input_assembly,
@@ -55,7 +61,7 @@ namespace potato::render {
             .pMultisampleState   = &info.ci_multisample,
             .pDepthStencilState  = &info.ci_depth,
             .pColorBlendState    = &info.ci_colorblend,
-            .pDynamicState       = &info.ci_dynamic,
+            .pDynamicState       = &dynamic_info_ci,
             .layout              = *vkpipeline_layout,
             .renderPass          = renderpass,
             .subpass             = info.subpass_count
@@ -97,6 +103,11 @@ namespace potato::render {
     pipeline_info pipeline::default_pipeline_info() {
 
         using ccfb = vk::ColorComponentFlagBits;
+
+        std::vector<vk::DynamicState> dynamic_states {
+            vk::DynamicState::eViewport,
+            vk::DynamicState::eScissor,
+        };
 
         _pif pipelineinfo {
             .viewport = {
@@ -171,7 +182,7 @@ namespace potato::render {
                 .pAttachments = &pipelineinfo.colorblend_attachment,
                 .blendConstants = {},
             },
-            // .ci_dynamic = {},
+            .ci_dynamic = dynamic_states,
             // .pipeline_layout = {},
             // .renderpass = {},
             .subpass_count = {},

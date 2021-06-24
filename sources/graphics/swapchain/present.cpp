@@ -11,18 +11,18 @@ namespace potato::render {
 
         // wait for the fence for the current frame before trying to acquire it
         m_device->logical->waitForFences(m_in_flight_fence[m_current_frame],
-                                          true,
-                                          tmax);
+                                         true,
+                                         tmax);
 
-        auto result { m_device->logical->acquireNextImageKHR(
+        auto [result, value] { m_device->logical->acquireNextImageKHR(
           m_swapchain,                         // swapchain to acquire from
           tmax,                                // wait timeout
           m_image_available[m_current_frame],  // semaphore to signal
           {}                                   // fences
           ) };
 
-        if ( result.result == vk::Result::eSuccess ) [[likely]] {
-            m_framebuffer_inx = result.value;
+        if ( result == vk::Result::eSuccess ) [[likely]] {
+            m_framebuffer_inx = value;
             // Got an index, check if it's still in "in-flight" by checking
             // for its fence
             if ( m_in_flight_image[m_framebuffer_inx] != vk::Fence {} ) {
@@ -49,9 +49,11 @@ namespace potato::render {
         static std::array<vk::ClearValue, 2> clr_val {};
 
         clr_val[1].depthStencil = vk::ClearDepthStencilValue { 1.0f, 0 };
-
         clr_val[0].color =
           vk::ClearColorValue { std::array { 0.01f, 0.01f, 0.01f, 1.0f } };
+
+        const auto frame_extent { m_surface->framebuffer_size(
+          m_device->physical) };
 
         acquire_image();
 
@@ -61,12 +63,20 @@ namespace potato::render {
 
         cmd_buffer.begin(cmd_buffer_begin_info);
 
+        cmd_buffer.setScissor(0, { { .offset = {}, .extent = frame_extent } });
+        cmd_buffer.setViewport(
+          0,
+          { { .x        = 0,
+              .y        = 0,
+              .width    = static_cast<float>(frame_extent.width),
+              .height   = static_cast<float>(frame_extent.height),
+              .minDepth = 0.0f,
+              .maxDepth = 1.0f } });
+
         vk::RenderPassBeginInfo renderpass_begin_info {
             .renderPass      = renderpass,
             .framebuffer     = m_framebuffers[m_framebuffer_inx],
-            .renderArea      = { .offset = {},
-                            .extent = m_surface->framebuffer_size(
-                              m_device->physical) },
+            .renderArea      = { .offset = {}, .extent = frame_extent },
             .clearValueCount = static_cast<uint32_t>(clr_val.size()),
             .pClearValues    = clr_val.data(),
         };
