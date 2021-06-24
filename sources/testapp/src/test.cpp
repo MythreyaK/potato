@@ -17,8 +17,6 @@ namespace testpotato {
             { { -0.5f, 0.5f }, { 0.0f, 0.0f, 1.0f } },
         };
 
-        std::vector<potato::model> vertex_model {};
-
         vertex_model.emplace_back(renderer.get_device(), vertices);
 
         while ( keep_window_open() ) {

@@ -15,6 +15,8 @@ namespace testpotato {
         testpotato::render renderer;
         bool               minimized { false };
 
+        std::vector<potato::model> vertex_model {};
+
       public:
         testapp(int                     width,
                 int                     height,
