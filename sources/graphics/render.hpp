@@ -12,7 +12,7 @@
 
 #include <vector>
 
-namespace potato::render {
+namespace potato::graphics {
 
     class render_instance {
       private:
@@ -58,6 +58,6 @@ namespace potato::render {
                                                  vk::Format depth_format) = 0;
     };
 
-}  // namespace potato::render
+}  // namespace potato::graphics
 
 #endif  // !POTATO_RENDER_HPP

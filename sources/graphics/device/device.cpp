@@ -8,7 +8,7 @@
 #include <set>
 #include <utility>
 
-namespace potato::render {
+namespace potato::graphics {
 
 #pragma region FWD_DECLARE
 
@@ -224,4 +224,4 @@ namespace potato::render {
 
 #pragma endregion UTILS
 
-}  // namespace potato::render
+}  // namespace potato::graphics

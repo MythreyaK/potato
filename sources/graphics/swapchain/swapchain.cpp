@@ -11,7 +11,7 @@ extern "C" {
     void glfwGetFramebufferSize(GLFWwindow*, int* w, int* h);
 }
 
-namespace potato::render {
+namespace potato::graphics {
 
     using attachments = std::vector<vk::ImageView>;
 
@@ -258,4 +258,4 @@ namespace potato::render {
           vk::FormatFeatureFlagBits::eDepthStencilAttachment);
     }
 
-}  // namespace potato::render
+}  // namespace potato::graphics

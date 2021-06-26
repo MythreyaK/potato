@@ -6,7 +6,7 @@
 #include <format>
 #include <iostream>
 
-namespace potato::render {
+namespace potato::graphics {
     using namespace potato::utils;
 
     // TODO: Make pipeline moveable to retain pointers
@@ -221,4 +221,4 @@ namespace potato::render {
 
 #pragma endregion PIPELINEINFO_STRUCT
 
-}  // namespace potato::render
+}  // namespace potato::graphics

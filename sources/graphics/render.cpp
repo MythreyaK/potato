@@ -6,7 +6,7 @@
 #include <iostream>
 #include <vector>
 
-namespace potato::render {
+namespace potato::graphics {
 
     render_instance::render_instance(GLFWwindow* window_handle)
       : window_handle { window_handle }
@@ -97,4 +97,4 @@ namespace potato::render {
         return potato_device->shared_from_this();
     }
 
-}  // namespace potato::render
+}  // namespace potato::graphics

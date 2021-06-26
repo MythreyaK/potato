@@ -4,7 +4,7 @@
 
 #include <numeric>
 
-namespace potato::render {
+namespace potato::graphics {
 
     void swapchain::acquire_image() {
         static constexpr auto tmax { std::numeric_limits<uint64_t>::max() };
@@ -127,4 +127,4 @@ namespace potato::render {
         m_current_frame     = (m_current_frame + 1) % MAX_FRAMES_IN_FLIGHT;
     }
 
-}  // namespace potato::render
+}  // namespace potato::graphics

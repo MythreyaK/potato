@@ -7,7 +7,7 @@ extern "C" {
     struct GLFWwindow;
 }
 
-namespace potato::render {
+namespace potato::graphics {
 
     class instance {
       private:
@@ -30,6 +30,6 @@ namespace potato::render {
         instance& operator=(instance&&) = default;
     };
 
-}  // namespace potato::render
+}  // namespace potato::graphics
 
 #endif

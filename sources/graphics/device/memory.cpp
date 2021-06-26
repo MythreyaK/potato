@@ -1,6 +1,6 @@
 #include "device.hpp"
 
-namespace potato::render {
+namespace potato::graphics {
 
     uint32_t device::find_mem_type(vk::MemoryPropertyFlags filter,
                                    vk::MemoryPropertyFlags flags) const {
@@ -121,4 +121,4 @@ namespace potato::render {
         throw std::runtime_error("Could not find supported format");
     }
 
-}  // namespace potato::render
+}  // namespace potato::graphics

@@ -9,7 +9,7 @@ extern "C" {
     struct GLFWwindow;
 }
 
-namespace potato::render {
+namespace potato::graphics {
     class device;
     class surface;
 
@@ -94,6 +94,6 @@ namespace potato::render {
         swapchain& operator=(swapchain&&) = default;
     };
 
-}  // namespace potato::render
+}  // namespace potato::graphics
 
 #endif

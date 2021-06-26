@@ -5,7 +5,7 @@
 
 #include <memory>
 
-namespace potato::render {
+namespace potato::graphics {
     using vertex_bindings   = std::vector<vk::VertexInputBindingDescription>;
     using vertex_attributes = std::vector<vk::VertexInputAttributeDescription>;
 
@@ -82,6 +82,6 @@ namespace potato::render {
         pipeline& operator=(pipeline&&) = default;
     };
 
-}  // namespace potato::render
+}  // namespace potato::graphics
 
 #endif

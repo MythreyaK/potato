@@ -35,7 +35,7 @@ namespace {
 
 #pragma endregion CTYPE_AND_CONSTANTS
 
-namespace potato::render {
+namespace potato::graphics {
 #pragma region FWD_DECLARE_MISC
     using cmtf    = VkDebugUtilsMessageTypeFlagsEXT;
     using cmsfb   = VkDebugUtilsMessageSeverityFlagBitsEXT;
@@ -185,7 +185,7 @@ namespace potato::render {
                                  vk::to_string(mes_typs),
                                  data.pMessage);
     }
-}  // namespace potato::render
+}  // namespace potato::graphics
 
 extern "C" {
     // clang-format off
@@ -195,7 +195,7 @@ extern "C" {
                    const cmcd* pCallbackData,
                    void*       pUserData)
     {
-        potato::render::debug_log(messageSeverity, messageTypes, *pCallbackData, pUserData);
+        potato::graphics::debug_log(messageSeverity, messageTypes, *pCallbackData, pUserData);
         return VK_FALSE;
     }
     // clang-format on

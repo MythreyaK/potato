@@ -6,7 +6,7 @@
 #include <exception>
 #include <optional>
 
-namespace potato::render {
+namespace potato::graphics {
     using opt_inx = std::optional<uint32_t>;
 
     struct _queue {
@@ -28,6 +28,6 @@ namespace potato::render {
         uint32_t           image_count;
     };
 
-}  // namespace potato::render
+}  // namespace potato::graphics
 
 #endif

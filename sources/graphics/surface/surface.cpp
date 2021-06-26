@@ -9,7 +9,7 @@ extern "C" {
                                      VkSurfaceKHR*);
 }
 
-namespace potato::render {
+namespace potato::graphics {
 
     surface::surface(const vk::Instance& instance, GLFWwindow* wh) {
 
@@ -133,4 +133,4 @@ namespace potato::render {
         return std::clamp(req_count, min_count, max_count);
     }
 
-}  // namespace potato::render
+}  // namespace potato::graphics

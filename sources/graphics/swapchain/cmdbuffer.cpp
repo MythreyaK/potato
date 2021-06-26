@@ -1,7 +1,7 @@
 #include "device/device.hpp"
 #include "swapchain.hpp"
 
-namespace potato::render {
+namespace potato::graphics {
 
     void swapchain::create_command_buffers(uint32_t graphics_queue) {
         using cmdci = vk::CommandPoolCreateInfo;
@@ -34,4 +34,4 @@ namespace potato::render {
         return m_cmd_buffers[m_current_frame];
     }
 
-}  // namespace potato::render
+}  // namespace potato::graphics

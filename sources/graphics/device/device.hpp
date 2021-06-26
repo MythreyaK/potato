@@ -7,7 +7,7 @@
 #include <map>
 #include <optional>
 
-namespace potato::render {
+namespace potato::graphics {
     class surface;
 
     using vkqueues = std::map<vk::QueueFlagBits, vk::Queue>;
@@ -51,6 +51,6 @@ namespace potato::render {
                            vk::DeviceMemory&) const;
     };
 
-}  // namespace potato::render
+}  // namespace potato::graphics
 
 #endif  // !POTATO_RENDER_DEVICE_HPP

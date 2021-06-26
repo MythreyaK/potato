@@ -7,7 +7,7 @@ extern "C" {
     struct GLFWwindow;
 }
 
-namespace potato::render {
+namespace potato::graphics {
 
     class surface : public std::enable_shared_from_this<surface> {
       private:
@@ -38,6 +38,6 @@ namespace potato::render {
         get_present_setting(const vk::PhysicalDevice&) const;
     };
 
-}  // namespace potato::render
+}  // namespace potato::graphics
 
 #endif
