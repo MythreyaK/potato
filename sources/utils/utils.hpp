@@ -4,6 +4,10 @@
 #include <string>
 #include <vector>
 
+// Yeah yeah shouldn't do this, but vulkan uses it so often,
+// it becomes distracting after a while
+#define UINTSIZE(X) static_cast<uint32_t>(X.size())
+
 namespace potato::utils {
     std::vector<const char*> to_vecchar(const std::vector<std::string>& s);
 

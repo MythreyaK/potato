@@ -2,7 +2,7 @@
 
 #include <graphics/device/device.hpp>
 
-namespace potato {
+namespace testapp {
 
     // struct vertex
     std::vector<vk::VertexInputBindingDescription>
@@ -67,6 +67,7 @@ namespace potato {
     }
 
     model::~model() {
+        potato_device->logical->waitIdle();
         potato_device->logical->destroyBuffer(vertex_bufer);
         potato_device->logical->freeMemory(vertex_device_mem);
     }
@@ -81,4 +82,4 @@ namespace potato {
         cmd_buffer.bindVertexBuffers(0, 1, buffers, offsets);
     }
 
-}  // namespace potato
+}  // namespace testapp

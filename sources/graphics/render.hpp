@@ -21,8 +21,6 @@ namespace potato::graphics {
         std::shared_ptr<surface> potato_surface;
         std::shared_ptr<device>  potato_device;
         swapchain                potato_swapchain;
-        vk::RenderPass           renderpass {};
-        pipeline                 potato_pipeline {};
 
       public:
         render_instance(GLFWwindow* window_handle);
@@ -42,20 +40,9 @@ namespace potato::graphics {
 
         swapchain& get_swapchain();
 
-        const surface&                get_surface() const;
-        const pipeline&               get_pipeline() const;
-        const vk::RenderPass&         get_renderpass() const;
-        std::shared_ptr<const device> get_device() const;
-
-        // Virtual functions
-        virtual pipeline_info create_pipeline_info() = 0;
-
-        virtual vk::UniquePipelineLayout
-        create_pipeline_layout(const vk::Device&) = 0;
-
-        virtual vk::RenderPass create_renderpass(const vk::Device&,
-                                                 vk::Format color_format,
-                                                 vk::Format depth_format) = 0;
+        const surface&  get_surface() const;
+        const pipeline& get_pipeline() const;
+        const device&   get_device() const;
     };
 
 }  // namespace potato::graphics

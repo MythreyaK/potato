@@ -4,26 +4,27 @@
 #include "render/render.hpp"
 
 #include <glfwcpp/glfw.hpp>
+#include <graphics/render.hpp>
 #include <iostream>
 #include <string>
 
-namespace potato_render = potato::render;
+namespace pgfx = potato::graphics;
 
-namespace testpotato {
-    class testapp : public glfw::window {
+namespace testapp {
+
+    class app : public glfw::window {
       private:
-        testpotato::render renderer;
-        bool               minimized { false };
+        pgfx::render_instance m_renderer;
+        render_system         m_render_system;
+        bool                  minimized { false };
 
-        std::vector<potato::model> vertex_model {};
+        std::vector<testapp::model> vertex_model {};
 
       public:
-        testapp(int                     width,
-                int                     height,
-                const std::string&      title,
-                std::vector<glfw::icon> icons)
-          : glfw::window(width, height, title, icons)
-          , renderer(get_handle()) {}
+        app(int                width,
+            int                height,
+            const std::string& title,
+            std::vector<glfw::icon>);
 
         void run();
         void window_loop() override;
@@ -31,6 +32,6 @@ namespace testpotato {
         vk::RenderPass create_renderpass();
     };
 
-}  // namespace testpotato
+}  // namespace testapp
 
 #endif  // !TESTAPP

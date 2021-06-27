@@ -5,11 +5,11 @@
 #include <graphics/vkinclude/vulkan.hpp>
 #include <vector>
 
-namespace potato::render {
+namespace potato::graphics {
     class device;
 }
 
-namespace potato {
+namespace testapp {
     struct vertex;
     using mesh = std::vector<vertex>;
 
@@ -27,7 +27,8 @@ namespace potato {
     class model {
 
       private:
-        using shared_ptr_device = std::shared_ptr<const potato::render::device>;
+        using shared_ptr_device =
+          std::shared_ptr<const potato::graphics::device>;
 
         uint32_t          vertex_count {};
         shared_ptr_device potato_device;
@@ -54,6 +55,6 @@ namespace potato {
         alignas(16) glm::vec3 color;
     };
 
-}  // namespace potato
+}  // namespace testapp
 
 #endif

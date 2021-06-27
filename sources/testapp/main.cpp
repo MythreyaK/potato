@@ -4,15 +4,15 @@
 
 int main() {
 
-    using namespace testpotato;
+    using namespace testapp;
     namespace pu = potato::utils;
 
     try {
-        testapp app { 800,
-                      600,
-                      std::string("Hello, World!"),
-                      { { 125, 125, pu::read_file("icon.bin") } } };
-        app.run();
+        app helloapp { 800,
+                       600,
+                       std::string("Hello, World!"),
+                       { { 125, 125, pu::read_file("icon.bin") } } };
+        helloapp.run();
     }
     catch ( std::exception e ) {
         std::cerr << "Exception: " << e.what() << '\n';
