@@ -42,53 +42,59 @@ namespace potato::graphics {
         }
     }
 
-    const vk::CommandBuffer&
-    swapchain::begin_frame(const vk::RenderPass& renderpass) {
+    const vk::CommandBuffer& swapchain::begin_frame() {
+        static const vk::CommandBufferBeginInfo cmd_begin_info {};
+
         assert(!m_frame_in_progress && "Frame must be started");
-
-        static std::array<vk::ClearValue, 2> clr_val {};
-
-        clr_val[1].depthStencil = vk::ClearDepthStencilValue { 1.0f, 0 };
-        clr_val[0].color =
-          vk::ClearColorValue { std::array { 0.01f, 0.01f, 0.01f, 1.0f } };
-
-        const auto frame_extent { m_surface->framebuffer_size(
-          m_device->physical) };
 
         acquire_image();
 
         auto& cmd_buffer { current_cmd_buffer() };
 
-        vk::CommandBufferBeginInfo cmd_buffer_begin_info {};
 
-        cmd_buffer.begin(cmd_buffer_begin_info);
+        cmd_buffer.begin(&cmd_begin_info);
 
-        cmd_buffer.setScissor(0, { { .offset = {}, .extent = frame_extent } });
+        return cmd_buffer;
+    }
+
+    void swapchain::begin_renderpass() {
+        // clang-format off
+        static std::array<vk::ClearValue, 2> clr_val { {
+            { vk::ClearColorValue { std::array { 0.01f, 0.01f, 0.01f, 1.0f } } },
+            { vk::ClearDepthStencilValue { 1.0f, 0 } }
+        } };
+        // clang-format on
+
+        auto&      cmd_buffer { current_cmd_buffer() };
+        const auto frame_extent { m_surface->framebuffer_size(
+          m_device->physical) };
+
+        cmd_buffer.setScissor(0, { { .extent = frame_extent } });
         cmd_buffer.setViewport(
           0,
-          { { .x        = 0,
-              .y        = 0,
-              .width    = static_cast<float>(frame_extent.width),
+          { { .width    = static_cast<float>(frame_extent.width),
               .height   = static_cast<float>(frame_extent.height),
               .minDepth = 0.0f,
               .maxDepth = 1.0f } });
 
         vk::RenderPassBeginInfo renderpass_begin_info {
-            .renderPass      = renderpass,
+            .renderPass      = m_renderpass,
             .framebuffer     = m_framebuffers[m_framebuffer_inx],
-            .renderArea      = { .offset = {}, .extent = frame_extent },
+            .renderArea      = { .extent = frame_extent },
             .clearValueCount = static_cast<uint32_t>(clr_val.size()),
             .pClearValues    = clr_val.data(),
         };
 
         cmd_buffer.beginRenderPass(renderpass_begin_info,
                                    vk::SubpassContents::eInline);
-        return cmd_buffer;
+    }
+
+    void swapchain::end_renderpass() {
+        current_cmd_buffer().endRenderPass();
     }
 
     void swapchain::end_frame() {
         auto& cmd_buffer { current_cmd_buffer() };
-        cmd_buffer.endRenderPass();
         cmd_buffer.end();
 
         constexpr vk::PipelineStageFlags flags_mask {

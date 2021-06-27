@@ -22,11 +22,22 @@ namespace potato::graphics {
       , m_device_info { inf }
       , m_surface { std::move(surf) } {
         create_swapchain();
+        create_swapchain_images();
+        create_command_buffers(m_device_info.q_families.graphics.value());
+        create_renderpass();
+        create_framebuffers();
+        create_sync_objects();
     }
 
     swapchain::~swapchain() {
+        m_device->logical->waitIdle();
+
+        destroy_sync_objects();
+        destroy_framebuffers();
+        destroy_renderpass();
+        destroy_command_buffers();
+        destroy_swapchain_images();
         m_device->logical->destroySwapchainKHR(m_swapchain);
-        destroy_swapchain_stuff();
     }
 
     vk::SurfaceTransformFlagBitsKHR swapchain::current_transform() const {
@@ -35,12 +46,12 @@ namespace potato::graphics {
           .surfaceCapabilities.currentTransform;
     }
 
-    void swapchain::create_framebuffers(const vk::RenderPass& renderpass) {
+    void swapchain::create_framebuffers() {
 
         const auto extents { m_surface->framebuffer_size(m_device->physical) };
 
         vk::FramebufferCreateInfo framebuffer_ci {
-            .renderPass      = renderpass,
+            .renderPass      = m_renderpass,
             .attachmentCount = 2u,
             .width           = extents.width,
             .height          = extents.height,
@@ -61,13 +72,6 @@ namespace potato::graphics {
         }
     }
 
-    void swapchain::destroy_framebuffers() {
-        for ( auto& fb : m_framebuffers ) {
-            m_device->logical->destroyFramebuffer(fb);
-        }
-        m_framebuffers.clear();
-    }
-
     void swapchain::create_swapchain() {
 
         std::vector<uint32_t> queues {
@@ -76,11 +80,16 @@ namespace potato::graphics {
 
         m_swapchain =
           m_device->logical->createSwapchainKHR(swapchain_create_info(queues));
-        create_swapchain_stuff();
     }
 
     void swapchain::recreate_swapchain() {
-        destroy_swapchain_stuff();
+        m_device->logical->waitIdle();
+
+        destroy_sync_objects();
+        destroy_framebuffers();
+        destroy_renderpass();
+        destroy_command_buffers();
+        destroy_swapchain_images();
 
         std::vector<uint32_t> queues {
             m_device_info.q_families.graphics.value()
@@ -90,11 +99,16 @@ namespace potato::graphics {
           swapchain_create_info(queues, m_swapchain)) };
 
         m_swapchain = std::move(new_swapchain);
-        create_swapchain_stuff();
+
+        create_swapchain_images();
+        create_command_buffers(m_device_info.q_families.graphics.value());
+        create_renderpass();
+        create_framebuffers();
+        create_sync_objects();
     }
 
     // creates all images, views
-    void swapchain::create_swapchain_stuff() {
+    void swapchain::create_swapchain_images() {
         const auto extent_2d { m_surface->framebuffer_size(m_device->physical) };
 
         m_swapimages = m_device->logical->getSwapchainImagesKHR(m_swapchain);
@@ -160,22 +174,6 @@ namespace potato::graphics {
                 m_device->logical->createImageView(depthimageview_ci));
             // clang-format on
         }
-
-        create_command_buffers(m_device_info.q_families.graphics.value());
-
-        for ( int i = 0; i < MAX_FRAMES_IN_FLIGHT; ++i ) {
-            m_image_available.emplace_back(
-              m_device->logical->createSemaphore({}));
-
-            m_render_complete.emplace_back(
-              m_device->logical->createSemaphore({}));
-
-            m_in_flight_fence.emplace_back(m_device->logical->createFence({
-              .flags = vk::FenceCreateFlagBits::eSignaled,
-            }));
-        }
-
-        m_in_flight_image.resize(swapimage_count(), {});
     }
 
     uint32_t swapchain::swapimage_count() const {
@@ -215,36 +213,31 @@ namespace potato::graphics {
     }
 
     // destroy swapimage-views
-    void swapchain::destroy_swapchain_stuff() {
-        for ( int i = 0; i < MAX_FRAMES_IN_FLIGHT; ++i ) {
-            m_device->logical->destroySemaphore(m_image_available[i]);
-            m_device->logical->destroySemaphore(m_render_complete[i]);
-            m_device->logical->destroyFence(m_in_flight_fence[i]);
-        }
-
-        m_image_available.clear();
-        m_render_complete.clear();
-        m_in_flight_fence.clear();
-        m_in_flight_image.clear();
-
-        m_device->logical->freeCommandBuffers(m_cmd_pool, m_cmd_buffers);
-        m_device->logical->destroyCommandPool(m_cmd_pool);
-
-        destroy_framebuffers();
+    void swapchain::destroy_swapchain_images() {
 
         for ( int i = 0; i < swapimage_count(); ++i ) {
             m_device->logical->destroyImageView(m_swapimageviews[i]);
             m_device->logical->destroyImageView(m_depthimageviews[i]);
-            // m_device->logical->destroyImage(swapimages[i]);
             m_device->logical->destroyImage(m_depthimages[i]);
             m_device->logical->freeMemory(m_depthimagesmemory[i]);
         }
 
         m_swapimageviews.clear();
+
         m_depthimagesmemory.clear();
         m_depthimageviews.clear();
         m_depthimages.clear();
-        m_swapimages.clear();
+    }
+
+    void swapchain::destroy_framebuffers() {
+        for ( auto& fb : m_framebuffers ) {
+            m_device->logical->destroyFramebuffer(fb);
+        }
+        m_framebuffers.clear();
+    }
+
+    vk::Format swapchain::color_format() const {
+        return m_device_info.surface_format;
     }
 
     vk::Format swapchain::depth_format() const {

@@ -3,32 +3,23 @@
 
 #include "primitive.hpp"
 
-#include <graphics/render.hpp>
+#include <graphics/pipeline.hpp>
 #include <graphics/vkinclude/vulkan.hpp>
 
-namespace testpotato {
+namespace testapp {
 
-    namespace potato_render = potato::render;
-    class render final : public potato::render::render_instance {
+    class render_system {
+      private:
+        potato::graphics::pipeline m_pipeline;
+
+        void create_pipeline(const vk::Device&, const vk::RenderPass&);
 
       public:
-        render(GLFWwindow* window_handle) : render_instance(window_handle) {
-            create_pipeline();
-        }
+        render_system(const vk::Device&, const vk::RenderPass&);
 
-        virtual potato_render::pipeline_info create_pipeline_info() override;
-
-        virtual vk::UniquePipelineLayout
-        create_pipeline_layout(const vk::Device&) override;
-
-        virtual vk::RenderPass
-        create_renderpass(const vk::Device&,
-                          vk::Format color_format,
-                          vk::Format depth_format) override;
-
-        void render_objects(const std::vector<potato::model>& objects);
+        void render_objects(const vk::CommandBuffer&,
+                            const std::vector<testapp::model>&);
     };
 
-}  // namespace testpotato
-
+}  // namespace testapp
 #endif

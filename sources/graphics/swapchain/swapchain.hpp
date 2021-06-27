@@ -37,6 +37,7 @@ namespace potato::graphics {
         vkimageviews                   m_depthimageviews {};
         vk::CommandPool                m_cmd_pool {};
         vkcmdbuffers                   m_cmd_buffers {};
+        vk::RenderPass                 m_renderpass {};
         vkframebuffers                 m_framebuffers {};
 
         // pipeline waits for m_image_available before write
@@ -51,10 +52,16 @@ namespace potato::graphics {
         // methods
         void create_swapchain();
         void create_depth_resources();
-        void create_swapchain_stuff();
+        void create_swapchain_images();
+        void create_renderpass();
+        void create_sync_objects();
+        void create_framebuffers();
 
-        void destroy_swapchain_stuff();
+        void destroy_swapchain_images();
         void destroy_framebuffers();
+        void destroy_renderpass();
+        void destroy_sync_objects();
+        void destroy_command_buffers();
         void acquire_image();
 
         void create_command_buffers(uint32_t graphics_queue);
@@ -75,14 +82,16 @@ namespace potato::graphics {
         ~swapchain();
 
         vk::SurfaceTransformFlagBitsKHR current_transform() const;
+        const vk::CommandBuffer&        begin_frame();
         vk::Format                      color_format() const;
         vk::Format                      depth_format() const;
         uint32_t                        swapimage_count() const;
+        const vk::RenderPass&           get_renderpass() const;
 
-        const vk::CommandBuffer& begin_frame(const vk::RenderPass&);
-        void                     end_frame();
+        void begin_renderpass();
+        void end_renderpass();
+        void end_frame();
 
-        void create_framebuffers(const vk::RenderPass& renderpass);
         void recreate_swapchain();
 
         // no copies

@@ -30,6 +30,11 @@ namespace potato::graphics {
           std::move(m_device->logical->allocateCommandBuffers(cmd_alloc_ci));
     }
 
+    void swapchain::destroy_command_buffers() {
+        m_device->logical->freeCommandBuffers(m_cmd_pool, m_cmd_buffers);
+        m_device->logical->destroyCommandPool(m_cmd_pool);
+    }
+
     const vk::CommandBuffer& swapchain::current_cmd_buffer() const {
         return m_cmd_buffers[m_current_frame];
     }
