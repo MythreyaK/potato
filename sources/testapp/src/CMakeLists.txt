@@ -11,5 +11,5 @@ target_link_libraries(testapp
                         PUBLIC render
 )
 
-
+add_dependencies(testapp shaders)
 target_precompile_headers(testapp REUSE_FROM render)
