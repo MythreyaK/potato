@@ -29,6 +29,7 @@ namespace testapp {
         void run();
         void window_loop() override;
         void on_window_resized(int new_width, int new_height) override;
+        void create_cube_model(glm::vec3 offset);
         vk::RenderPass create_renderpass();
     };
 
