@@ -1,6 +1,7 @@
 #ifndef TESTAPP_RENDER_HPP
 #define TESTAPP_RENDER_HPP
 
+#include "camera.hpp"
 #include "primitive.hpp"
 
 #include <graphics/pipeline.hpp>
@@ -18,7 +19,8 @@ namespace testapp {
         render_system(const vk::Device&, const vk::RenderPass&);
 
         void render_objects(const vk::CommandBuffer&,
-                            const std::vector<testapp::model>&);
+                            const std::vector<testapp::model>&,
+                            const camera&);
     };
 
 }  // namespace testapp

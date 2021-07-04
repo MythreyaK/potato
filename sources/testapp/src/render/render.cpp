@@ -39,7 +39,10 @@ namespace testapp {
             .size       = sizeof(push_constants),
         };
 
-        vk::PipelineLayoutCreateInfo pipeline_layout_ci {};
+        vk::PipelineLayoutCreateInfo pipeline_layout_ci {
+            .pushConstantRangeCount = 1,
+            .pPushConstantRanges    = &push_const_ranges,
+        };
 
         auto pipeline_layout { device.createPipelineLayoutUnique(
           pipeline_layout_ci) };
@@ -52,11 +55,29 @@ namespace testapp {
 
     void
     render_system::render_objects(const vk::CommandBuffer&           cmd_buffer,
-                                  const std::vector<testapp::model>& objects) {
+                                  const std::vector<testapp::model>& objects,
+                                  const camera&                      cam) {
+
+        static push_constants push {};
+
+        static constexpr auto shader_and_frag {
+            vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment
+        };
+
+        auto projectionView = cam.getProjection() * cam.getView();
 
         m_pipeline.bind(cmd_buffer);
 
         for ( auto& obj : objects ) {
+
+            push.transform = projectionView * obj.transform.mat4();
+
+            cmd_buffer.pushConstants(m_pipeline.get_layout(),
+                                     shader_and_frag,
+                                     0,
+                                     sizeof(push_constants),
+                                     &push);
+
             obj.bind(cmd_buffer);
             obj.draw(cmd_buffer);
         }
