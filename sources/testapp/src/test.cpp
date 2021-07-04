@@ -49,6 +49,7 @@ namespace testapp {
 
     void app::run() {
         window_loop();
+        m_renderer.get_device().logical->waitIdle();
     }
 
     void app::on_window_resized(int new_width, int new_height) {
