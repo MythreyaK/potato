@@ -86,6 +86,10 @@ namespace potato::graphics {
         cmd_buffer.bindPipeline(vk::PipelineBindPoint::eGraphics, *m_pipeline);
     }
 
+    const vk::PipelineLayout& pipeline::get_layout() const {
+        return *m_pipeline_layout;
+    }
+
     vk::ShaderModule pipeline::create_shader(const vk::Device&  device,
                                              const std::string& fpath) {
         auto data { read_file(fpath) };

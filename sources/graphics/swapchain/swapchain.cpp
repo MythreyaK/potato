@@ -251,4 +251,9 @@ namespace potato::graphics {
           vk::FormatFeatureFlagBits::eDepthStencilAttachment);
     }
 
+    float swapchain::get_aspect() const {
+        const auto extents { m_surface->framebuffer_size(m_device->physical) };
+        return extents.width / static_cast<float>(extents.height);
+    }
+
 }  // namespace potato::graphics

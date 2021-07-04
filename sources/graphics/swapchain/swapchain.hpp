@@ -87,6 +87,7 @@ namespace potato::graphics {
         vk::Format                      depth_format() const;
         uint32_t                        swapimage_count() const;
         const vk::RenderPass&           get_renderpass() const;
+        float                           get_aspect() const;
 
         void begin_renderpass();
         void end_renderpass();
