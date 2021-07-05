@@ -3,6 +3,7 @@
 #include "device/device.hpp"
 #include "surface/surface.hpp"
 
+#include <core/utils.hpp>
 #include <set>
 
 // Contains stuff related to device swapchain management
@@ -182,6 +183,7 @@ namespace potato::graphics {
 
     vk::SwapchainCreateInfoKHR swapchain::swapchain_create_info(
       const std::vector<uint32_t>& queues) const {
+        using namespace potato::utils;
 
         constexpr auto exclusive  = vk::SharingMode::eExclusive;
         constexpr auto concurrent = vk::SharingMode::eConcurrent;
@@ -194,7 +196,7 @@ namespace potato::graphics {
                  .imageArrayLayers = 1,  // 2 for streoscopic 3D
                  .imageUsage       = vk::ImageUsageFlagBits::eColorAttachment,
                  .imageSharingMode = queues.size() == 1 ? exclusive : concurrent,
-                 .queueFamilyIndexCount = static_cast<uint32_t>(queues.size()),
+                 .queueFamilyIndexCount = vksize(queues),
                  .pQueueFamilyIndices   = queues.data(),
                  .preTransform          = current_transform(),
                  .compositeAlpha = vk::CompositeAlphaFlagBitsKHR::eOpaque,

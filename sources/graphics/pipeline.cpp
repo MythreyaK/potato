@@ -1,8 +1,8 @@
 #include "pipeline.hpp"
 
 #include "device/device.hpp"
-#include "utils/utils.hpp"
 
+#include <core/utils.hpp>
 #include <format>
 #include <iostream>
 
@@ -16,6 +16,8 @@ namespace potato::graphics {
                        const vk::RenderPass&      renderpass)
       : m_pipeline_info { pinf }
       , m_pipeline_layout { std::move(pipeline_layout) } {
+
+        using namespace potato::utils;
 
         auto vert_shader { create_shader(device, pinf.vertex_shader) };
         auto frag_shader { create_shader(device, pinf.fragment_shader) };
@@ -34,18 +36,18 @@ namespace potato::graphics {
         };
 
         vk::PipelineVertexInputStateCreateInfo vertex_input_sci {
-            .vertexBindingDescriptionCount = UINTSIZE(pinf.binding_descriptions),
+            .vertexBindingDescriptionCount = vksize(pinf.binding_descriptions),
 
             .pVertexBindingDescriptions = pinf.binding_descriptions.data(),
 
             .vertexAttributeDescriptionCount =
-              UINTSIZE(pinf.attribute_descriptions),
+              vksize(pinf.attribute_descriptions),
 
             .pVertexAttributeDescriptions = pinf.attribute_descriptions.data(),
         };
 
         vk::PipelineDynamicStateCreateInfo dynamic_info_ci {
-            .dynamicStateCount = UINTSIZE(pinf.ci_dynamic),
+            .dynamicStateCount = vksize(pinf.ci_dynamic),
             .pDynamicStates    = pinf.ci_dynamic.data()
         };
 
@@ -65,7 +67,7 @@ namespace potato::graphics {
         };
 
         graphics_pipeline_ci.setPStages(shaders.data());
-        graphics_pipeline_ci.setStageCount(UINTSIZE(shaders));
+        graphics_pipeline_ci.setStageCount(vksize(shaders));
 
         auto create_result =
           device.createGraphicsPipelineUnique(nullptr, graphics_pipeline_ci);
@@ -127,9 +129,9 @@ namespace potato::graphics {
             },
             // .ci_tessellation  = {},
             .ci_viewport = {
-                .viewportCount = UINTSIZE(pipelineinfo.viewports),
+                .viewportCount = vksize(pipelineinfo.viewports),
                 .pViewports = pipelineinfo.viewports.data(),
-                .scissorCount = UINTSIZE(pipelineinfo.scissors),
+                .scissorCount = vksize(pipelineinfo.scissors),
                 .pScissors  = pipelineinfo.scissors.data(),
             },
             .ci_rasterization = {
@@ -176,7 +178,7 @@ namespace potato::graphics {
             .ci_colorblend = {
                 .logicOpEnable = false,
                 .logicOp = vk::LogicOp::eCopy,
-                .attachmentCount = UINTSIZE(pipelineinfo.colorblend_attachments),
+                .attachmentCount = vksize(pipelineinfo.colorblend_attachments),
                 .pAttachments = pipelineinfo.colorblend_attachments.data(),
                 .blendConstants = {},
             },

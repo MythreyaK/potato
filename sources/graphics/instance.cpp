@@ -1,8 +1,8 @@
 #include "instance.hpp"
 
-#include "utils/utils.hpp"
 #include "version.hpp"
 
+#include <core/utils.hpp>
 #include <format>
 
 #pragma region CTYPE_AND_CONSTANTS
@@ -117,16 +117,18 @@ namespace potato::graphics {
         // Also add debug messenger create info
         constexpr auto debug_crinf { debug_create_info() };
 
+        // clang-format off
         const icrf inst_create_info {
             vk::InstanceCreateInfo {
               .pApplicationInfo        = &app_info,
-              .enabledLayerCount       = static_cast<uint32_t>(_layers.size()),
+              .enabledLayerCount       = vksize(_layers),
               .ppEnabledLayerNames     = _layers.data(),
-              .enabledExtensionCount   = static_cast<uint32_t>(_extns.size()),
+              .enabledExtensionCount   = vksize(_extns),
               .ppEnabledExtensionNames = _extns.data(),
             },
             debug_crinf
         };
+        // clang-format on
 
         vkinstance = vk::createInstanceUnique(
           inst_create_info.get<vk::InstanceCreateInfo>());

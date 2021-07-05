@@ -1,8 +1,8 @@
 #include "device.hpp"
 
 #include "surface/surface.hpp"
-#include "utils/utils.hpp"
 
+#include <core/utils.hpp>
 #include <format>
 #include <iostream>
 #include <set>
@@ -52,6 +52,7 @@ namespace potato::graphics {
     }
 
     vk::UniqueDevice create_device(device_create_info device_info) {
+        using namespace potato::utils;
 
         std::set<uint32_t> queues { device_info.q_families.graphics.value(),
                                     device_info.q_families.present.value() };
@@ -82,9 +83,9 @@ namespace potato::graphics {
 
         // TODO: Device features, and optional extensions
         const auto create_info { vk::DeviceCreateInfo {
-          .queueCreateInfoCount  = static_cast<uint32_t>(q_create_infos.size()),
-          .pQueueCreateInfos     = q_create_infos.data(),
-          .enabledExtensionCount = static_cast<uint32_t>(extns.size()),
+          .queueCreateInfoCount    = vksize(q_create_infos),
+          .pQueueCreateInfos       = q_create_infos.data(),
+          .enabledExtensionCount   = vksize(extns),
           .ppEnabledExtensionNames = extns.data(),
           .pEnabledFeatures        = {},
         } };

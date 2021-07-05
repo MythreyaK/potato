@@ -2,6 +2,7 @@
 #include "surface/surface.hpp"
 #include "swapchain/swapchain.hpp"
 
+#include <core/utils.hpp>
 #include <numeric>
 
 namespace potato::graphics {
@@ -51,13 +52,14 @@ namespace potato::graphics {
 
         auto& cmd_buffer { current_cmd_buffer() };
 
-
         cmd_buffer.begin(&cmd_begin_info);
 
         return cmd_buffer;
     }
 
     void swapchain::begin_renderpass() {
+        using namespace potato::utils;
+
         // clang-format off
         static std::array<vk::ClearValue, 2> clr_val { {
             { vk::ClearColorValue { std::array { 0.01f, 0.01f, 0.01f, 1.0f } } },
@@ -81,7 +83,7 @@ namespace potato::graphics {
             .renderPass      = m_renderpass,
             .framebuffer     = m_framebuffers[m_framebuffer_inx],
             .renderArea      = { .extent = frame_extent },
-            .clearValueCount = static_cast<uint32_t>(clr_val.size()),
+            .clearValueCount = vksize(clr_val),
             .pClearValues    = clr_val.data(),
         };
 

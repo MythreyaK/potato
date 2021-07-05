@@ -1,9 +1,11 @@
 #include "device/device.hpp"
 #include "swapchain.hpp"
+#include <core/utils.hpp>
 
 namespace potato::graphics {
 
     void swapchain::create_renderpass() {
+        using namespace potato::utils;
 
         // clang-format off
         vk::AttachmentDescription color_attachment = {
@@ -69,7 +71,7 @@ namespace potato::graphics {
         };
 
         vk::RenderPassCreateInfo renderpass_ci = {
-            .attachmentCount = static_cast<uint32_t>(attachments.size()),
+            .attachmentCount = vksize(attachments),
             .pAttachments    = attachments.data(),
             .subpassCount    = 1,
             .pSubpasses      = &subpass_desc,
