@@ -14,7 +14,7 @@ target_include_directories(render
 )
 
 target_link_libraries(render
-                    PRIVATE utils
+                    PRIVATE core
                     PUBLIC Vulkan::Vulkan
 )
 
