@@ -3,6 +3,8 @@
 
 #include "device/create_info.hpp"
 #include "pipeline.hpp"
+
+#include <unordered_map>
 // #include "vkinclude/vulkan.hpp"
 
 extern "C" {
@@ -22,14 +24,12 @@ namespace potato::graphics {
         using vksemaphores   = std::vector<vk::Semaphore>;
         using vkfences       = std::vector<vk::Fence>;
 
-      public:
-        static constexpr int MAX_FRAMES_IN_FLIGHT { 2 };
-
       private:
         std::shared_ptr<const device>  m_device {};
         device_create_info             m_device_info {};
         std::shared_ptr<const surface> m_surface {};
         vk::SwapchainKHR               m_swapchain {};
+        uint32_t                       MAX_FRAMES_IN_FLIGHT {};
         vkimages                       m_swapimages {};
         vkimageviews                   m_swapimageviews {};
         vkdepthmemory                  m_depthimagesmemory {};

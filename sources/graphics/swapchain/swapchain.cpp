@@ -113,6 +113,7 @@ namespace potato::graphics {
         const auto extent_2d { m_surface->framebuffer_size(m_device->physical) };
 
         m_swapimages = m_device->logical->getSwapchainImagesKHR(m_swapchain);
+        MAX_FRAMES_IN_FLIGHT = m_swapimages.size() - 1;
 
         // swapimageviews.reserve(swapimages.size());
         // If emplacing, do not resize
