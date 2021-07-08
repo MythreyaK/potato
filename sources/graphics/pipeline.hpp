@@ -52,7 +52,7 @@ namespace potato::graphics {
                  vk::UniquePipelineLayout&&,
                  const vk::RenderPass&);
 
-        void bind(const vk::CommandBuffer&) const;
+        void                      bind(const vk::CommandBuffer&) const;
         const vk::PipelineLayout& get_layout() const;
 
         static vkpipeline_info default_pipeline_info();
