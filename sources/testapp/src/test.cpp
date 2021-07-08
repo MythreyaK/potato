@@ -25,8 +25,10 @@ namespace testapp {
                           m_renderer.get_swapchain().get_renderpass() } {}
 
     void app::window_loop() {
-        int    count = 0;
+        constexpr float rate { 1.5f * 0.001f };
+
         camera camera {};
+
         camera.setViewTarget(glm::vec3(-1.f, -2.f, -2.f),
                              glm::vec3(0.f, 0.f, 2.5f));
 
@@ -49,13 +51,15 @@ namespace testapp {
 
             m_renderer.get_swapchain().begin_renderpass();
 
+            auto advance { rate * m_timer.elapsed().count() };
+
             for ( auto& obj : vertex_model ) {
                 obj.transform.rotation.y =
-                  glm::mod(obj.transform.rotation.y + 0.01f,
+                  glm::mod(obj.transform.rotation.y + advance,
                            glm::two_pi<float>());
 
                 obj.transform.rotation.x =
-                  glm::mod(obj.transform.rotation.x + 0.005f,
+                  glm::mod(obj.transform.rotation.x + advance,
                            glm::two_pi<float>());
             }
 

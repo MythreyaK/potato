@@ -3,6 +3,7 @@
 
 #include "render/render.hpp"
 
+#include <core/time.hpp>
 #include <glfwcpp/glfw.hpp>
 #include <graphics/render.hpp>
 #include <iostream>
@@ -16,6 +17,7 @@ namespace testapp {
       private:
         pgfx::render_instance m_renderer;
         render_system         m_render_system;
+        potato::chrono::timer m_timer { "Main loop" };
         bool                  minimized { false };
 
         std::vector<testapp::model> vertex_model {};
