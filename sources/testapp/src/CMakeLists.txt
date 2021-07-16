@@ -8,8 +8,8 @@ add_library(testapp STATIC ${TESTAPP_HPP} ${TESTAPP_CPP})
 target_link_libraries(testapp
                         PUBLIC glfwcpp
                         PUBLIC glm::glm
-                        PUBLIC render
+                        PUBLIC potato_lib
 )
 
 add_dependencies(testapp shaders)
-target_precompile_headers(testapp REUSE_FROM render)
+target_precompile_headers(testapp REUSE_FROM potato_lib)

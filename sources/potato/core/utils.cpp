@@ -1,11 +1,14 @@
 #include "utils.hpp"
 
 #include <filesystem>
+#include <format>
 #include <fstream>
 #include <ios>
 #include <iostream>
 
 namespace potato::utils {
+
+    using sloc = std::source_location;
 
     std::vector<std::byte> read_file(const std::string& fname) {
 
@@ -70,8 +73,7 @@ namespace potato::utils {
         return found_extns == required_items.size();
     }
 
-    // Make sure not to pass temporaries! Argument
-    // MUST outlive the return value
+    // Make sure not to pass temporaries! Argument MUST outlive the return value
     std::vector<const char*> to_vecchar(const std::vector<std::string>& s) {
         std::vector<const char*> ret {};
         ret.reserve(s.size());
@@ -82,4 +84,22 @@ namespace potato::utils {
 
         return ret;
     }
+
+    void check_result(vk::Result&& res, const sloc loc) {
+
+        const auto file_info {
+            std::format("{}({}): ", loc.file_name(), loc.line())
+        };
+
+        const auto error_info { std::format("{}"
+                                            "Error '{}' in {}\n",
+                                            file_info,
+                                            vk::to_string(res),
+                                            loc.function_name()) };
+
+        if ( res != vk::Result::eSuccess ) {
+            std::cout << error_info << '\n';
+        }
+    }
+
 }  // namespace potato::utils

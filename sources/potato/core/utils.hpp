@@ -4,6 +4,7 @@
 #include "version.hpp"
 
 #include <concepts>
+#include <source_location>
 #include <string>
 #include <vector>
 
@@ -36,6 +37,10 @@ namespace potato::utils {
     bool has_required_items(const std::string&              info,
                             const std::vector<std::string>& supported_items,
                             const std::vector<std::string>& required_items);
+
+    void check_result(
+      vk::Result&&,
+      const std::source_location location = std::source_location::current());
 
 }  // namespace potato::utils
 
