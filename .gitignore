@@ -104,3 +104,4 @@ ipch/
 *.bin
 ignore
 natvis
+**build**
