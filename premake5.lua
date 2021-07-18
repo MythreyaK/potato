@@ -8,13 +8,27 @@ workspace "potato"
     cppdialect "C++20"
     location (workspacedir)
 
-    filter { "files:**.ixx" }
+    startupproject "potato"
+
+    filter { "files:**.mpp" }
         buildaction "ClCompile"
         compileas "Module"
 
     filter { "files:**.ifc" }
         buildaction "ClCompile"
         compileas "HeaderUnit"
+
+    filter "configurations:Debug"
+        defines { "DEBUG" }
+        symbols "On"
+        optimize "Off"
+        runtime "Debug"
+
+    filter "configurations:Release"
+        defines { "NDEBUG" }
+        symbols "On"
+        optimize "On"
+        runtime "Release"
 
     -- filter { "files:**.cpp or **.hpp" }
     --     compileas "C++"
@@ -28,24 +42,24 @@ workspace "potato"
 project "potato"
     kind "ConsoleApp"
     language "C++"
+    links { "glfwcpp" }
 
     targetdir(bindir)
     objdir(bindir)
 
     files {
-        "sources/potato/**.hpp",
         "sources/potato/**.cpp",
-        "sources/potato/**.ixx",
+        "sources/potato/**.mpp",
     }
 
-    filter "configurations:Debug"
-        defines { "DEBUG" }
-        symbols "On"
-        optimize "Off"
-        runtime "Debug"
+project "glfwcpp"
+    kind "StaticLib"
+    language "C++"
 
-    filter "configurations:Release"
-        defines { "NDEBUG" }
-        symbols "On"
-        optimize "On"
-        runtime "Release"
+    targetdir(bindir)
+    objdir(bindir)
+
+    files {
+        "sources/glfwcpp/**.cpp",
+        "sources/glfwcpp/**.mpp",
+    }

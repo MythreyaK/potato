@@ -1,10 +1,6 @@
-#ifndef GLFW_HPP
-#define GLFW_HPP
+export module glfw;
 
-#include <chrono>
-#include <iostream>
-#include <string>
-#include <vector>
+import std.core;
 
 extern "C" {
     struct GLFWwindow;
@@ -74,5 +70,3 @@ namespace glfw {
         virtual void on_window_refresh();
     };
 }  // namespace glfw
-
-#endif  // !GLFW_HPP
