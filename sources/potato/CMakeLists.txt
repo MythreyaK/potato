@@ -14,10 +14,6 @@ target_include_directories(potato_lib
                         INTERFACE   "${CMAKE_CURRENT_SOURCE_DIR}"
 )
 
-target_link_libraries(potato_lib
-                    PUBLIC Vulkan::Vulkan
-)
-
 configure_file("version.hpp.in" "version/version.hpp" @ONLY NEWLINE_STYLE LF)
 
 target_precompile_headers(potato_lib PUBLIC "graphics/vkinclude/vulkan.hpp")
