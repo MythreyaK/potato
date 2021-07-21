@@ -1,14 +1,11 @@
-#ifndef GLFW_CPP
-#define GLFW_CPP
+module;
+
 #define GLFW_INCLUDE_NONE
-
-#include "GLFW.hpp"
-
-// clang-format off
-// Vulkan needs to be included before GLFW
 #include <vulkan/vulkan.h>
 #include <GLFW/glfw3.h>
-// clang-format on
+
+module glfwcpp;
+import std.core;
 
 namespace glfw {
 
@@ -166,4 +163,3 @@ namespace glfw {
 
 }  // namespace glfw
 
-#endif  // GLFW_CPP

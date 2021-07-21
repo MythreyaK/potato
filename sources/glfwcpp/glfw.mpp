@@ -1,20 +1,18 @@
-#ifndef GLFW_HPP
-#define GLFW_HPP
+module;
 
-#include <chrono>
-#include <iostream>
-#include <string>
-#include <vector>
+// clang-format off
+// Vulkan needs to be included before GLFW
+#define GLFW_INCLUDE_NONE
+#include <vulkan/vulkan.h>
+#include <GLFW/glfw3.h>
+// clang-format on
 
-extern "C" {
-    struct GLFWwindow;
-    struct VkSurfaceKHR_T;
-    struct VkInstance_T;
-    typedef VkInstance_T*   VkInstance;
-    typedef VkSurfaceKHR_T* VkSurfaceKHR;
-}
 
-namespace glfw {
+export module glfwcpp;
+
+import std.core;
+
+export namespace glfw {
 
     struct icon {
         int                    width {};
@@ -74,5 +72,3 @@ namespace glfw {
         virtual void on_window_refresh();
     };
 }  // namespace glfw
-
-#endif  // !GLFW_HPP
