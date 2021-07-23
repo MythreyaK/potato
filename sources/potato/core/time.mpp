@@ -1,11 +1,8 @@
-#ifndef POTATO_CORE_TIME_HPP
-#define POTATO_CORE_TIME_HPP
+export module potato.core:time;
 
-#include <chrono>
-#include <iostream>
-#include <type_traits>
+import std.core;
 
-namespace potato::chrono {
+export namespace potato::chrono {
 
     using nanoseconds  = std::chrono::duration<float, std::nano>;
     using microseconds = std::chrono::duration<float, std::micro>;
@@ -37,5 +34,3 @@ namespace potato::chrono {
     };
 
 }  // namespace potato::chrono
-
-#endif

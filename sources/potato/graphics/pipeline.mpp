@@ -1,11 +1,9 @@
-#ifndef POTATO_RENDER_PIPELINE_HPP
-#define POTATO_RENDER_PIPELINE_HPP
+export module potato.graphics:pipeline;
 
-// #include "vkinclude/vulkan.hpp"
+import std.core;
+import vulkan;
 
-#include <memory>
-
-namespace potato::graphics {
+export namespace potato::graphics {
     class device;
 
     using vkvertex_bindings = std::vector<vk::VertexInputBindingDescription>;
@@ -66,6 +64,4 @@ namespace potato::graphics {
         pipeline& operator=(pipeline&&) = default;
     };
 
-}  // namespace potato::graphics
-
-#endif
+}  // export namespace potato::graphics

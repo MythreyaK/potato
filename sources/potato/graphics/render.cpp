@@ -1,10 +1,11 @@
-#include "render.hpp"
+module potato.graphics;
 
-#include "surface/surface.hpp"
+import std.core;
+import std.memory;
+import vulkan;
+import :device;
+import :surface;
 
-#include <format>
-#include <iostream>
-#include <vector>
 
 namespace potato::graphics {
 
@@ -43,4 +44,4 @@ namespace potato::graphics {
         return *potato_device;
     }
 
-}  // namespace potato::graphics
+}  // export namespace potato::graphics

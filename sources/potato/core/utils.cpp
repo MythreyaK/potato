@@ -1,10 +1,7 @@
-#include "utils.hpp"
+module potato.core:utils;
 
-#include <filesystem>
-#include <format>
-#include <fstream>
-#include <ios>
-#include <iostream>
+import std.core;
+import std.filesystem;
 
 namespace potato::utils {
 
@@ -85,21 +82,21 @@ namespace potato::utils {
         return ret;
     }
 
-    void check_result(vk::Result&& res, const sloc loc) {
+    //void check_result(vk::Result&& res, const sloc loc) {
 
-        const auto file_info {
-            std::format("{}({}): ", loc.file_name(), loc.line())
-        };
+    //    const auto file_info {
+    //        std::format("{}({}): ", loc.file_name(), loc.line())
+    //    };
 
-        const auto error_info { std::format("{}"
-                                            "Error '{}' in {}\n",
-                                            file_info,
-                                            vk::to_string(res),
-                                            loc.function_name()) };
+    //    const auto error_info { std::format("{}"
+    //                                        "Error '{}' in {}\n",
+    //                                        file_info,
+    //                                        vk::to_string(res),
+    //                                        loc.function_name()) };
 
-        if ( res != vk::Result::eSuccess ) {
-            std::cout << error_info << '\n';
-        }
-    }
+    //    if ( res != vk::Result::eSuccess ) {
+    //        std::cout << error_info << '\n';
+    //    }
+    //}
 
 }  // namespace potato::utils

@@ -1,10 +1,8 @@
-#include "pipeline.hpp"
+module potato.graphics:pipeline;
 
-#include "device/device.hpp"
-
-#include <core/utils.hpp>
-#include <format>
-#include <iostream>
+import std.core;
+import vulkan;
+import potato.core;
 
 namespace potato::graphics {
     using namespace potato::utils;
@@ -191,4 +189,4 @@ namespace potato::graphics {
         return pipelineinfo;
     }
 
-}  // namespace potato::graphics
+}  // export namespace potato::graphics

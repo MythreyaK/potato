@@ -1,6 +1,6 @@
-#include <core/utils.hpp>
-#include <iostream>
-#include <testapp/src/test.hpp>
+import std.core;
+import testapp;
+import potato.core;
 
 int main() {
 
@@ -17,10 +17,10 @@ int main() {
     catch ( std::exception e ) {
         std::cerr << "Exception: " << e.what() << '\n';
         std::flush(std::cout);
-        return EXIT_FAILURE;
+        return -1;
     }
 
     std::flush(std::cout);
 
-    return EXIT_SUCCESS;
+    return 0;
 }

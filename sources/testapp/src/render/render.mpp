@@ -1,13 +1,13 @@
-#ifndef TESTAPP_RENDER_HPP
-#define TESTAPP_RENDER_HPP
+export module testapp:render;
 
-#include "camera.hpp"
-#include "primitive.hpp"
+import std.core;
+import potato.graphics;
+import vulkan;
+import :primitive;
 
-#include <graphics/pipeline.hpp>
-#include <graphics/vkinclude/vulkan.hpp>
+export namespace testapp {
 
-namespace testapp {
+    class camera;
 
     class render_system {
       private:
@@ -24,4 +24,3 @@ namespace testapp {
     };
 
 }  // namespace testapp
-#endif

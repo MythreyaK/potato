@@ -1,14 +1,9 @@
-#ifndef POTATO_UTILS_HPP
-#define POTATO_UTILS_HPP
+export module potato.core:utils;
 
-#include "version.hpp"
+import std.core;
+import vulkan;
 
-#include <concepts>
-#include <source_location>
-#include <string>
-#include <vector>
-
-namespace potato::utils {
+export namespace potato::utils {
 
     template<typename T>
     concept has_size = requires(T a) {
@@ -38,10 +33,9 @@ namespace potato::utils {
                             const std::vector<std::string>& supported_items,
                             const std::vector<std::string>& required_items);
 
-    void check_result(
-      vk::Result&&,
-      const std::source_location location = std::source_location::current());
+    //void check_result(
+    //  vk::Result&&,
+    //  const std::source_location location = std::source_location::current());
 
+    auto retain_decl_export = potato::utils::vksize(std::vector<int>{10});
 }  // namespace potato::utils
-
-#endif

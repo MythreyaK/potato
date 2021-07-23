@@ -1,9 +1,17 @@
-#include "render.hpp"
+module;
 
+#define GLM_FORCE_RADIANS
+#define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #include <glm/glm.hpp>
-#include <graphics/pipeline.hpp>
-#include <graphics/vkinclude/vulkan.hpp>
-#include <tuple>
+
+module testapp:render;
+
+import std.core;
+import vulkan;
+import potato.graphics;
+
+import :primitive;
+import :camera;
 
 namespace testapp {
 

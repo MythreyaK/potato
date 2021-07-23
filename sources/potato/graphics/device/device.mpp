@@ -1,14 +1,12 @@
-#ifndef POTATO_RENDER_DEVICE_HPP
-#define POTATO_RENDER_DEVICE_HPP
+export module potato.graphics:device;
 
-#include "create_info.hpp"
-// #include "vkinclude/vulkan.hpp"
+import std.core;
+import std.memory;
+import vulkan;
+import :surface;
+import :device_ci;
 
-#include <map>
-#include <optional>
-
-namespace potato::graphics {
-    class surface;
+export namespace potato::graphics {
 
     using vkqueues = std::map<vk::QueueFlagBits, vk::Queue>;
 
@@ -51,6 +49,6 @@ namespace potato::graphics {
                            vk::DeviceMemory&) const;
     };
 
-}  // namespace potato::graphics
+}  // export namespace potato::graphics
 
-#endif  // !POTATO_RENDER_DEVICE_HPP
+  // !POTATO_RENDER_DEVICE_HPP

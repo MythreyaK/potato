@@ -1,13 +1,10 @@
-#ifndef POTATO_RENDER_INSTANCE_HPP
-#define POTATO_RENDER_INSTANCE_HPP
+export module potato.graphics:instance;
 
-// #include "vkinclude/vulkan.hpp"
+import std.core;
+import vulkan;
 
-extern "C" {
-    struct GLFWwindow;
-}
 
-namespace potato::graphics {
+export namespace potato::graphics {
 
     class instance {
       private:
@@ -30,6 +27,4 @@ namespace potato::graphics {
         instance& operator=(instance&&) = default;
     };
 
-}  // namespace potato::graphics
-
-#endif
+}  // export namespace potato::graphics

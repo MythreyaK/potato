@@ -1,17 +1,23 @@
-#ifndef TESTAPP
-#define TESTAPP
+module;
 
-#include "render/render.hpp"
+#define GLM_FORCE_RADIANS
+#define GLM_FORCE_DEPTH_ZERO_TO_ONE
+#include <glm/glm.hpp>
 
-#include <core/time.hpp>
-#include <glfwcpp/glfw.hpp>
-#include <graphics/render.hpp>
-#include <iostream>
-#include <string>
+export module testapp;
+
+export import :primitive;
+export import :camera;
+export import :render;
+
+import glfwcpp;
+import std.core;
+import potato.core;
+import potato.graphics;
 
 namespace pgfx = potato::graphics;
 
-namespace testapp {
+export namespace testapp {
 
     class app : public glfw::window {
       private:
@@ -36,5 +42,3 @@ namespace testapp {
     };
 
 }  // namespace testapp
-
-#endif  // !TESTAPP

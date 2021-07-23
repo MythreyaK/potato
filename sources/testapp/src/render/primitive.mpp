@@ -1,17 +1,17 @@
-#ifndef POTATO_VERTEX_HPP
-#define POTATO_VERTEX_HPP
+module;
 
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #include <glm/glm.hpp>
-#include <graphics/vkinclude/vulkan.hpp>
-#include <vector>
 
-namespace potato::graphics {
-    class device;
-}
+export module testapp:primitive;
 
-namespace testapp {
+import std.core;
+import potato.graphics;
+import vulkan;
+import std.memory;
+
+export namespace testapp {
     struct vertex;
     using mesh = std::vector<vertex>;
 
@@ -96,5 +96,3 @@ namespace testapp {
     };
 
 }  // namespace testapp
-
-#endif

@@ -1,7 +1,9 @@
-#include "device/device.hpp"
-#include "swapchain.hpp"
+module potato.graphics:swapchain;
 
-#include <core/utils.hpp>
+import std.core;
+import vulkan;
+import :device;
+import potato.core;
 
 namespace potato::graphics {
 
@@ -58,7 +60,7 @@ namespace potato::graphics {
         constexpr auto dst_mask { vk::PipelineStageFlagBits::eColorAttachmentOutput | vk::PipelineStageFlagBits::eEarlyFragmentTests };
 
         vk::SubpassDependency subpass_dependency = {
-            .srcSubpass    = VK_SUBPASS_EXTERNAL,
+            .srcSubpass    = ~0U, // VK_SUBPASS_EXTERNAL,
             .dstSubpass    = 0,
             .srcStageMask  = src_mask,
             .dstStageMask  = dst_mask,
@@ -93,4 +95,4 @@ namespace potato::graphics {
         m_device->logical->destroyRenderPass(m_renderpass);
     }
 
-}  // namespace potato::graphics
+}  // export namespace potato::graphics

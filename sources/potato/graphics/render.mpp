@@ -1,18 +1,16 @@
-#ifndef POTATO_RENDER_HPP
-#define POTATO_RENDER_HPP
+export module potato.graphics;
 
-// clang-format off
-// #include "vkinclude/vulkan.hpp"
-// clang-format on
-#include "device/device.hpp"
-#include "instance.hpp"
-#include "pipeline.hpp"
-#include "surface/surface.hpp"
-#include "swapchain/swapchain.hpp"
+export import :swapchain;
+export import :device;
+export import :device_ci;
+export import :surface;
+export import :instance;
+export import :pipeline;
 
-#include <vector>
+import std.core;
+import vulkan;
 
-namespace potato::graphics {
+export namespace potato::graphics {
 
     class render_instance {
       private:
@@ -45,6 +43,4 @@ namespace potato::graphics {
         const device&   get_device() const;
     };
 
-}  // namespace potato::graphics
-
-#endif  // !POTATO_RENDER_HPP
+}  // export namespace potato::graphics

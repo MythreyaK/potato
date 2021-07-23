@@ -1,12 +1,20 @@
-#include "surface.hpp"
+module potato.graphics : surface;
+
+import std.core;
+import std.memory;
+import vulkan;
 
 extern "C" {
+    // typedef uint32_t VkResult;
+    struct VkAllocationCallbacks;
+    typedef struct VkSurfaceKHR_T *VkSurfaceKHR;
+    typedef struct VkInstance_T* VkInstance;
     // TODO: Maybe replace with callbacks? std::function?
-    void     glfwGetFramebufferSize(GLFWwindow*, int*, int*);
+    void glfwGetFramebufferSize(GLFWwindow*, int*, int*);
     VkResult glfwCreateWindowSurface(VkInstance,
-                                     GLFWwindow*,
-                                     const VkAllocationCallbacks*,
-                                     VkSurfaceKHR*);
+                                    GLFWwindow*,
+                                    const VkAllocationCallbacks*,
+                                    VkSurfaceKHR*);
 }
 
 namespace potato::graphics {
@@ -17,19 +25,19 @@ namespace potato::graphics {
         VkSurfaceKHR c_vksurface;
 
         if ( glfwCreateWindowSurface(instance,
-                                     window_handle,
-                                     nullptr,
-                                     &c_vksurface)
-             != VK_SUCCESS )
+                                    window_handle,
+                                    nullptr,
+                                    &c_vksurface)
+            != 0 )
         {
-            throw std::runtime_error("Cannot create surface");
+           throw std::runtime_error("Cannot create surface");
         }
 
         vk::ObjectDestroy<vk::Instance, vk::DispatchLoaderDynamic>
-          surfaceDeleter { instance, nullptr, VULKAN_HPP_DEFAULT_DISPATCHER };
+         surfaceDeleter { instance, nullptr, vk::Dispatcher };
 
         vksurface =
-          vk::UniqueSurfaceKHR(vk::SurfaceKHR(c_vksurface), surfaceDeleter);
+         vk::UniqueSurfaceKHR(vk::SurfaceKHR(c_vksurface), surfaceDeleter);
     }
 
     std::shared_ptr<surface> surface::make_shared() {
@@ -133,4 +141,4 @@ namespace potato::graphics {
         return std::clamp(req_count, min_count, max_count);
     }
 
-}  // namespace potato::graphics
+}  // export namespace potato::graphics

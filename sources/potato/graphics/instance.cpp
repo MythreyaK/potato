@@ -1,11 +1,13 @@
-#include "instance.hpp"
+module;
 
-#include "version.hpp"
+#include <vulkan/vulkan.h>
 
-#include <core/utils.hpp>
-#include <format>
+module potato.graphics : instance;
 
-#pragma region CTYPE_AND_CONSTANTS
+import std.core;
+import vulkan;
+import potato.core;
+
 extern "C" {
     typedef VkDebugUtilsMessageTypeFlagsEXT        cmtf;
     typedef VkDebugUtilsMessageSeverityFlagBitsEXT cmsfb;
@@ -17,26 +19,21 @@ extern "C" {
     // clang-format on
 
     const char** glfwGetRequiredInstanceExtensions(uint32_t*);
-    void         debug_log(cmsfb msev, cmtf mtypes, cmcd data, void* puserdata);
 }
 
 namespace {
     const std::vector<std::string> _required_layers {
-#ifdef POTATO_DEBUG
         "VK_LAYER_KHRONOS_validation",
         "VK_LAYER_LUNARG_monitor",
-#endif
     };
-
     const std::vector<std::string> _required_extensions {
         "VK_KHR_get_surface_capabilities2"
     };
 }  // namespace
 
-#pragma endregion CTYPE_AND_CONSTANTS
-
 namespace potato::graphics {
 #pragma region FWD_DECLARE_MISC
+
     using cmtf    = VkDebugUtilsMessageTypeFlagsEXT;
     using cmsfb   = VkDebugUtilsMessageSeverityFlagBitsEXT;
     using cmcd    = VkDebugUtilsMessengerCallbackDataEXT;
@@ -74,21 +71,22 @@ namespace potato::graphics {
     instance::instance(std::vector<std::string> extensions) {
         using namespace potato::utils;
 
+        vk::DynamicLoader dl {};
+
         // Initialize the dynamic loader
-        VULKAN_HPP_DEFAULT_DISPATCHER.init(
-          dynamicLoader.getProcAddress<PFN_vkGetInstanceProcAddr>(
-            "vkGetInstanceProcAddr"));
+        vk::Dispatcher.init(dl.getProcAddress<PFN_vkGetInstanceProcAddr>(
+          "vkGetInstanceProcAddr"));
 
         const vk::ApplicationInfo app_info {
             .pApplicationName   = "Potato App",
             .applicationVersion = 1,
             .pEngineName        = "Potato",
             .engineVersion      = 1,
-            .apiVersion         = VK_API_VERSION_1_2,
+            .apiVersion         = vk::makeApiVersion(1, 2),
         };
 
         if constexpr ( potato::build::is_debug() ) {
-            extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+            extensions.push_back(vk::extname::EXT_DEBUG_UTILS);
         }
 
         // Push in required extensions
@@ -133,7 +131,7 @@ namespace potato::graphics {
         vkinstance = vk::createInstanceUnique(
           inst_create_info.get<vk::InstanceCreateInfo>());
 
-        VULKAN_HPP_DEFAULT_DISPATCHER.init(vkinstance.get());
+        vk::Dispatcher.init(vkinstance.get());
     }
 
     strings instance::supported_extensions() {

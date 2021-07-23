@@ -1,4 +1,10 @@
-#include "camera.hpp"
+module;
+
+#define GLM_FORCE_RADIANS
+#define GLM_FORCE_DEPTH_ZERO_TO_ONE
+#include <glm/glm.hpp>
+
+module testapp:camera;
 
 namespace testapp {
 
@@ -11,7 +17,7 @@ namespace testapp {
         projectionMatrix       = glm::mat4 { 1.0f };
         projectionMatrix[0][0] = 2.f / (right - left);
         projectionMatrix[1][1] = 2.f / (bottom - top);
-        projectionMatrix[2][2] = 1.f / (far - _near);
+        projectionMatrix[2][2] = 1.f / (_far - _near);
         projectionMatrix[3][0] = -(right + left) / (right - left);
         projectionMatrix[3][1] = -(bottom + top) / (bottom - top);
         projectionMatrix[3][2] = -_near / (_far - _near);

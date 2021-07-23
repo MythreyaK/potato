@@ -1,16 +1,14 @@
-#include "swapchain/swapchain.hpp"
+module potato.graphics:swapchain;
 
-#include "device/device.hpp"
-#include "surface/surface.hpp"
-
-#include <core/utils.hpp>
-#include <set>
+import std.core;
+import std.memory;
+import vulkan;
+import :device;
+import :surface;
+import potato.core;
 
 // Contains stuff related to device swapchain management
 
-extern "C" {
-    void glfwGetFramebufferSize(GLFWwindow*, int* w, int* h);
-}
 
 namespace potato::graphics {
 
@@ -259,4 +257,4 @@ namespace potato::graphics {
         return extents.width / static_cast<float>(extents.height);
     }
 
-}  // namespace potato::graphics
+}  // export namespace potato::graphics

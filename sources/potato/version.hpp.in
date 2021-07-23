@@ -1,22 +1,7 @@
 #ifndef POTATO_VERSION_HPP
 #define POTATO_VERSION_HPP
 
-#include <iostream>
-#include <string>
-#include <string_view>
-
 #cmakedefine POTATO_DEBUG
-
-namespace potato::build {
-
-    enum class type { Debug, Release, ReleaseWithDebugInfo };
-
-    constexpr type build_type { type::@BUILD_TYPE@ };
-
-    constexpr bool is_debug() {
-        return (build_type == type::Debug) || (build_type == type::ReleaseWithDebugInfo);
-    }
-
-}  // namespace potato::debug
+#define DBUILD_TYPE @BUILD_TYPE@
 
 #endif

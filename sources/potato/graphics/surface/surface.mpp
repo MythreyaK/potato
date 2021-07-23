@@ -1,13 +1,14 @@
-#ifndef POTATO_RENDER_SURFACE_HPP
-#define POTATO_RENDER_SURFACE_HPP
+export module potato.graphics:surface;
 
-#include <memory>
+import std.core;
+import std.memory;
+import vulkan;
 
 extern "C" {
-    struct GLFWwindow;
+    export struct GLFWwindow;
 }
 
-namespace potato::graphics {
+export namespace potato::graphics {
 
     class surface : public std::enable_shared_from_this<surface> {
       private:
@@ -38,6 +39,4 @@ namespace potato::graphics {
         get_present_setting(const vk::PhysicalDevice&) const;
     };
 
-}  // namespace potato::graphics
-
-#endif
+}  // export namespace potato::graphics

@@ -1,5 +1,8 @@
-#include "device/device.hpp"
-#include "swapchain.hpp"
+module potato.graphics:swapchain;
+
+import std.core;
+import vulkan;
+import :device;
 
 namespace potato::graphics {
 
@@ -39,4 +42,4 @@ namespace potato::graphics {
         return m_cmd_buffers[m_current_frame];
     }
 
-}  // namespace potato::graphics
+}  // export namespace potato::graphics

@@ -1,19 +1,12 @@
-#ifndef POTATO_RENDER_SWAPCHAIN_HPP
-#define POTATO_RENDER_SWAPCHAIN_HPP
+export module potato.graphics:swapchain;
 
-#include "device/create_info.hpp"
-#include "pipeline.hpp"
+import std.core;
+import std.memory;
+import vulkan;
+import :device;
 
-#include <unordered_map>
-// #include "vkinclude/vulkan.hpp"
 
-extern "C" {
-    struct GLFWwindow;
-}
-
-namespace potato::graphics {
-    class device;
-    class surface;
+export namespace potato::graphics {
 
     class swapchain {
         using vkimages       = std::vector<vk::Image>;
@@ -104,6 +97,4 @@ namespace potato::graphics {
         swapchain& operator=(swapchain&&) = default;
     };
 
-}  // namespace potato::graphics
-
-#endif
+}  // export namespace potato::graphics

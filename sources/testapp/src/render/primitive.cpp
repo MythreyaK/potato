@@ -1,6 +1,12 @@
-#include "primitive.hpp"
+module;
 
-#include <graphics/device/device.hpp>
+#include <cstddef>
+
+module testapp:primitive;
+
+import std.core;
+import potato.graphics;
+import vulkan;
 
 namespace testapp {
 
@@ -37,7 +43,7 @@ namespace testapp {
       : potato_device(device)
       , vertex_count(mesh.size()) {
 
-        assert(vertex_count >= 3 && "Vertex count must be at least 3");
+        // assert(vertex_count >= 3 && "Vertex count must be at least 3");
 
         vk::DeviceSize buffer_size = sizeof(mesh[0]) * vertex_count;
 

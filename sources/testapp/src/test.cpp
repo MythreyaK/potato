@@ -1,18 +1,17 @@
-#include "test.hpp"
-
-#include <chrono>
-#include <filesystem>
-#include <fstream>
-#include <graphics/render.hpp>
-#include <ios>
-#include <vector>
+module;
 
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
-#include "render/camera.hpp"
-
 #include <glm/glm.hpp>
 #include <glm/gtc/constants.hpp>
+
+module testapp;
+
+import std.core;
+import std.filesystem;
+
+import potato.core;
+import potato.graphics;
 
 namespace testapp {
     app::app(int                     width,

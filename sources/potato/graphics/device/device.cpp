@@ -1,12 +1,9 @@
-#include "device.hpp"
+module potato.graphics:device;
 
-#include "surface/surface.hpp"
-
-#include <core/utils.hpp>
-#include <format>
-#include <iostream>
-#include <set>
-#include <utility>
+import std.core;
+import vulkan;
+import :surface;
+import potato.core;
 
 namespace potato::graphics {
 
@@ -15,7 +12,7 @@ namespace potato::graphics {
     using queue_famiies = std::map<vk::QueueFlagBits, uint32_t>;
 
     const std::vector<std::string> required_device_extensions {
-        VK_KHR_SWAPCHAIN_EXTENSION_NAME,
+        vk::extname::KHR_SWAPCHAIN,
     };
 
     vk::UniqueDevice   create_device(device_create_info);
@@ -93,7 +90,7 @@ namespace potato::graphics {
         auto ret { device_info.device.createDeviceUnique(create_info) };
 
         // Init device-specific pointers
-        VULKAN_HPP_DEFAULT_DISPATCHER.init(*ret);
+        vk::Dispatcher.init(*ret);
 
         return std::move(ret);
     }
@@ -156,15 +153,15 @@ namespace potato::graphics {
             "  Driver name:    {}\n"
             "  Driver make:    {}\n"
             "  Driver version: {}\n"
-            "  Vulkan version: {}\n"
+            //"  Vulkan version: {}\n"
             ,
             dev_props.deviceName                ,
             vk::to_string(dev_props.deviceType) ,
             dev_props.limits.maxImageDimension2D,
             drv_props.driverName                ,
             vk::to_string(drv_props.driverID)   ,
-            drv_props.driverInfo                ,
-            vk::to_string(drv_props.conformanceVersion)
+            drv_props.driverInfo
+            //vk::to_string(drv_props.conformanceVersion)
         );
         // clang-format on
 
@@ -225,4 +222,4 @@ namespace potato::graphics {
 
 #pragma endregion UTILS
 
-}  // namespace potato::graphics
+}  // export namespace potato::graphics

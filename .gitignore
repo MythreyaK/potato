@@ -105,3 +105,4 @@ ipch/
 ignore
 natvis
 **build**
+vulkan.mpp
