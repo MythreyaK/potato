@@ -1,10 +1,6 @@
 #ifndef POTATO_VERTEX_HPP
 #define POTATO_VERTEX_HPP
 
-#define GLM_FORCE_RADIANS
-#define GLM_FORCE_DEPTH_ZERO_TO_ONE
-#include <glm/glm.hpp>
-#include <graphics/vkinclude/vulkan.hpp>
 #include <vector>
 
 namespace potato::graphics {

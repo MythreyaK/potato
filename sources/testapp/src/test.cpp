@@ -7,12 +7,8 @@
 #include <ios>
 #include <vector>
 
-#define GLM_FORCE_RADIANS
-#define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #include "render/camera.hpp"
 
-#include <glm/glm.hpp>
-#include <glm/gtc/constants.hpp>
 
 namespace testapp {
     app::app(int                     width,
