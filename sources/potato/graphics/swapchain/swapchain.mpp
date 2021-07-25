@@ -3,10 +3,12 @@ export module potato.graphics:swapchain;
 import std.core;
 import std.memory;
 import vulkan;
-import :device;
-
+import :device_ci;
 
 export namespace potato::graphics {
+
+    class surface;
+    class device;
 
     class swapchain {
         using vkimages       = std::vector<vk::Image>;

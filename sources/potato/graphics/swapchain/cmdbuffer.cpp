@@ -1,8 +1,7 @@
-module potato.graphics:swapchain;
+module potato.graphics : swapchain;
 
-import std.core;
-import vulkan;
-import :device;
+import : device;
+// import :device;
 
 namespace potato::graphics {
 
@@ -42,4 +41,4 @@ namespace potato::graphics {
         return m_cmd_buffers[m_current_frame];
     }
 
-}  // export namespace potato::graphics
+}  // namespace potato::graphics

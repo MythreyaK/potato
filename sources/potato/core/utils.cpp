@@ -1,4 +1,4 @@
-module potato.core:utils;
+module potato.core : utils;
 
 import std.core;
 import std.filesystem;
@@ -82,7 +82,7 @@ namespace potato::utils {
         return ret;
     }
 
-    //void check_result(vk::Result&& res, const sloc loc) {
+    // void check_result(vk::Result&& res, const sloc loc) {
 
     //    const auto file_info {
     //        std::format("{}({}): ", loc.file_name(), loc.line())

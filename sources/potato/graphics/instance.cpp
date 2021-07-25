@@ -4,8 +4,6 @@ module;
 
 module potato.graphics : instance;
 
-import std.core;
-import vulkan;
 import potato.core;
 
 extern "C" {

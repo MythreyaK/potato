@@ -1,7 +1,5 @@
-module potato.graphics:pipeline;
+module potato.graphics : pipeline;
 
-import std.core;
-import vulkan;
 import potato.core;
 
 namespace potato::graphics {
@@ -189,4 +187,4 @@ namespace potato::graphics {
         return pipelineinfo;
     }
 
-}  // export namespace potato::graphics
+}  // namespace potato::graphics

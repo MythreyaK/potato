@@ -3,10 +3,11 @@ export module potato.graphics:device;
 import std.core;
 import std.memory;
 import vulkan;
-import :surface;
 import :device_ci;
 
 export namespace potato::graphics {
+
+    class surface;
 
     using vkqueues = std::map<vk::QueueFlagBits, vk::Queue>;
 

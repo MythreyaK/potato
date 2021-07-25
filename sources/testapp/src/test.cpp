@@ -7,12 +7,6 @@ module;
 
 module testapp;
 
-import std.core;
-import std.filesystem;
-
-import potato.core;
-import potato.graphics;
-
 namespace testapp {
     app::app(int                     width,
              int                     height,

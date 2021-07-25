@@ -1,20 +1,16 @@
 module potato.graphics : surface;
 
-import std.core;
-import std.memory;
-import vulkan;
-
 extern "C" {
     // typedef uint32_t VkResult;
     struct VkAllocationCallbacks;
-    typedef struct VkSurfaceKHR_T *VkSurfaceKHR;
-    typedef struct VkInstance_T* VkInstance;
+    typedef struct VkSurfaceKHR_T* VkSurfaceKHR;
+    typedef struct VkInstance_T*   VkInstance;
     // TODO: Maybe replace with callbacks? std::function?
-    void glfwGetFramebufferSize(GLFWwindow*, int*, int*);
+    void     glfwGetFramebufferSize(GLFWwindow*, int*, int*);
     VkResult glfwCreateWindowSurface(VkInstance,
-                                    GLFWwindow*,
-                                    const VkAllocationCallbacks*,
-                                    VkSurfaceKHR*);
+                                     GLFWwindow*,
+                                     const VkAllocationCallbacks*,
+                                     VkSurfaceKHR*);
 }
 
 namespace potato::graphics {
@@ -25,19 +21,19 @@ namespace potato::graphics {
         VkSurfaceKHR c_vksurface;
 
         if ( glfwCreateWindowSurface(instance,
-                                    window_handle,
-                                    nullptr,
-                                    &c_vksurface)
-            != 0 )
+                                     window_handle,
+                                     nullptr,
+                                     &c_vksurface)
+             != 0 )
         {
-           throw std::runtime_error("Cannot create surface");
+            throw std::runtime_error("Cannot create surface");
         }
 
         vk::ObjectDestroy<vk::Instance, vk::DispatchLoaderDynamic>
-         surfaceDeleter { instance, nullptr, vk::Dispatcher };
+          surfaceDeleter { instance, nullptr, vk::Dispatcher };
 
         vksurface =
-         vk::UniqueSurfaceKHR(vk::SurfaceKHR(c_vksurface), surfaceDeleter);
+          vk::UniqueSurfaceKHR(vk::SurfaceKHR(c_vksurface), surfaceDeleter);
     }
 
     std::shared_ptr<surface> surface::make_shared() {

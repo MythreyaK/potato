@@ -1,7 +1,6 @@
-module potato.graphics:swapchain;
+module potato.graphics : swapchain;
 
-import std.core;
-import vulkan;
+import : device;
 
 namespace potato::graphics {
 
@@ -33,4 +32,4 @@ namespace potato::graphics {
         m_in_flight_fence.clear();
         m_in_flight_image.clear();
     }
-}  // export namespace potato::graphics
+}  // namespace potato::graphics

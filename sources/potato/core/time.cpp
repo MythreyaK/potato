@@ -1,9 +1,9 @@
-module potato.core:time;
+module potato.core : time;
 
 namespace {
-    static potato::chrono::clock_type GLOBAL_CLOCK {};
+    static potato::chrono::clock_type      GLOBAL_CLOCK {};
     constexpr potato::chrono::milliseconds MAX_FRAME_TIME { 30 };
-}
+}  // namespace
 
 namespace potato::chrono {
 

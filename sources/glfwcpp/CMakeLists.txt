@@ -1,14 +1,26 @@
 cmake_minimum_required (VERSION 3.20)
 
-add_library(glfwcpp STATIC "glfw.cpp" "glfw.mpp")
+set(GLFW_CPP
+    "glfw.cpp"
+)
 
-set_source_files_properties("glfw.mpp" PROPERTIES
+set(GLFW_MPP
+    "glfw.mpp"
+    "keys.mpp"
+    "input.mpp"
+)
+
+message("fl: ${GLFW_MPP}")
+
+add_library(glfwcpp STATIC "${GLFW_CPP}" "${GLFW_MPP}")
+
+set_source_files_properties(${GLFW_MPP} PROPERTIES
                         LANGUAGE CXX
-                        COMPILE_FLAGS "/interface"
+                        COMPILE_OPTIONS "/interface"
 )
 
 target_include_directories(glfwcpp
-                        INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}/.."
+                        PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}"
                         PRIVATE "${Vulkan_INCLUDE_DIR}"
 )
 

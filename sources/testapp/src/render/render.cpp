@@ -4,14 +4,14 @@ module;
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #include <glm/glm.hpp>
 
-module testapp:render;
+module testapp : render;
 
 import std.core;
 import vulkan;
 import potato.graphics;
 
-import :primitive;
-import :camera;
+import : primitive;
+import : camera;
 
 namespace testapp {
 

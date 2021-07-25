@@ -1,9 +1,7 @@
-module potato.graphics:swapchain;
+module potato.graphics : swapchain;
 
-import std.core;
-import vulkan;
-import :device;
 import potato.core;
+import : device;
 
 namespace potato::graphics {
 
@@ -95,4 +93,4 @@ namespace potato::graphics {
         m_device->logical->destroyRenderPass(m_renderpass);
     }
 
-}  // export namespace potato::graphics
+}  // namespace potato::graphics

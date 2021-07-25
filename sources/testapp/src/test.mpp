@@ -10,7 +10,7 @@ export import :primitive;
 export import :camera;
 export import :render;
 
-import glfwcpp;
+import glfw;
 import std.core;
 import potato.core;
 import potato.graphics;

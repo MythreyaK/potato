@@ -2,7 +2,7 @@ module;
 
 #include <cstddef>
 
-module testapp:primitive;
+module testapp : primitive;
 
 import std.core;
 import potato.graphics;

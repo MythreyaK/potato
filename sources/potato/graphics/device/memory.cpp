@@ -1,7 +1,4 @@
-module potato.graphics:device;
-
-import std.core;
-import vulkan;
+module potato.graphics : device;
 
 namespace potato::graphics {
 
@@ -124,4 +121,4 @@ namespace potato::graphics {
         throw std::runtime_error("Could not find supported format");
     }
 
-}  // export namespace potato::graphics
+}  // namespace potato::graphics

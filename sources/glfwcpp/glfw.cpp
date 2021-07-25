@@ -1,11 +1,8 @@
 module;
 
-#define GLFW_INCLUDE_NONE
-#include <vulkan/vulkan.h>
-#include <GLFW/glfw3.h>
+#include "glfw_include.hpp"
 
-module glfwcpp;
-import std.core;
+module glfw;
 
 namespace glfw {
 
@@ -162,4 +159,3 @@ namespace glfw {
     }
 
 }  // namespace glfw
-

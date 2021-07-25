@@ -1,9 +1,8 @@
-module potato.graphics:swapchain;
+module potato.graphics : swapchain;
 
-import std.core;
-import vulkan;
-import :device;
 import potato.core;
+import : device;
+import : surface;
 
 namespace potato::graphics {
 
@@ -46,7 +45,7 @@ namespace potato::graphics {
     const vk::CommandBuffer& swapchain::begin_frame() {
         static const vk::CommandBufferBeginInfo cmd_begin_info {};
 
-        //assert(!m_frame_in_progress && "Frame must be started");
+        // assert(!m_frame_in_progress && "Frame must be started");
 
         acquire_image();
 
@@ -135,4 +134,4 @@ namespace potato::graphics {
         m_current_frame     = (m_current_frame + 1) % MAX_FRAMES_IN_FLIGHT;
     }
 
-}  // export namespace potato::graphics
+}  // namespace potato::graphics

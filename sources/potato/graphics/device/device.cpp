@@ -1,9 +1,7 @@
-module potato.graphics:device;
+module potato.graphics : device;
 
-import std.core;
-import vulkan;
-import :surface;
 import potato.core;
+import : surface;
 
 namespace potato::graphics {
 
@@ -222,4 +220,4 @@ namespace potato::graphics {
 
 #pragma endregion UTILS
 
-}  // export namespace potato::graphics
+}  // namespace potato::graphics

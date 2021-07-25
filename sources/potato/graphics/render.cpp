@@ -1,11 +1,8 @@
 module potato.graphics;
 
-import std.core;
 import std.memory;
-import vulkan;
-import :device;
-import :surface;
-
+import : device;
+import : surface;
 
 namespace potato::graphics {
 
@@ -44,4 +41,4 @@ namespace potato::graphics {
         return *potato_device;
     }
 
-}  // export namespace potato::graphics
+}  // namespace potato::graphics
