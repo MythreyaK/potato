@@ -1,0 +1,28 @@
+module;
+
+#include "glfw_include.hpp"
+
+export module glfw : input;
+
+import std.core;
+
+static_assert(GLFW_TRUE == true);
+static_assert(GLFW_FALSE == false);
+
+export namespace glfw {
+
+    enum class im {
+        CURSOR               = GLFW_CURSOR,
+        STICKY_KEYS          = GLFW_STICKY_KEYS,
+        STICKY_MOUSE_BUTTONS = GLFW_STICKY_MOUSE_BUTTONS,
+        LOCK_KEY_MODS        = GLFW_LOCK_KEY_MODS,
+        RAW_MOUSE_MOTION     = GLFW_RAW_MOUSE_MOTION,
+    };
+
+    enum class cm {
+        NORMAL   = GLFW_CURSOR_NORMAL,
+        HIDDEN   = GLFW_CURSOR_HIDDEN,
+        DISABLED = GLFW_CURSOR_DISABLED,
+    };
+
+}  // namespace glfw

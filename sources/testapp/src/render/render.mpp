@@ -1,9 +1,9 @@
-export module testapp:render;
+export module testapp : render;
 
 import std.core;
 import potato.graphics;
 import vulkan;
-import :primitive;
+import : primitive;
 
 export namespace testapp {
 

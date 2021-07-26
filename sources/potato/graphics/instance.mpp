@@ -1,8 +1,7 @@
-export module potato.graphics:instance;
+export module potato.graphics : instance;
 
 import std.core;
 import vulkan;
-
 
 export namespace potato::graphics {
 
@@ -27,4 +26,4 @@ export namespace potato::graphics {
         instance& operator=(instance&&) = default;
     };
 
-}  // export namespace potato::graphics
+}  // namespace potato::graphics

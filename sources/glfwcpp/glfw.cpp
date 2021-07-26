@@ -115,6 +115,16 @@ namespace glfw {
         glfwSetWindowTitle(window_handle, new_title.c_str());
     }
 
+    void window::set_window_position(int x, int y) const {
+        glfwSetWindowPos(window_handle, x, y);
+    }
+
+    std::pair<int, int> window::get_window_position() const {
+        int x, y;
+        glfwGetWindowPos(window_handle, &x, &y);
+        return { x, y };
+    }
+
     bool window::is_minimized() const {
         return is_iconified;
     }
@@ -123,6 +133,26 @@ namespace glfw {
         int width, height;
         glfwGetFramebufferSize(window_handle, &width, &height);
         return { width, height };
+    }
+
+    std::pair<double, double> window::get_cursor_position() const {
+        double x, y;
+        glfwGetCursorPos(window_handle, &x, &y);
+        return { x, y };
+    }
+
+    void window::set_cursor_position(double x, double y) const {
+        glfwSetCursorPos(window_handle, x, y);
+    }
+
+    void window::set_cursor_mode(cm a) const {
+        glfwSetInputMode(window_handle, GLFW_CURSOR, static_cast<int>(a));
+    }
+
+    void window::set_input_mode(im a, bool b) const {
+        glfwSetInputMode(window_handle,
+                         static_cast<int>(a),
+                         static_cast<int>(b));
     }
 
     void window::window_loop() {};

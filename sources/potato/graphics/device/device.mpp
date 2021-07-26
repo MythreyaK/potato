@@ -1,9 +1,9 @@
-export module potato.graphics:device;
+export module potato.graphics : device;
 
 import std.core;
 import std.memory;
 import vulkan;
-import :device_ci;
+import : device_ci;
 
 export namespace potato::graphics {
 
@@ -50,6 +50,6 @@ export namespace potato::graphics {
                            vk::DeviceMemory&) const;
     };
 
-}  // export namespace potato::graphics
+}  // namespace potato::graphics
 
-  // !POTATO_RENDER_DEVICE_HPP
+// !POTATO_RENDER_DEVICE_HPP

@@ -1,10 +1,3 @@
-module;
-
-#define GLM_FORCE_RADIANS
-#define GLM_FORCE_DEPTH_ZERO_TO_ONE
-#include <glm/glm.hpp>
-#include <glm/gtc/constants.hpp>
-
 module testapp;
 
 namespace testapp {
@@ -64,7 +57,10 @@ namespace testapp {
     }
 
     void app::run() {
+        // set_cursor_mode(glfw::cm::DISABLED);
+
         window_loop();
+
         m_renderer.get_device().logical->waitIdle();
     }
 

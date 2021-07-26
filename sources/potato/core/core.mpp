@@ -4,8 +4,8 @@ module;
 
 export module potato.core;
 
-export import :time;
-export import :utils;
+export import : time;
+export import : utils;
 
 import std.core;
 
@@ -16,7 +16,8 @@ export namespace potato::build {
     constexpr type build_type { type::DBUILD_TYPE };
 
     constexpr bool is_debug() {
-        return (build_type == type::Debug) || (build_type == type::ReleaseWithDebugInfo);
+        return (build_type == type::Debug)
+            || (build_type == type::ReleaseWithDebugInfo);
     }
 
-} // namespace potato::debug
+}  // namespace potato::build

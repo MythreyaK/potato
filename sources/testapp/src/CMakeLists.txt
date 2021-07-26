@@ -12,8 +12,8 @@ set_source_files_properties(${TESTAPP_MPP} PROPERTIES
 
 target_link_libraries(testapp
                         PUBLIC glfwcpp
-                        PUBLIC glm::glm
                         PUBLIC potato_lib
+                        PUBLIC modules
 )
 
 add_dependencies(testapp shaders)

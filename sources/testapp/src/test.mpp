@@ -1,16 +1,11 @@
-module;
-
-#define GLM_FORCE_RADIANS
-#define GLM_FORCE_DEPTH_ZERO_TO_ONE
-#include <glm/glm.hpp>
-
 export module testapp;
 
-export import :primitive;
-export import :camera;
-export import :render;
+export import : primitive;
+export import : camera;
+export import : render;
 
 import glfw;
+import "glm.imp";
 import std.core;
 import potato.core;
 import potato.graphics;

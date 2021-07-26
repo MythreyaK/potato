@@ -1,4 +1,4 @@
-export module potato.graphics:device_ci;
+export module potato.graphics : device_ci;
 
 import std.core;
 import vulkan;
@@ -25,4 +25,4 @@ export namespace potato::graphics {
         uint32_t           image_count;
     };
 
-}  // export namespace potato::graphics
+}  // namespace potato::graphics

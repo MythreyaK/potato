@@ -1,14 +1,6 @@
-module;
-
-#define GLM_FORCE_RADIANS
-#define GLM_FORCE_DEPTH_ZERO_TO_ONE
-#include <glm/glm.hpp>
-
 module testapp : render;
 
-import std.core;
-import vulkan;
-import potato.graphics;
+import "glm.imp";
 
 import : primitive;
 import : camera;

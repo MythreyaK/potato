@@ -4,10 +4,6 @@ module;
 
 module testapp : primitive;
 
-import std.core;
-import potato.graphics;
-import vulkan;
-
 namespace testapp {
 
     // struct vertex

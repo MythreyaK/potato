@@ -1,4 +1,4 @@
-export module potato.core:utils;
+export module potato.core : utils;
 
 import std.core;
 import vulkan;
@@ -37,5 +37,5 @@ export namespace potato::utils {
     //  vk::Result&&,
     //  const std::source_location location = std::source_location::current());
 
-    auto retain_decl_export = potato::utils::vksize(std::vector<int>{10});
+    auto retain_decl_export = potato::utils::vksize(std::vector<int> { 10 });
 }  // namespace potato::utils

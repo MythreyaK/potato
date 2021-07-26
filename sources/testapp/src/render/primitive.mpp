@@ -1,15 +1,10 @@
-module;
-
-#define GLM_FORCE_RADIANS
-#define GLM_FORCE_DEPTH_ZERO_TO_ONE
-#include <glm/glm.hpp>
-
-export module testapp:primitive;
+export module testapp : primitive;
 
 import std.core;
 import potato.graphics;
 import vulkan;
 import std.memory;
+import "glm.imp";
 
 export namespace testapp {
     struct vertex;

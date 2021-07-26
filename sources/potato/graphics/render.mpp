@@ -1,11 +1,11 @@
 export module potato.graphics;
 
-export import :swapchain;
-export import :device;
-export import :device_ci;
-export import :surface;
-export import :instance;
-export import :pipeline;
+export import : swapchain;
+export import : device;
+export import : device_ci;
+export import : surface;
+export import : instance;
+export import : pipeline;
 
 import std.core;
 import vulkan;
@@ -43,4 +43,4 @@ export namespace potato::graphics {
         const device&   get_device() const;
     };
 
-}  // export namespace potato::graphics
+}  // namespace potato::graphics

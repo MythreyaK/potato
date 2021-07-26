@@ -1,4 +1,4 @@
-export module potato.core:time;
+export module potato.core : time;
 
 import std.core;
 

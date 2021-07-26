@@ -1,9 +1,9 @@
-export module potato.graphics:swapchain;
+export module potato.graphics : swapchain;
 
 import std.core;
 import std.memory;
 import vulkan;
-import :device_ci;
+import : device_ci;
 
 export namespace potato::graphics {
 
@@ -99,4 +99,4 @@ export namespace potato::graphics {
         swapchain& operator=(swapchain&&) = default;
     };
 
-}  // export namespace potato::graphics
+}  // namespace potato::graphics
