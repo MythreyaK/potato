@@ -19,10 +19,12 @@ export namespace glfw {
 
     class window {
       private:
+        static bool init_success;
+        static bool init_complete;
         GLFWwindow* window_handle;
         bool        is_iconified { false };
 
-        bool init_glfw(int w, int h, const std::string& title);
+        static bool init_glfw();
 
         static void _on_scroll(GLFWwindow*, double xoffset, double yoffset);
         static void _on_codepoint(GLFWwindow*, unsigned int codepoint);

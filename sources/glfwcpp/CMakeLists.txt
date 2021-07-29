@@ -8,9 +8,8 @@ set(GLFW_MPP
     "glfw.mpp"
     "keys.mpp"
     "input.mpp"
+    "errors.mpp"
 )
-
-message("fl: ${GLFW_MPP}")
 
 add_library(glfwcpp STATIC "${GLFW_CPP}" "${GLFW_MPP}")
 
