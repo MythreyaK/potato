@@ -1,33 +1,20 @@
-#ifndef GLFW_CPP
-#define GLFW_CPP
-#define GLFW_INCLUDE_NONE
-
 #include "GLFW.hpp"
 
-// clang-format off
-// Vulkan needs to be included before GLFW
-#include <vulkan/vulkan.h>
-#include <GLFW/glfw3.h>
-// clang-format on
+#include "errors.hpp"
+#include "glfwinclude.hpp"
 
 namespace glfw {
 
-    bool window::init_glfw(int w, int h, const std::string& title) {
-        /* Initialize the library */
-        if ( !glfwInit() ) {
-            return false;
+    bool window::init_success  = false;
+    bool window::init_complete = false;
+
+    bool window::init_glfw() {
+        init_success = glfwInit();
+        if ( !init_success ) {
+            check_error();
         }
-
-        glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-        GLFWwindow* window = glfwCreateWindow(w, h, title.c_str(), NULL, NULL);
-
-        if ( !window ) {
-            return false;
-        }
-
-        window_handle = window;
-        glfwSetWindowUserPointer(window, this);
-        return true;
+        init_complete = true;
+        return init_success;
     }
 
     window::window(int                w,
@@ -36,12 +23,20 @@ namespace glfw {
                    std::vector<icon>  icons) try
       : window_handle(nullptr)
     {
-        if ( !init_glfw(w, h, title) )
-            throw std::runtime_error("GLFW initialization Error");
+        if ( !init_complete ) init_glfw();
+        glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+        GLFWwindow* window = glfwCreateWindow(w, h, title.c_str(), NULL, NULL);
+
+        if ( !window ) {
+            check_error();
+        }
+
+        window_handle = window;
+        glfwSetWindowUserPointer(window, this);
 
         // hook up callbacks
-        glfwSetCharCallback(window_handle, window::_on_codepoint);
-        glfwSetScrollCallback(window_handle, window::_on_scroll);
+        // glfwSetCharCallback(window_handle, window::_on_codepoint);
+        // glfwSetScrollCallback(window_handle, window::_on_scroll);
         glfwSetFramebufferSizeCallback(window_handle, window::_on_window_resize);
         glfwSetWindowIconifyCallback(window_handle, window::_on_window_iconify);
         glfwSetWindowRefreshCallback(window_handle, _on_window_refresh);
@@ -50,8 +45,12 @@ namespace glfw {
     catch ( const std::exception& ) {
     }
 
-    window::~window() {
+    static void terminate() {
         glfwTerminate();
+    }
+
+    window::~window() {
+        glfwDestroyWindow(window_handle);
     }
 
     // Other functions
@@ -165,5 +164,3 @@ namespace glfw {
     }
 
 }  // namespace glfw
-
-#endif  // GLFW_CPP

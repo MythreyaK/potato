@@ -33,8 +33,8 @@ set(DEPS_DIR "${PROJECT_SOURCE_DIR}/third-party")
 
 include("cmake/packages.cmake")
 
-find_package(Vulkan REQUIRED FATAL_ERROR)
-find_package(glm REQUIRED FATAL_ERROR)
+find_package(glm        REQUIRED FATAL_ERROR)
+find_package(Vulkan     REQUIRED FATAL_ERROR)
 
 # Deps
 add_subdirectory("${DEPS_DIR}")
