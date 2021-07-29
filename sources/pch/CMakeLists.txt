@@ -8,10 +8,8 @@ add_library(pch STATIC ${POTATO_PCH_HPP} ${POTATO_PCH_CPP})
 target_include_directories(pch
                     PUBLIC      "${CMAKE_CURRENT_SOURCE_DIR}"
                     PUBLIC      "${Vulkan_INCLUDE_DIR}"
+                    PUBLIC      "${GLM_INCLUDE_DIRS}"
 )
 
-target_link_libraries(pch
-                    PUBLIC glm::glm
-)
 
 target_precompile_headers(pch PUBLIC ${POTATO_PCH_HPP})
