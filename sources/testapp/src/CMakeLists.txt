@@ -8,6 +8,7 @@ add_library(testapp STATIC ${TESTAPP_HPP} ${TESTAPP_CPP})
 target_link_libraries(testapp
                         PUBLIC glfwcpp
                         PUBLIC potato_lib
+                        PUBLIC pch
 )
 
 add_dependencies(testapp shaders)

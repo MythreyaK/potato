@@ -1,14 +1,10 @@
 #include "test.hpp"
 
-#include <chrono>
-#include <filesystem>
-#include <fstream>
-#include <graphics/render.hpp>
-#include <ios>
-#include <vector>
-
 #include "render/camera.hpp"
 
+#include <chrono>
+#include <graphics/render.hpp>
+#include <vector>
 
 namespace testapp {
     app::app(int                     width,
@@ -21,7 +17,7 @@ namespace testapp {
                           m_renderer.get_swapchain().get_renderpass() } {}
 
     void app::window_loop() {
-        constexpr float rate { 1.5f * 0.001f };
+        constexpr float rate { 2.0f * 0.001f };
 
         camera camera {};
 
@@ -29,6 +25,8 @@ namespace testapp {
                              glm::vec3(0.f, 0.f, 2.5f));
 
         create_cube_model({ .0f, .0f, .0f });
+
+        glm::vec3 rotations = { 0.0f, 0.0f, 0.0f };
 
         while ( keep_window_open() ) {
             poll_events();
@@ -50,13 +48,10 @@ namespace testapp {
             auto advance { rate * m_timer.elapsed().count() };
 
             for ( auto& obj : vertex_model ) {
-                obj.transform.rotation.y =
-                  glm::mod(obj.transform.rotation.y + advance,
-                           glm::two_pi<float>());
-
-                obj.transform.rotation.x =
-                  glm::mod(obj.transform.rotation.x + advance,
-                           glm::two_pi<float>());
+                // rotations.x += advance;
+                // rotations.y += advance;
+                rotations.z += advance;
+                obj.transform.euler_rotate(rotations);
             }
 
             m_render_system.render_objects(cmd_buffer, vertex_model, camera);
