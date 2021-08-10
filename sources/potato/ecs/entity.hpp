@@ -18,10 +18,9 @@ namespace ecs {
         static id next_eid;
         static id count;
 
-        id              entity_id;
-        context&        entity_context;
+        id              entity_id { 0 };
+        context*        entity_context;
         std::bitset<64> components;
-
 
       public:
         explicit entity(context& c);
@@ -34,24 +33,24 @@ namespace ecs {
         entity& operator=(const entity&) = delete;
 
         // allow move
-        entity(entity&&) = default;
-        entity& operator=(entity&&) = default;
+        entity(entity&&);
+        entity& operator=(entity&&);
 
         template<component_type T, typename... Args>
         T& add_component(Args... args) {
-            entity_context.get_component<T>().add(*this,
-                                                  std::forward<Args>(args)...);
+            entity_context->get_component<T>().add(*this,
+                                                   std::forward<Args>(args)...);
             return get_component<T>();
         }
 
         template<typename T>
         requires component_type<T> T& get_component() {
-            return entity_context.get_component<T>().get(*this);
+            return entity_context->get_component<T>().get(*this);
         }
 
         template<typename T>
         requires component_type<T> T& get_component() const {
-            return entity_context.get_component<T>().get(*this);
+            return entity_context->get_component<T>().get(*this);
         }
 
         // template<typename T>

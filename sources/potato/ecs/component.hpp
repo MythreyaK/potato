@@ -87,6 +87,8 @@ namespace ecs {
             // `entity_component[e]`
             items[new_inx] = std::move(items[last_cmp]);
 
+            items.pop_back();
+
             // Update the entity<->component mapping for the `moved_entity`
             entity_component[last_eid] = new_inx;
             component_entity[new_inx]  = last_eid;
