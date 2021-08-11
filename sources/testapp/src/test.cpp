@@ -3,8 +3,24 @@
 #include "render/camera.hpp"
 
 #include <chrono>
+#include <format>
 #include <graphics/render.hpp>
+#include <random>
 #include <vector>
+
+namespace {
+    std::random_device                 rd;
+    std::mt19937                       gen(rd());
+    std::uniform_int_distribution<int> dist(-800, 800);  // distribution in range [1, 6]
+
+    float get_rand() {
+        return dist(gen);
+    }
+
+    void debug_glm(const glm::vec3& a) {
+        std::cout << std::format("({}, {}, {})", a.x, a.y, a.z) << '\n';
+    }
+}  // namespace
 
 namespace testapp {
     app::app(int                     width,
@@ -21,12 +37,22 @@ namespace testapp {
 
         camera camera {};
 
-        camera.setViewTarget(glm::vec3(-1.f, -2.f, -2.f),
-                             glm::vec3(0.f, 0.f, 2.5f));
-
-        create_cube_model({ .0f, .0f, .0f });
+        camera.setViewTarget(glm::vec3(0.f, -70.0f, -70.f),
+                             glm::vec3(0.f, 0.0f, 0.0f));
 
         glm::vec3 rotations = { 0.0f, 0.0f, 0.0f };
+        ecs_context.add_component<transform>();
+        ecs_context.add_component<model>();
+        std::vector<ecs::entity> entities {};
+
+        for ( int i = 0; i < 1200; ++i ) {
+            auto cube = ecs_context.create_entity();
+
+            cube.add_component<transform>().translation = { get_rand() / 10, 0.0f, get_rand() / 10 };
+            create_cube_model(cube, {});
+
+            entities.emplace_back(std::move(cube));
+        }
 
         while ( keep_window_open() ) {
             poll_events();
@@ -36,10 +62,10 @@ namespace testapp {
             }
 
             camera.setPerspectiveProjection(
-              glm::radians(50.f),
+              glm::radians(70.f),
               m_renderer.get_swapchain().get_aspect(),
               0.1f,
-              10.f);
+              250.f);
 
             auto& cmd_buffer { m_renderer.get_swapchain().begin_frame() };
 
@@ -47,23 +73,24 @@ namespace testapp {
 
             auto advance { rate * m_timer.elapsed().count() };
 
-            for ( auto& obj : vertex_model ) {
-                // rotations.x += advance;
-                // rotations.y += advance;
-                rotations.z += advance;
-                obj.transform.euler_rotate(rotations);
+            rotations.x += advance ;
+            rotations.z += advance ;
+
+            for ( auto& obj : entities ) {
+                obj.get_component<transform>().euler_rotate(rotations);
             }
 
-            m_render_system.render_objects(cmd_buffer, vertex_model, camera);
+            m_render_system.render_objects(cmd_buffer, entities, camera);
 
             m_renderer.get_swapchain().end_renderpass();
             m_renderer.get_swapchain().end_frame();
         }
+
+        m_renderer.get_device().logical->waitIdle();
     }
 
     void app::run() {
         window_loop();
-        m_renderer.get_device().logical->waitIdle();
     }
 
     void app::on_window_resized(int new_width, int new_height) {
@@ -75,7 +102,7 @@ namespace testapp {
         }
     }
 
-    void app::create_cube_model(glm::vec3 offset) {
+    void app::create_cube_model(ecs::entity& e, glm::vec3 offset) {
 
         testapp::mesh vertices {
 
@@ -129,15 +156,19 @@ namespace testapp {
 
         };
 
-        for ( auto& v : vertices ) {
-            v.position += offset;
-        }
+        // for ( auto& v : vertices ) {
+        //     v.position += offset;
+        // }
 
-        vertex_model.emplace_back(m_renderer.get_device().shared_from_this(),
-                                  vertices);
+        e.add_component<model>(m_renderer.get_device().shared_from_this(),
+                               vertices);
 
-        vertex_model[0].transform.translation = { .0f, .0f, 2.5f };
-        vertex_model[0].transform.scale       = { 1.5f, 1.5f, 1.5f };
+        // vertex_model.emplace_back(m_renderer.get_device().shared_from_this(),
+        //                           vertices);
+
+        // vertex_model[0].transform.translation = { .0f, .0f, 2.5f };
+        // vertex_model[0].transform.scale       = { 1.5f, 1.5f, 1.5f };
+        // e.get_component<transform>().translation = offset;
     }
 
 }  // namespace testapp

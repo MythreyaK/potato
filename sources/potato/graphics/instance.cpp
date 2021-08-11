@@ -21,13 +21,6 @@ extern "C" {
 }
 
 namespace {
-    const std::vector<std::string> _required_layers {
-#ifdef POTATO_DEBUG
-        "VK_LAYER_KHRONOS_validation",
-        "VK_LAYER_LUNARG_monitor",
-#endif
-    };
-
     const std::vector<std::string> _required_extensions {
         "VK_KHR_get_surface_capabilities2"
     };
@@ -104,15 +97,7 @@ namespace potato::graphics {
             throw std::runtime_error("Required extensions not present");
         }
 
-        if ( !has_required_items("Instance layers",
-                                 supported_layers(),
-                                 _required_layers) )
-        {
-            throw std::runtime_error("Required layers not present");
-        }
-
         const auto _extns { to_vecchar(extensions) };
-        const auto _layers { to_vecchar(_required_layers) };
 
         // Also add debug messenger create info
         constexpr auto debug_crinf { debug_create_info() };
@@ -121,8 +106,6 @@ namespace potato::graphics {
         const icrf inst_create_info {
             vk::InstanceCreateInfo {
               .pApplicationInfo        = &app_info,
-              .enabledLayerCount       = vksize(_layers),
-              .ppEnabledLayerNames     = _layers.data(),
               .enabledExtensionCount   = vksize(_extns),
               .ppEnabledExtensionNames = _extns.data(),
             },

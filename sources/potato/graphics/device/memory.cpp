@@ -2,6 +2,8 @@
 
 namespace potato::graphics {
 
+    uint64_t device::alloc_offset { 0 };
+
     uint32_t device::find_mem_type(vk::MemoryPropertyFlags filter,
                                    vk::MemoryPropertyFlags flags) const {
 
@@ -46,7 +48,8 @@ namespace potato::graphics {
                                vk::BufferUsageFlags    usage,
                                vk::MemoryPropertyFlags properties,
                                vk::Buffer&             buffer,
-                               vk::DeviceMemory&       buffer_memory) const {
+                               vk::DeviceMemory&       buffer_memory,
+                               const void*             buffer_data) const {
 
         // clang-format off
         vk::BufferCreateInfo buffer_info {
@@ -71,6 +74,20 @@ namespace potato::graphics {
         buffer_memory = logical->allocateMemory(alloc_info);
 
         logical->bindBufferMemory(buffer, buffer_memory, 0);
+
+        void* data;
+        auto  result = logical->mapMemory(buffer_memory, 0, size, {}, &data);
+
+        if ( result != vk::Result::eSuccess ) {
+            throw std::runtime_error(
+              "Failed to map vertex buffer memory to GPU");
+        }
+
+        std::memcpy(data, buffer_data, size);
+        logical->unmapMemory(buffer_memory);
+
+        // update offset for next alloc
+        alloc_offset += ( mem_req.alignment - (size % mem_req.alignment));
     }
 
     vk::Image device::create_image(const vk::ImageCreateInfo& im_ci,

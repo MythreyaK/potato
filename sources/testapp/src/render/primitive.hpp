@@ -1,6 +1,8 @@
 #ifndef POTATO_VERTEX_HPP
 #define POTATO_VERTEX_HPP
 
+#include <core/utils.hpp>
+#include <ecs/ecs.hpp>
 #include <vector>
 
 namespace potato::graphics {
@@ -22,45 +24,30 @@ namespace testapp {
         attribute_descriptions();
     };
 
-    struct model_transform {
-        glm::vec3 translation {};
-        glm::vec3 scale { 1.f, 1.f, 1.f };
-        glm::quat rotation {};
-
-        void euler_rotate(glm::vec3 euler_angles) {
-            rotation = glm::toQuat(
-              glm::yawPitchRoll(euler_angles.y, euler_angles.x, euler_angles.z));
-        }
-
-        glm::mat4 mat4() const {
-            return glm::translate(glm::mat4 { 1.f }, translation)
-                 * glm::toMat4(rotation)
-                 * glm::scale(glm::mat4 { 1.0f }, scale);
-        }
-    };
-
     class model {
 
       private:
         using shared_ptr_device =
           std::shared_ptr<const potato::graphics::device>;
-
-        uint32_t          vertex_count {};
+        mesh              m_mesh {};
         shared_ptr_device potato_device;
         vk::Buffer        vertex_bufer {};
         vk::DeviceMemory  vertex_device_mem {};
 
       public:
-        model_transform transform {};
+        static constexpr auto signature = potato::utils::bit(4);
 
-        model(shared_ptr_device device, const mesh& model_mesh);
+        model(shared_ptr_device device, mesh model_mesh);
         ~model();
 
         model(const model&) = delete;
         model& operator=(const model&) = delete;
 
-        model(model&&) = default;
-        model& operator=(model&&) = default;
+        model(model&&);
+        model& operator=(model&&);
+        bool   operator==(const model&) const;
+
+        friend void swap(model&, model&);
 
         void bind(const vk::CommandBuffer& cmdbuffer) const;
         void draw(const vk::CommandBuffer& cmdbuffer) const;

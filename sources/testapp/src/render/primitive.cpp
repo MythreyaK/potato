@@ -1,5 +1,6 @@
 #include "primitive.hpp"
 
+#include <format>
 #include <graphics/device/device.hpp>
 
 namespace testapp {
@@ -33,53 +34,62 @@ namespace testapp {
     }
 
     // class model
-    model::model(shared_ptr_device device, const mesh& mesh)
-      : potato_device(device)
-      , vertex_count(mesh.size()) {
+    model::model(shared_ptr_device device, mesh mesh)
+      : m_mesh { mesh }
+      , potato_device { device } {
 
-        assert(vertex_count >= 3 && "Vertex count must be at least 3");
+        assert(m_mesh.size() >= 3 && "Vertex count must be at least 3");
 
-        vk::DeviceSize buffer_size = sizeof(mesh[0]) * vertex_count;
+        vk::DeviceSize buffer_size = sizeof(m_mesh[0]) * m_mesh.size();
 
         constexpr auto host_visible_coherent {
             vk::MemoryPropertyFlagBits::eHostVisible
             | vk::MemoryPropertyFlagBits::eHostCoherent
         };
 
-        device->create_buffer(buffer_size,
-                              vk::BufferUsageFlagBits::eVertexBuffer,
-                              host_visible_coherent,
-                              vertex_bufer,
-                              vertex_device_mem);
-        void* data;
-        auto  result = device->logical->mapMemory(vertex_device_mem,
-                                                 0,
-                                                 buffer_size,
-                                                 {},
-                                                 &data);
-        if ( result != vk::Result::eSuccess ) {
-            throw std::runtime_error(
-              "Failed to map vertex buffer memory to GPU");
-        }
+        potato_device->create_buffer(buffer_size,
+                                     vk::BufferUsageFlagBits::eVertexBuffer,
+                                     host_visible_coherent,
+                                     vertex_bufer,
+                                     vertex_device_mem,
+                                     mesh.data());
+    }
 
-        std::memcpy(data, mesh.data(), buffer_size);
-        device->logical->unmapMemory(vertex_device_mem);
+    model::model(model&& other) {
+        if ( *this != other ) swap(*this, other);
+    }
+
+    model& model::operator=(model&& other) {
+        if ( *this != other ) swap(*this, other);
+        return *this;
+    }
+
+    bool model::operator==(const model& other) const {
+        return vertex_bufer == other.vertex_bufer
+            && vertex_device_mem == other.vertex_device_mem;
     }
 
     model::~model() {
-        potato_device->logical->waitIdle();
         potato_device->logical->destroyBuffer(vertex_bufer);
         potato_device->logical->freeMemory(vertex_device_mem);
     }
 
     void model::draw(const vk::CommandBuffer& cmd_buffer) const {
-        cmd_buffer.draw(vertex_count, 1, 0, 0);
+        cmd_buffer.draw(m_mesh.size(), 1, 0, 0);
     }
 
     void model::bind(const vk::CommandBuffer& cmd_buffer) const {
         vk::Buffer     buffers[] = { vertex_bufer };
         vk::DeviceSize offsets[] = { 0 };
         cmd_buffer.bindVertexBuffers(0, 1, buffers, offsets);
+    }
+
+    void swap(model& a, model& b) {
+        using std::swap;
+        swap(a.m_mesh, b.m_mesh);
+        swap(a.potato_device, b.potato_device);
+        swap(a.vertex_bufer, b.vertex_bufer);
+        swap(a.vertex_device_mem, b.vertex_device_mem);
     }
 
 }  // namespace testapp

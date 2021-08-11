@@ -6,6 +6,8 @@
 
 #include <graphics/pipeline.hpp>
 
+class ecs::entity;
+
 namespace testapp {
 
     class render_system {
@@ -18,7 +20,7 @@ namespace testapp {
         render_system(const vk::Device&, const vk::RenderPass&);
 
         void render_objects(const vk::CommandBuffer&,
-                            const std::vector<testapp::model>&,
+                            const std::vector<ecs::entity>&,
                             const camera&);
     };
 

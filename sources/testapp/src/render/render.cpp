@@ -1,5 +1,6 @@
 #include "render.hpp"
 
+#include <ecs/ecs.hpp>
 #include <graphics/pipeline.hpp>
 #include <tuple>
 
@@ -51,10 +52,9 @@ namespace testapp {
                                         renderpass));
     }
 
-    void
-    render_system::render_objects(const vk::CommandBuffer&           cmd_buffer,
-                                  const std::vector<testapp::model>& objects,
-                                  const camera&                      cam) {
+    void render_system::render_objects(const vk::CommandBuffer& cmd_buffer,
+                                       const std::vector<ecs::entity>& objects,
+                                       const camera&                   cam) {
 
         static push_constants push {};
 
@@ -68,7 +68,7 @@ namespace testapp {
 
         for ( auto& obj : objects ) {
 
-            push.transform = projectionView * obj.transform.mat4();
+            push.transform = projectionView * obj.get_component<transform>().mat4();
 
             cmd_buffer.pushConstants(m_pipeline.get_layout(),
                                      shader_and_frag,
@@ -76,8 +76,8 @@ namespace testapp {
                                      sizeof(push_constants),
                                      &push);
 
-            obj.bind(cmd_buffer);
-            obj.draw(cmd_buffer);
+            obj.get_component<model>().bind(cmd_buffer);
+            obj.get_component<model>().draw(cmd_buffer);
         }
     }
 

@@ -4,6 +4,7 @@
 #include "render/render.hpp"
 
 #include <core/time.hpp>
+#include <ecs/ecs.hpp>
 #include <glfwcpp/glfw.hpp>
 #include <graphics/render.hpp>
 #include <iostream>
@@ -19,8 +20,7 @@ namespace testapp {
         render_system         m_render_system;
         potato::chrono::timer m_timer { "Main loop" };
         bool                  minimized { false };
-
-        std::vector<testapp::model> vertex_model {};
+        ecs::context          ecs_context {};
 
       public:
         app(int                width,
@@ -31,7 +31,7 @@ namespace testapp {
         void run();
         void window_loop() override;
         void on_window_resized(int new_width, int new_height) override;
-        void create_cube_model(glm::vec3 offset);
+        void create_cube_model(ecs::entity&, glm::vec3 offset);
         vk::RenderPass create_renderpass();
     };
 

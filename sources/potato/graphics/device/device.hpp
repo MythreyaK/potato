@@ -14,6 +14,8 @@ namespace potato::graphics {
 
     // TODO: Maybe use a tagged shared_ptr
     class device : public std::enable_shared_from_this<device> {
+      private:
+        static uint64_t alloc_offset;
 
       public:
         const device_create_info create_info {};
@@ -48,7 +50,8 @@ namespace potato::graphics {
                            vk::BufferUsageFlags,
                            vk::MemoryPropertyFlags,
                            vk::Buffer&,
-                           vk::DeviceMemory&) const;
+                           vk::DeviceMemory&,
+                           const void*) const;
     };
 
 }  // namespace potato::graphics
