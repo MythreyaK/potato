@@ -2,51 +2,10 @@
 
 namespace potato::graphics {
 
-    uint32_t device::find_mem_type(vk::MemoryPropertyFlags filter,
-                                   vk::MemoryPropertyFlags flags) const {
-
-        /*/
-         * Quoting from the spec, at
-         * https://khronos.org/registry/vulkan/specs/1.2-khr-extensions/html/chap12.html#resources-association
-         *
-         * Under 'VkMemoryRequirements'
-         *
-         * "memoryTypeBits is a bitmask and contains one bit set for every
-         * supported memory type for the resource. Bit i is set if and only if the
-         * memory type i in the VkPhysicalDeviceMemoryProperties structure for the
-         * physical device is supported for the resource."
-         *
-         * So we just check if bit i is set in bit_flags, starting from LSB.
-         * Higher bits are 'less ideal' for performance reasons.
-        /*/
-
-        const auto mem_props {
-            physical.getMemoryProperties2().memoryProperties
-        };
-
-        // clang-format off
-        using mpf = vk::MemoryPropertyFlags;
-
-        auto condition { [&mem_props] // Lambda function to get proper memory index
-            (mpf _filter, mpf flags, uint32_t i) -> bool {
-                return (_filter & mpf(1 << i))
-                    && ((mem_props.memoryTypes[i].propertyFlags & flags) == flags);
-        } };
-
-        // clang-format on
-
-        for ( uint32_t i = 0; i < mem_props.memoryTypeCount; i++ ) {
-            if ( condition(filter, flags, i) ) return i;
-        }
-
-        throw std::runtime_error("Failed to find suitable memory type");
-    }
-
     void device::create_buffer(vk::DeviceSize          size,
                                vk::BufferUsageFlags    usage,
                                vk::MemoryPropertyFlags properties,
-                               vk::Buffer&             buffer,
-                               vk::DeviceMemory&       buffer_memory) const {
+                               vk::Buffer&             buffer) {
 
         // clang-format off
         vk::BufferCreateInfo buffer_info {
@@ -61,37 +20,26 @@ namespace potato::graphics {
         vk::MemoryRequirements mem_req { logical->getBufferMemoryRequirements(
           buffer) };
 
-        auto flags { vk::MemoryPropertyFlags(mem_req.memoryTypeBits) };
+        auto res = allocator.allocate(mem_req, properties);
 
-        vk::MemoryAllocateInfo alloc_info {
-            .allocationSize  = mem_req.size,
-            .memoryTypeIndex = find_mem_type(flags, properties),
-        };
+        auto& alloc = allocator.get(res);
 
-        buffer_memory = logical->allocateMemory(alloc_info);
-
-        logical->bindBufferMemory(buffer, buffer_memory, 0);
+        logical->bindBufferMemory(buffer, alloc.handle, alloc.offset);
     }
 
     vk::Image device::create_image(const vk::ImageCreateInfo& im_ci,
-                                   vk::MemoryPropertyFlags    props,
-                                   vk::DeviceMemory& device_memory) const {
+                                   vk::MemoryPropertyFlags    props) {
 
         auto image { logical->createImage(im_ci) };
 
         vk::MemoryRequirements mem_req { logical->getImageMemoryRequirements(
           image) };
 
-        auto flags { vk::MemoryPropertyFlags(mem_req.memoryTypeBits) };
+        auto res = allocator.allocate(mem_req, props);
 
-        vk::MemoryAllocateInfo alloc_info {
-            .allocationSize  = mem_req.size,
-            .memoryTypeIndex = find_mem_type(flags, props),
-        };
+        auto& alloc = allocator.get(res);
 
-        device_memory = logical->allocateMemory(alloc_info);
-
-        logical->bindImageMemory(image, device_memory, 0);
+        logical->bindImageMemory(image, alloc.handle, alloc.offset);
 
         return image;
     }

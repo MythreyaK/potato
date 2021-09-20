@@ -1,5 +1,6 @@
 #include "device.hpp"
 
+#include "memory/memory.hpp"
 #include "surface/surface.hpp"
 
 #include <core/utils.hpp>
@@ -16,6 +17,7 @@ namespace potato::graphics {
 
     const std::vector<std::string> required_device_extensions {
         VK_KHR_SWAPCHAIN_EXTENSION_NAME,
+        VK_EXT_MEMORY_BUDGET_EXTENSION_NAME,
     };
 
     vk::UniqueDevice   create_device(device_create_info);
@@ -33,7 +35,10 @@ namespace potato::graphics {
       : create_info { pick_device(instance, surface) }
       , physical { create_info.device }
       , logical { create_device(create_info) }
-      , queues { get_queues(*logical, create_info) } {}
+      , queues { get_queues(*logical, create_info) }
+      , allocator { physical, *logical } {
+        lol::dump_meminfo(physical);
+    }
 
     device::~device() {
         logical->waitIdle();
