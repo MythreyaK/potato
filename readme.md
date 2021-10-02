@@ -5,5 +5,5 @@ A project to teach myself the graphics pipeline, rendering and Vulkan. It's call
 <br/>
 
 <div align="center">
-    <img alt="Hello World Triangle" src="https://user-images.githubusercontent.com/26112391/135707888-11ea3431-1bf2-4e5c-a249-7e980230f381.png" width="500"></img>
+    <img alt="Hello World Triangle" src="https://user-images.githubusercontent.com/26112391/135707888-11ea3431-1bf2-4e5c-a249-7e980230f381.png" width="700"></img>
 </div>
