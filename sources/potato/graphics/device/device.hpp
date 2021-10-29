@@ -21,9 +21,6 @@ namespace potato::graphics {
         const vk::UniqueDevice   logical {};
         const vkqueues           queues {};
 
-      private:
-        vma::gpualloc allocator;
-
       public:
         ~device();
         device(const vk::Instance&, const surface&);
@@ -36,18 +33,21 @@ namespace potato::graphics {
         device(device&&) = default;
         device& operator=(device&&) = default;
 
-        vk::Image create_image(const vk::ImageCreateInfo&,
-                               vk::MemoryPropertyFlags);
+        // vk::Image create_image(vk::ImageCreateInfo,
+        //                        vk::MemoryPropertyFlags,
+        //                        vma::memory&,
+        //                        vk::Extent3D max_extent);
 
         vk::Format
         find_supported_format(const std::vector<vk::Format>& candidates,
                               vk::ImageTiling                tiling,
                               vk::FormatFeatureFlags         features) const;
 
-        void create_buffer(vk::DeviceSize,
-                           vk::BufferUsageFlags,
-                           vk::MemoryPropertyFlags,
-                           vk::Buffer&);
+        // void create_buffer(vk::DeviceSize,
+        //                    vk::BufferUsageFlags,
+        //                    vk::MemoryPropertyFlags,
+        //                    vk::Buffer&,
+        //                    vma::memory&);
     };
 
 }  // namespace potato::graphics

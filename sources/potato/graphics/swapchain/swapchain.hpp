@@ -2,6 +2,7 @@
 #define POTATO_RENDER_SWAPCHAIN_HPP
 
 #include "device/create_info.hpp"
+#include "memory/memory.hpp"
 #include "pipeline.hpp"
 
 #include <unordered_map>
@@ -25,7 +26,7 @@ namespace potato::graphics {
         using vkfences       = std::vector<vk::Fence>;
 
       private:
-        std::shared_ptr<const device>  m_device {};
+        std::shared_ptr<device>        m_device {};
         device_create_info             m_device_info {};
         std::shared_ptr<const surface> m_surface {};
         vk::SwapchainKHR               m_swapchain {};
@@ -76,7 +77,7 @@ namespace potato::graphics {
                               const vk::SwapchainKHR&) const;
 
       public:
-        swapchain(std::shared_ptr<const device>,
+        swapchain(std::shared_ptr<device>,
                   device_create_info,
                   std::shared_ptr<const surface>);
         ~swapchain();

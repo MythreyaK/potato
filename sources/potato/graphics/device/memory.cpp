@@ -2,47 +2,52 @@
 
 namespace potato::graphics {
 
-    void device::create_buffer(vk::DeviceSize          size,
-                               vk::BufferUsageFlags    usage,
-                               vk::MemoryPropertyFlags properties,
-                               vk::Buffer&             buffer) {
+    // void device::create_buffer(vk::DeviceSize          size,
+    //                            vk::BufferUsageFlags    usage,
+    //                            vk::MemoryPropertyFlags properties,
+    //                            vk::Buffer&             buffer,
+    //                            vma::memory&            mem) {
 
-        // clang-format off
-        vk::BufferCreateInfo buffer_info {
-            .size  = size,
-            .usage = usage,
-            .sharingMode = vk::SharingMode::eExclusive
-        };
-        // clang-format on
+    //     // clang-format off
+    //     vk::BufferCreateInfo buffer_info {
+    //         .size  = size,
+    //         .usage = usage,
+    //         .sharingMode = vk::SharingMode::eExclusive
+    //     };
+    //     // clang-format on
 
-        buffer = logical->createBuffer(buffer_info);
+    //     buffer = logical->createBuffer(buffer_info);
 
-        vk::MemoryRequirements mem_req { logical->getBufferMemoryRequirements(
-          buffer) };
+    //     vk::MemoryRequirements mem_req { logical->getBufferMemoryRequirements(
+    //       buffer) };
 
-        auto res = allocator.allocate(mem_req, properties);
+    //     mem = allocator.allocate(mem_req, properties);
 
-        auto& alloc = allocator.get(res);
+    //     auto& alloc = allocator.get(mem);
 
-        logical->bindBufferMemory(buffer, alloc.handle, alloc.offset);
-    }
+    //     logical->bindBufferMemory(buffer, alloc.handle, alloc.offset);
+    // }
 
-    vk::Image device::create_image(const vk::ImageCreateInfo& im_ci,
-                                   vk::MemoryPropertyFlags    props) {
+    // vk::Image device::create_image(vk::ImageCreateInfo     im_ci,
+    //                                vk::MemoryPropertyFlags props,
+    //                                vma::memory&            mem,
+    //                                vk::Extent3D            max_extent) {
 
-        auto image { logical->createImage(im_ci) };
+    //     // always create images with max extents, to prevent needless reallocations
+    //     im_ci.extent = max_extent;
+    //     auto image { logical->createImage(im_ci) };
 
-        vk::MemoryRequirements mem_req { logical->getImageMemoryRequirements(
-          image) };
+    //     vk::MemoryRequirements mem_req { logical->getImageMemoryRequirements(
+    //       image) };
 
-        auto res = allocator.allocate(mem_req, props);
+    //     mem = allocator.allocate(mem_req, props);
 
-        auto& alloc = allocator.get(res);
+    //     auto& alloc = allocator.get(mem);
 
-        logical->bindImageMemory(image, alloc.handle, alloc.offset);
+    //     logical->bindImageMemory(image, alloc.handle, alloc.offset);
 
-        return image;
-    }
+    //     return image;
+    // }
 
     vk::Format
     device::find_supported_format(const std::vector<vk::Format>& candidates,

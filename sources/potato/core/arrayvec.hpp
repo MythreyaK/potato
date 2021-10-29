@@ -204,6 +204,10 @@ namespace potato::core {
             return curr_size;
         }
 
+        [[nodiscard]] bool has_space() const noexcept {
+            return curr_size < max_size;
+        }
+
         [[nodiscard]] constexpr size_t capacity() const noexcept {
             return max_size;
         }
@@ -314,8 +318,7 @@ namespace potato::core {
             return elems[curr_size--];
         }
 
-        bool emplace_back(T&& o) noexcept {
-            if ( curr_size == max_size ) return false;
+        void emplace_back(T&& o) noexcept {
             elems[curr_size++] = std::move(o);
         }
     };

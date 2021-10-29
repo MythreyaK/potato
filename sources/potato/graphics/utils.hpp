@@ -38,11 +38,10 @@ namespace potato::graphics {
 
         debug::debug_obj_names.emplace_back(std::move(obj_name));
 
-        dev.setDebugUtilsObjectNameEXT({
-          .objectType   = T::objectType,
-          .objectHandle = vk::to_handle(obj),
-          .pObjectName  = debug::debug_obj_names.back().data()
-        });
+        dev.setDebugUtilsObjectNameEXT(
+          { .objectType   = T::objectType,
+            .objectHandle = vk::to_handle(obj),
+            .pObjectName  = debug::debug_obj_names.back().data() });
     }
 }  // namespace potato::graphics
 

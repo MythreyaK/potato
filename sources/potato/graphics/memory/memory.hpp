@@ -1,64 +1,73 @@
-#ifndef POTATO_GRAPHICS_MEMORY_HPP
-#define POTATO_GRAPHICS_MEMORY_HPP
+#ifndef POTATO_GRAPHICS_MEMORY2_HPP
+#define POTATO_GRAPHICS_MEMORY2_HPP
 
+#include <concepts>
 #include <cstddef>
 
 namespace potato::graphics::vma {
 
+    void     init(vk::PhysicalDevice, vk::Device);
+    uint32_t find_memtype_inx(uint32_t                mem_req_bits,
+                              vk::MemoryPropertyFlags req_props);
+
     constexpr size_t MB { 1024 * 1024 };
     constexpr size_t GB { MB * 1024 };
 
-    static constexpr auto POOL_SIZE { 128 * MB };
+    struct allocation;
 
-    class gpualloc;
+    // clang-format off
+    template<typename some_long_t>
+    concept gpuallocator = requires(some_long_t                    alloc,
+                                    const vk::MemoryRequirements&  a,
+                                    const vk::MemoryPropertyFlags& b) {
+        some_long_t::suballoc_info; // for mapping suballocs to pools
+        // alloc.free(some_long_t::suballoc_metadata_t id);
+        // { alloc.allocate(a, b) } -> std::same_as<some_long_t::suballoc_info>;
+        // { alloc.get(id) } -> std::same_as<allocation&>;
+    };
+    // clang-format on
 
-    struct memory {
-        uint32_t mem_type;
-        uint32_t pool_inx;
-        uint32_t alloc_inx;
+    template<gpuallocator T, int F>
+    class memory {
+      private:
+        using gpuallocator_t  = T;
+        using suballoc_info_t = gpuallocator_t::suballoc_info;
+
+        gpuallocator_t          allocator {};
+        suballoc_info_t         metadata {};
+        // vk::MemoryPropertyFlags usage_flags { F };
+
+      public:
+        memory() = default;
+        memory(const vk::MemoryRequirements& r, const vk::MemoryPropertyFlags& f)
+          : allocator { gpuallocator_t {} }
+          , metadata { allocator.allocate(r, f) } {}
+
+        allocation& get() {
+            return allocator.get(metadata);
+        }
+
+        // void map();
+        // void flush_to_gpu();
+        // void refresh_from_gpu();
     };
 
-    struct suballoc {
+    struct allocation {
         vk::DeviceMemory handle {};
         vk::DeviceSize   size {};
         vk::DeviceSize   offset {};
         bool             free { false };
-        void*            cpu_ptr { nullptr };
     };
 
-    struct pool {
-        vk::DeviceSize        curr_offset { 0 };
-        uint32_t              memory_inx {};
-        vk::DeviceMemory      handle {};
-        std::vector<suballoc> sub_allocs {};
+    void dump_meminfo();
 
-        bool operator==(const pool&) const = default;
-    };
+}  // namespace potato::graphics::vma
 
-    class gpualloc {
-      private:
-        vk::PhysicalDevice vk_phy_device {};
-        vk::Device         vk_device {};
-        // each memory type index has many pools
-        std::vector<std::vector<pool>> pools {};
+namespace potato::graphics::vma::internal {
+    extern vk::PhysicalDevice g_phy_device;
+    extern vk::Device         g_device;
+}  // namespace potato::graphics::vma::internal
 
-        void allocate_pool(uint32_t mem_inx, std::vector<pool>&);
-
-      public:
-        gpualloc(vk::PhysicalDevice, vk::Device);
-        ~gpualloc();
-
-        memory allocate(const vk::MemoryRequirements&,
-                        const vk::MemoryPropertyFlags&);
-        void   deallocate(const memory&);
-
-        suballoc& get(const memory&);
-    };
-
-}  // namespace potato::graphics
-
-namespace lol {
-    void dump_meminfo(const vk::PhysicalDevice& phydev);
-}
+namespace vma = potato::graphics::vma;
 
 #endif

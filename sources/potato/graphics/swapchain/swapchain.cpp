@@ -16,7 +16,7 @@ namespace potato::graphics {
 
     using attachments = std::vector<vk::ImageView>;
 
-    swapchain::swapchain(std::shared_ptr<const device>  device,
+    swapchain::swapchain(std::shared_ptr<device>        device,
                          device_create_info             inf,
                          std::shared_ptr<const surface> surf)
       : m_device { device }
@@ -154,10 +154,11 @@ namespace potato::graphics {
             };
 
             // clang-format off
-            m_depthimages.emplace_back(
-                m_device->create_image(depthimage_ci,
-                    vk::MemoryPropertyFlagBits::eDeviceLocal,
-                    m_depthimagesmemory[i]));
+            // m_depthimages.emplace_back(
+            //     m_device->create_image(depthimage_ci,
+            //         vk::MemoryPropertyFlagBits::eDeviceLocal,
+            //         m_depthimagesmemory[i],
+            //         { .width = 1920, .height = 1080, .depth = 1 }));
 
             vk::ImageViewCreateInfo depthimageview_ci {
                 .image    = m_depthimages[i],
@@ -222,7 +223,8 @@ namespace potato::graphics {
             m_device->logical->destroyImageView(m_swapimageviews[i]);
             m_device->logical->destroyImageView(m_depthimageviews[i]);
             m_device->logical->destroyImage(m_depthimages[i]);
-            m_device->logical->freeMemory(m_depthimagesmemory[i]);
+            // m_device->logical->freeMemory(m_depthimagesmemory[i]);
+
         }
 
         m_swapimageviews.clear();

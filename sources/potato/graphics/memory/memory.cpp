@@ -1,18 +1,23 @@
 #include "memory.hpp"
 
+#include "internal.hpp"
 #include "utils.hpp"
 
 #include <format>
 #include <iostream>
 #include <vector>
 
-namespace lol {
-    namespace pg = potato::graphics;
+namespace potato::graphics::vma::internal {
+
+    vk::PhysicalDevice g_phy_device {};
+    vk::Device         g_device {};
+
+}  // namespace potato::graphics::vma::internal
+
+namespace {
 
     constexpr float MBf { 1024 * 1024 };
     constexpr float GBf { MBf * 1024 };
-
-    // TODO: Lock when allocating
 
     std::string size_format(vk::DeviceSize sz) {
         std::string a {};
@@ -29,8 +34,25 @@ namespace lol {
         return a;
     }
 
-    void dump_meminfo(const vk::PhysicalDevice& phydev) {
-        auto memprops { phydev.getMemoryProperties2KHR().memoryProperties };
+}  // namespace
+
+namespace potato::graphics::vma {
+
+    void init(vk::PhysicalDevice p, vk::Device d) {
+        internal::g_phy_device = p;
+        internal::g_device     = d;
+
+        for ( auto& i : pool::g_pools ) {
+            i.reserve(256);
+        }
+    }
+
+    void dump_meminfo() {
+        using namespace potato::graphics::vma::internal;
+
+        auto memprops {
+            g_phy_device.getMemoryProperties2KHR().memoryProperties
+        };
 
         for ( uint32_t heap_i = 0; heap_i < memprops.memoryHeapCount; ++heap_i )
         {
@@ -60,14 +82,49 @@ namespace lol {
         }
     }
 
-}  // namespace lol
+    uint32_t find_memtype_inx(uint32_t                mem_req_bits,
+                              vk::MemoryPropertyFlags req_props) {
+        /*/
+        * Quoting from the spec, at
+        * https://khronos.org/registry/vulkan/specs/1.2/html/vkspec.html#memory-device-properties
+        * https://khronos.org/registry/vulkan/specs/1.2/html/vkspec.html#resources-association
+        *
+        * Under 'VkMemoryRequirements'
+        *
+        * "memoryTypeBits is a bitmask and contains one bit set for every
+        * supported memory type for the resource. Bit i is set if and only if the
+        * memory type i in the VkPhysicalDeviceMemoryProperties structure for the
+        * physical device is supported for the resource."
+        *
+        * So we just check if bit i is set in bit_flags, starting from LSB
+        /*/
 
-namespace potato::graphics::vma {
+        using namespace potato::graphics::vma::internal;
 
-    uint32_t allocate_in_pool(pool& this_pool, const vk::MemoryRequirements&);
-    uint32_t find_memtype_inx(vk::PhysicalDevice      device,
-                              uint32_t                mem_req_bits,
-                              vk::MemoryPropertyFlags req_props);
+        auto mem_props { g_phy_device.getMemoryProperties2().memoryProperties };
+
+        for ( uint32_t i = 0; i < mem_props.memoryTypeCount - 1; ++i ) {
+            // clang-format off
+            // check if mem properties (such as dev local etc) are satisfied
+            bool mem_props_ok {
+                (req_props & mem_props.memoryTypes[i].propertyFlags)
+                == req_props
+            };
+            // clang-format on
+
+            // check if bit i is set (memory type i is supported)
+            if ( (mem_req_bits & (1 << i)) && mem_props_ok ) {
+                return i;
+            }
+        }
+
+        // I give up
+        throw std::runtime_error("Could not find suitable memory type");
+    }
+
+}  // namespace potato::graphics::vma
+
+/*
 
     gpualloc::gpualloc(vk::PhysicalDevice pdev, vk::Device dev)
       : vk_phy_device { pdev }
@@ -131,8 +188,8 @@ namespace potato::graphics::vma {
         // clang-format off
         return {
             .mem_type = mem_inx,
-            .pool_inx = static_cast<uint32_t>(mem_inx_pools.size() - 1), // last pool
-            .alloc_inx = new_inx
+            .pool_inx = static_cast<uint32_t>(mem_inx_pools.size() - 1), // last
+   pool .alloc_inx = new_inx
         };
         // clang-format on
     }
@@ -198,43 +255,5 @@ namespace potato::graphics::vma {
         return pools[a.mem_type][a.pool_inx].sub_allocs[a.alloc_inx];
     }
 
-    uint32_t find_memtype_inx(vk::PhysicalDevice      device,
-                              uint32_t                mem_req_bits,
-                              vk::MemoryPropertyFlags req_props) {
-        /*/
-        * Quoting from the spec, at
-        * https://khronos.org/registry/vulkan/specs/1.2/html/vkspec.html#memory-device-properties
-        * https://khronos.org/registry/vulkan/specs/1.2/html/vkspec.html#resources-association
-        *
-        * Under 'VkMemoryRequirements'
-        *
-        * "memoryTypeBits is a bitmask and contains one bit set for every
-        * supported memory type for the resource. Bit i is set if and only if the
-        * memory type i in the VkPhysicalDeviceMemoryProperties structure for the
-        * physical device is supported for the resource."
-        *
-        * So we just check if bit i is set in bit_flags, starting from LSB
-        /*/
 
-        auto mem_props { device.getMemoryProperties2().memoryProperties };
-
-        for ( uint32_t i = 0; i < mem_props.memoryTypeCount - 1; ++i ) {
-            // clang-format off
-            // check if mem properties (such as dev local etc) are satisfied
-            bool mem_props_ok {
-                (req_props & mem_props.memoryTypes[i].propertyFlags)
-                == req_props
-            };
-            // clang-format on
-
-            // check if bit i is set (memory type i is supported)
-            if ( (mem_req_bits & (1 << i)) && mem_props_ok ) {
-                return i;
-            }
-        }
-
-        // I give up
-        throw std::runtime_error("Could not find suitable memory type");
-    }
-
-}  // namespace potato::graphics
+*/

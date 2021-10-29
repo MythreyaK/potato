@@ -46,11 +46,11 @@ namespace testapp {
             | vk::MemoryPropertyFlagBits::eHostCoherent
         };
 
-        device->create_buffer(buffer_size,
-                              vk::BufferUsageFlagBits::eVertexBuffer,
-                              host_visible_coherent,
-                              vertex_bufer,
-                              vertex_device_mem);
+        // device->create_buffer(buffer_size,
+        //                       vk::BufferUsageFlagBits::eVertexBuffer,
+        //                       host_visible_coherent,
+        //                       vertex_bufer,
+        //                       vertex_device_mem);
         void* data;
         auto  result = device->logical->mapMemory(vertex_device_mem,
                                                  0,
