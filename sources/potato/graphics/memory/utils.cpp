@@ -28,8 +28,8 @@ namespace {
             phy_device.getMemoryProperties2().memoryProperties
         };
         // clang-format off
-        bool bit_i_present { f & mpf(1 << inx) };   // that mem type is supported
-        bool has_req_flag {                         // that mem flag is supported
+        bool bit_i_present { _bits & mpf(1 << inx) };   // that mem type is supported
+        bool has_req_flag {                             // that mem flag is supported
             (mem_props.memoryTypes[inx].propertyFlags & f) == f
         };
         // clang-format on
