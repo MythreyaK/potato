@@ -110,9 +110,11 @@ namespace potato::graphics {
 
     // creates all images, views
     void swapchain::create_swapchain_images() {
+        auto& logical_device { *(m_device->logical) };
+
         const auto extent_2d { m_surface->framebuffer_size(m_device->physical) };
 
-        m_swapimages = m_device->logical->getSwapchainImagesKHR(m_swapchain);
+        m_swapimages = logical_device.getSwapchainImagesKHR(m_swapchain);
         MAX_FRAMES_IN_FLIGHT = m_swapimages.size() - 1;
 
         // swapimageviews.reserve(swapimages.size());
@@ -122,7 +124,7 @@ namespace potato::graphics {
         // Set up all depth, swap images and their views
         for ( int i = 0; i < swapimage_count(); ++i ) {
 
-            m_swapimageviews.emplace_back(m_device->logical->createImageView({
+            m_swapimageviews.emplace_back(logical_device.createImageView({
               .image      = m_swapimages[i],
               .viewType   = vk::ImageViewType::e2D,
               .format     = m_device_info.surface_format,
@@ -153,12 +155,23 @@ namespace potato::graphics {
                 .initialLayout = vk::ImageLayout::eUndefined,
             };
 
-            // clang-format off
+            // TODO: MEMORY
+            // create the image
             m_depthimages.emplace_back(
-                m_device->create_image(depthimage_ci,
-                    vk::MemoryPropertyFlagBits::eDeviceLocal,
-                    m_depthimagesmemory[i]));
+              logical_device.createImage(depthimage_ci));
 
+            // allocate memory for it
+            m_depthimagesmemory.emplace_back(vma::memory {
+              logical_device.getImageMemoryRequirements(m_depthimages.back()),
+              vk::MemoryPropertyFlagBits::eDeviceLocal });
+
+            m_depthimagesmemory.back().bind(m_depthimages.back());
+            // m_depthimages.emplace_back(
+            //     m_device->create_image(depthimage_ci,
+            //         vk::MemoryPropertyFlagBits::eDeviceLocal,
+            //         m_depthimagesmemory[i]));
+
+            // clang-format off
             vk::ImageViewCreateInfo depthimageview_ci {
                 .image    = m_depthimages[i],
                 .viewType = vk::ImageViewType::e2D,
@@ -173,7 +186,7 @@ namespace potato::graphics {
             };
 
             m_depthimageviews.emplace_back(
-                m_device->logical->createImageView(depthimageview_ci));
+                logical_device.createImageView(depthimageview_ci));
             // clang-format on
         }
     }
@@ -222,7 +235,7 @@ namespace potato::graphics {
             m_device->logical->destroyImageView(m_swapimageviews[i]);
             m_device->logical->destroyImageView(m_depthimageviews[i]);
             m_device->logical->destroyImage(m_depthimages[i]);
-            m_device->logical->freeMemory(m_depthimagesmemory[i]);
+            // m_device->logical->freeMemory(m_depthimagesmemory[i]);
         }
 
         m_swapimageviews.clear();

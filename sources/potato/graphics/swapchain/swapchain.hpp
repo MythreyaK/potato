@@ -2,6 +2,7 @@
 #define POTATO_RENDER_SWAPCHAIN_HPP
 
 #include "device/create_info.hpp"
+#include "memory/vma.hpp"
 #include "pipeline.hpp"
 
 #include <unordered_map>
@@ -19,7 +20,7 @@ namespace potato::graphics {
         using vkimages       = std::vector<vk::Image>;
         using vkimageviews   = std::vector<vk::ImageView>;
         using vkframebuffers = std::vector<vk::Framebuffer>;
-        using vkdepthmemory  = std::vector<vk::DeviceMemory>;
+        using vkdepthmemory  = std::vector<vma::memory<>>;
         using vkcmdbuffers   = std::vector<vk::CommandBuffer>;
         using vksemaphores   = std::vector<vk::Semaphore>;
         using vkfences       = std::vector<vk::Fence>;

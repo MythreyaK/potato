@@ -1,6 +1,8 @@
 #ifndef POTATO_VERTEX_HPP
 #define POTATO_VERTEX_HPP
 
+#include "graphics/memory/vma.hpp"
+
 #include <vector>
 
 namespace potato::graphics {
@@ -48,7 +50,7 @@ namespace testapp {
         uint32_t          vertex_count {};
         shared_ptr_device potato_device;
         vk::Buffer        vertex_bufer {};
-        vk::DeviceMemory  vertex_device_mem {};
+        vma::memory<>     vertex_device_mem {};
 
       public:
         model_transform transform {};

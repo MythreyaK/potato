@@ -39,7 +39,7 @@ namespace vma {
         }
         else {
             // allocate twice the size
-            internal::pool(pools[mem_inx].back().pool.size * 2, mem_inx);
+            internal::pool(pools[mem_inx].back().pool.capacity * 2, mem_inx);
         }
 
         // recurse
@@ -64,13 +64,13 @@ namespace vma {
 
         pool_md.suballocs.emplace_back(suballoc {
           .memory = pool_md.pool.memory,
-          .size   = mem_req.size,
           .offset = this_offset,
+          .size   = mem_req.size,
         });
 
         // Increment offset of the pool
         pool_md.offset += mem_req.size;
-        pool_md.pool.size -= mem_req.size;
+        pool_md.pool.capacity -= mem_req.size;
 
         return &pool_md.suballocs.back();
     }

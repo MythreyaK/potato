@@ -46,30 +46,48 @@ namespace testapp {
             | vk::MemoryPropertyFlagBits::eHostCoherent
         };
 
-        device->create_buffer(buffer_size,
-                              vk::BufferUsageFlagBits::eVertexBuffer,
-                              host_visible_coherent,
-                              vertex_bufer,
-                              vertex_device_mem);
-        void* data;
-        auto  result = device->logical->mapMemory(vertex_device_mem,
-                                                 0,
-                                                 buffer_size,
-                                                 {},
-                                                 &data);
-        if ( result != vk::Result::eSuccess ) {
-            throw std::runtime_error(
-              "Failed to map vertex buffer memory to GPU");
-        }
+        // TOOD: MEMORY
+        // device->create_buffer(buffer_size,
+        //                       vk::BufferUsageFlagBits::eVertexBuffer,
+        //                       host_visible_coherent,
+        //                       vertex_bufer,
+        //                       vertex_device_mem);
+        // void* data;
+        // vertex_devi
+        // auto  result = device->logical->mapMemory(vertex_device_mem,
+        //                                          0,
+        //                                          buffer_size,
+        //                                          {},
+        //                                          &data);
+        // if ( result != vk::Result::eSuccess ) {
+        //     throw std::runtime_error(
+        //       "Failed to map vertex buffer memory to GPU");
+        // }
 
-        std::memcpy(data, mesh.data(), buffer_size);
-        device->logical->unmapMemory(vertex_device_mem);
+        // std::memcpy(data, mesh.data(), buffer_size);
+        // device->logical->unmapMemory(vertex_device_mem);
+        vertex_bufer = std::move(device->logical->createBuffer({
+            .size = buffer_size,
+            .usage = vk::BufferUsageFlagBits::eVertexBuffer,
+            .sharingMode = vk::SharingMode::eExclusive,
+        }));
+
+        auto mem_req { device->logical->getBufferMemoryRequirements(
+          vertex_bufer) };
+
+        vertex_device_mem =
+          std::move(vma::memory<>(mem_req, host_visible_coherent));
+
+        vertex_device_mem.bind(vertex_bufer)
+          .map()
+          .write_to_gpu(mesh.data(), buffer_size)
+          .unmap();
     }
 
     model::~model() {
         potato_device->logical->waitIdle();
-        potato_device->logical->destroyBuffer(vertex_bufer);
-        potato_device->logical->freeMemory(vertex_device_mem);
+        // potato_device->logical->destroyBuffer(vertex_bufer);
+        // potato_device->logical->freeMemory(vertex_device_mem);
     }
 
     void model::draw(const vk::CommandBuffer& cmd_buffer) const {

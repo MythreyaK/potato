@@ -9,14 +9,10 @@
 
 namespace vma {
     class linear_allocator {
+      public:
+        struct suballoc;
 
       private:
-        struct suballoc {
-            vk::DeviceMemory memory {};
-            vk::DeviceSize   size {};
-            vk::DeviceSize   offset {};
-        };
-
         struct pool_metadata {
             // TOOD: List is not efficient for inserts / deletes
             internal::pool        pool {};
@@ -37,8 +33,15 @@ namespace vma {
                   int                            depth = 0);
 
       public:
+        struct suballoc {
+            vk::DeviceMemory memory {};
+            vk::DeviceSize   offset {};
+            vk::DeviceSize   size {};
+        };
+
+        using suballoc_t = suballoc;
+
         linear_allocator() = default;
-        using suballoc_t   = suballoc;
 
         [[nodiscard]] suballoc_t* allocate(const vk::MemoryRequirements&,
                                            const vk::MemoryPropertyFlags&);

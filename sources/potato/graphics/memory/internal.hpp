@@ -24,7 +24,7 @@ namespace vma::internal {
               .allocationSize  = a,
               .memoryTypeIndex = mem_inx,
             });
-            capacity = size;
+            capacity = a;
         }
     };
 }  // namespace vma::internal

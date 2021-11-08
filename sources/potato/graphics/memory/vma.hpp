@@ -1,6 +1,7 @@
 #ifndef POTATO_GRAPHICS_MEMORY_HPP
 #define POTATO_GRAPHICS_MEMORY_HPP
 
+#include "allocators/linear.hpp"
 #include "memory.hpp"
 
 namespace vma {

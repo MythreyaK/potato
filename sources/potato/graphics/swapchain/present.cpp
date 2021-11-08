@@ -11,7 +11,7 @@ namespace potato::graphics {
         static constexpr auto tmax { std::numeric_limits<uint64_t>::max() };
 
         // wait for the fence for the current frame before trying to acquire it
-        m_device->logical->waitForFences(m_in_flight_fence[m_current_frame],
+        std::ignore = m_device->logical->waitForFences(m_in_flight_fence[m_current_frame],
                                          true,
                                          tmax);
 
@@ -27,7 +27,7 @@ namespace potato::graphics {
             // Got an index, check if it's still in "in-flight" by checking
             // for its fence
             if ( m_in_flight_image[m_framebuffer_inx] != vk::Fence {} ) {
-                m_device->logical->waitForFences(
+                std::ignore = m_device->logical->waitForFences(
                   m_in_flight_image[m_framebuffer_inx],
                   true,
                   tmax);
@@ -52,7 +52,7 @@ namespace potato::graphics {
 
         auto& cmd_buffer { current_cmd_buffer() };
 
-        cmd_buffer.begin(&cmd_begin_info);
+        std::ignore = cmd_buffer.begin(&cmd_begin_info);
 
         return cmd_buffer;
     }
@@ -129,7 +129,7 @@ namespace potato::graphics {
 
         queue.submit(submit_info, m_in_flight_fence[m_current_frame]);
 
-        queue.presentKHR(present_info);
+        std::ignore = queue.presentKHR(present_info);
 
         m_frame_in_progress = false;
         m_current_frame     = (m_current_frame + 1) % MAX_FRAMES_IN_FLIGHT;
