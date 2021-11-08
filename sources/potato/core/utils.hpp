@@ -12,8 +12,8 @@ namespace potato::utils {
 
     template<typename T>
     requires std::integral<T>
-    constexpr T bit(T a) {
-        return 1 << a;
+    constexpr size_t pow2(T a) {
+        return 1ull << a;
     }
 
     template<typename T>

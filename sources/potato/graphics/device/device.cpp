@@ -1,5 +1,6 @@
 #include "device.hpp"
 
+#include "memory/vma.hpp"
 #include "surface/surface.hpp"
 
 #include <core/utils.hpp>
