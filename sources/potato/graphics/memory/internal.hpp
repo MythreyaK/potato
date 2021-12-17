@@ -25,6 +25,7 @@ namespace vma::internal {
               .memoryTypeIndex = mem_inx,
             });
             capacity = a;
+            size = a;
         }
     };
 }  // namespace vma::internal

@@ -15,9 +15,8 @@ namespace vma {
       private:
         struct pool_metadata {
             // TOOD: List is not efficient for inserts / deletes
-            internal::pool        pool {};
-            vk::DeviceSize        offset { 0 };
-            std::vector<suballoc> suballocs {};
+            internal::pool      pool {};
+            std::list<suballoc> suballocs {};
         };
 
         using pools_t = internal::pool_t<std::vector, pool_metadata>;
@@ -34,9 +33,13 @@ namespace vma {
 
       public:
         struct suballoc {
-            vk::DeviceMemory memory {};
-            vk::DeviceSize   offset {};
-            vk::DeviceSize   size {};
+            pool_metadata* pool {};
+            vk::DeviceSize offset {};
+            vk::DeviceSize size {};
+            bool           free { false };
+
+            bool             operator==(const suballoc& other) const;
+            vk::DeviceMemory memory() const;
         };
 
         using suballoc_t = suballoc;
@@ -45,7 +48,7 @@ namespace vma {
 
         [[nodiscard]] suballoc_t* allocate(const vk::MemoryRequirements&,
                                            const vk::MemoryPropertyFlags&);
-        void                      free();
+        void                      free(suballoc_t*);
     };
 }  // namespace vma
 

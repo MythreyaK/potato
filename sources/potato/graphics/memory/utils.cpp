@@ -55,4 +55,12 @@ namespace vma {
     size_t align(size_t s, size_t a) {
         return s % a == 0 ? s : s + (a - s % a);
     }
+
+    bool fits(size_t start_offset,
+              size_t request_size,
+              size_t free_size,
+              size_t alignment) {
+        auto align_offset = align(start_offset, alignment);
+        return (align_offset - start_offset) + request_size <= free_size;
+    }
 }  // namespace vma

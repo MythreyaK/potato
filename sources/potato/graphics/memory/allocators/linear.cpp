@@ -39,7 +39,8 @@ namespace vma {
         }
         else {
             // allocate twice the size
-            internal::pool(pools[mem_inx].back().pool.capacity * 2, mem_inx);
+            pools[mem_inx].emplace_back(
+              internal::pool(pools[mem_inx].back().pool.capacity * 2, mem_inx));
         }
 
         // recurse
@@ -58,21 +59,94 @@ namespace vma {
       const vk::MemoryPropertyFlags& mem_flags) {
 
         // TODO: Try to divide up freed allocations
+        linear_allocator::suballoc_t* ret = nullptr;
 
-        // Round up the offset to the alignment
-        auto this_offset = align(pool_md.offset, mem_req.alignment);
+        // If the pool is empty, add a new suballoc
+        if ( pool_md.suballocs.size() == 0 ) {
+            pool_md.suballocs.emplace_back(suballoc {
+              .pool   = &pool_md,
+              .offset = 0,
+              .size   = pool_md.pool.size,
+              .free   = true,
+            });
+        }
 
-        pool_md.suballocs.emplace_back(suballoc {
-          .memory = pool_md.pool.memory,
-          .offset = this_offset,
-          .size   = mem_req.size,
-        });
+        for ( auto sub = pool_md.suballocs.begin();
+              sub != pool_md.suballocs.end();
+              ++sub )
+        {
+            if ( sub->free
+                 && fits(sub->offset,
+                         mem_req.size,
+                         sub->size,
+                         mem_req.alignment) )
+            {
+                // suballoc is free, split the boi, by inserting before this
+                // alloc, and then reducing the free part's size
 
-        // Increment offset of the pool
-        pool_md.offset += mem_req.size;
-        pool_md.pool.capacity -= mem_req.size;
+                // Round up the offset to the alignment
+                auto align_offset = align(sub->offset, mem_req.alignment);
 
-        return &pool_md.suballocs.back();
+                // clang-format off
+                ret = &(*pool_md.suballocs.insert(sub, suballoc {
+                    .pool   = &pool_md,
+                    .offset = align_offset,
+                    .size   = mem_req.size,
+                    .free   = false,
+                    }));
+                // clang-format on
+
+                // now shrink the free region also account for the wasted space
+                // due to round up
+                auto round_up = sub->offset - ret->offset;
+                sub->offset += round_up + ret->size;
+                sub->size -= round_up + ret->size;
+            }
+        }
+
+        // hehe
+        return &(*ret);
+    }
+
+    void linear_allocator::free(suballoc_t* sub) {
+        // to remove it, just mark it free. Check blocks around and merge if needed
+        auto& suballocs { sub->pool->suballocs };
+        auto  n = sub->offset;
+        auto  suballoc =
+          std::find_if(suballocs.begin(),
+                       suballocs.end(),
+                       [n](const auto& val) { return val.offset == n; });
+
+        suballoc->free = true;
+
+        auto merge_suballocs = [&suballocs](auto& suballoc,
+                                            auto& next_suballoc) -> void {
+            suballoc->size =
+              next_suballoc->offset - suballoc->offset + next_suballoc->size;
+            suballocs.erase(next_suballoc);
+        };
+
+        // if next alloc is free merge them
+        if (suballoc != suballocs.end()) {
+            if ( auto next_sub { std::next(suballoc, +1) }; next_sub->free ) {
+                merge_suballocs(suballoc, next_sub);
+            }
+        }
+
+        // if prev alloc is free merge them
+        if (suballoc != suballocs.begin()) {
+            if ( auto prev_sub { std::next(suballoc, -1) }; prev_sub->free ) {
+                merge_suballocs(prev_sub, suballoc);
+            }
+        }
+    }
+
+    bool linear_allocator::suballoc::operator==(const suballoc& other) const {
+        return other.offset == offset;
+    }
+
+    vk::DeviceMemory linear_allocator::suballoc::memory() const {
+        return pool->pool.memory;
     }
 
 }  // namespace vma

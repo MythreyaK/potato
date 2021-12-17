@@ -8,17 +8,25 @@ namespace vma {
 
     class linear_allocator;
 
+    template<typename sub_t>
+    concept allocator_suballoc = requires(sub_t a) {
+        { a.memory() } -> std::same_as<vk::DeviceMemory>;
+    };
+
     template<typename class_type>
     concept gpu_allocator = requires(class_type                     a,
                                      const vk::MemoryRequirements&  mr,
                                      const vk::MemoryPropertyFlags& mf) {
         // clang-format off
         class_type::suballoc_t;
+        // allocator_suballoc<class_type::suballoc_t>;
         // { a.allocate(mr, mf) } -> std::same_as<
         //         std::add_pointer<class_type::suballoc_t>
         //     >;
         // clang-format on
     };
+
+    static_assert(allocator_suballoc<linear_allocator::suballoc_t>);
 
     template<gpu_allocator T = linear_allocator>
     class memory {
@@ -52,20 +60,20 @@ namespace vma {
 
         memory& bind(const vk::Image& image) {
             internal::device.bindImageMemory(image,
-                                             m_suballoc->memory,
+                                             m_suballoc->memory(),
                                              m_suballoc->offset);
             return *this;
         }
 
         memory& bind(const vk::Buffer& buffer) {
             internal::device.bindBufferMemory(buffer,
-                                              m_suballoc->memory,
+                                              m_suballoc->memory(),
                                               m_suballoc->offset);
             return *this;
         }
 
         memory& map() {
-            std::ignore = internal::device.mapMemory(m_suballoc->memory,
+            std::ignore = internal::device.mapMemory(m_suballoc->memory(),
                                                      m_suballoc->offset,
                                                      m_suballoc->size,
                                                      {},
@@ -74,7 +82,7 @@ namespace vma {
         }
 
         memory& unmap() {
-            internal::device.unmapMemory(m_suballoc->memory);
+            internal::device.unmapMemory(m_suballoc->memory());
             cpu_map = nullptr;
             return *this;
         }
