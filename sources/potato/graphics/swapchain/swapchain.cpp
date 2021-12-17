@@ -119,7 +119,7 @@ namespace potato::graphics {
 
         // swapimageviews.reserve(swapimages.size());
         // If emplacing, do not resize
-        m_depthimagesmemory.resize(swapimage_count());
+        // m_depthimagesmemory.resize(swapimage_count());
 
         // Set up all depth, swap images and their views
         for ( int i = 0; i < swapimage_count(); ++i ) {
@@ -235,7 +235,7 @@ namespace potato::graphics {
             m_device->logical->destroyImageView(m_swapimageviews[i]);
             m_device->logical->destroyImageView(m_depthimageviews[i]);
             m_device->logical->destroyImage(m_depthimages[i]);
-            // m_device->logical->freeMemory(m_depthimagesmemory[i]);
+            m_depthimagesmemory[i].free();
         }
 
         m_swapimageviews.clear();

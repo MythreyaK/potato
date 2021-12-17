@@ -120,8 +120,8 @@ namespace potato::graphics {
         }
         else {
             std::cout << std::format("Picked [{}]\n",
-                                     suitable_devices[0].device_name);
-            return suitable_devices[0];
+                                     suitable_devices.back().device_name);
+            return suitable_devices.back();
         }
     }
 
