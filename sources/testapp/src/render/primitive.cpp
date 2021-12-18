@@ -86,8 +86,9 @@ namespace testapp {
 
     model::~model() {
         potato_device->logical->waitIdle();
-        // potato_device->logical->destroyBuffer(vertex_bufer);
+        potato_device->logical->destroyBuffer(vertex_bufer);
         // potato_device->logical->freeMemory(vertex_device_mem);
+        vertex_device_mem.free();
     }
 
     void model::draw(const vk::CommandBuffer& cmd_buffer) const {

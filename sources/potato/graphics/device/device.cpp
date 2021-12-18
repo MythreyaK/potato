@@ -40,6 +40,7 @@ namespace potato::graphics {
 
     device::~device() {
         logical->waitIdle();
+        vma::deinit();
     }
 
 #pragma region UTILS

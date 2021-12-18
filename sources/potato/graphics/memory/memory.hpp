@@ -26,8 +26,6 @@ namespace vma {
         // clang-format on
     };
 
-    static_assert(allocator_suballoc<linear_allocator::suballoc_t>);
-
     template<gpu_allocator T = linear_allocator>
     class memory {
       private:

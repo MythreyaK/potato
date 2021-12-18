@@ -44,6 +44,8 @@ namespace vma {
 
         using suballoc_t = suballoc;
 
+        static void _free_pool();
+
         linear_allocator() = default;
 
         [[nodiscard]] suballoc_t* allocate(const vk::MemoryRequirements&,

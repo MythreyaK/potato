@@ -127,14 +127,14 @@ namespace vma {
         };
 
         // if next alloc is free merge them
-        if (suballoc != suballocs.end()) {
+        if ( suballoc != suballocs.end() ) {
             if ( auto next_sub { std::next(suballoc, +1) }; next_sub->free ) {
                 merge_suballocs(suballoc, next_sub);
             }
         }
 
         // if prev alloc is free merge them
-        if (suballoc != suballocs.begin()) {
+        if ( suballoc != suballocs.begin() ) {
             if ( auto prev_sub { std::next(suballoc, -1) }; prev_sub->free ) {
                 merge_suballocs(prev_sub, suballoc);
             }
@@ -147,6 +147,15 @@ namespace vma {
 
     vk::DeviceMemory linear_allocator::suballoc::memory() const {
         return pool->pool.memory;
+    }
+
+    void linear_allocator::_free_pool() {
+        for ( auto& mem_inx_pools : pools ) {
+            for ( auto& pool : mem_inx_pools ) {
+                internal::device.free(pool.pool.memory);
+            }
+            mem_inx_pools.clear();
+        }
     }
 
 }  // namespace vma
