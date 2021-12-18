@@ -2,7 +2,9 @@
 
 #include "../utils.hpp"
 #include "core/units.hpp"
+#include "graphics/utils/debug_name.hpp"
 
+#include <format>
 #include <utility>
 
 namespace vma {
@@ -36,11 +38,24 @@ namespace vma {
             pools[mem_inx].reserve(1024);
             pools[mem_inx].emplace_back(
               pool_metadata { .pool = internal::pool(16_mb, mem_inx) });
+
+            // clang-format off
+            potato::graphics::set_debug_name(
+              pools[mem_inx].back().pool.memory,
+              internal::device,
+              std::format("Pool [mem_inx {} pool_inx {}]", mem_inx, pools[mem_inx].size() - 1));
+            // clang-format on
         }
         else {
             // allocate twice the size
             pools[mem_inx].emplace_back(
               internal::pool(pools[mem_inx].back().pool.capacity * 2, mem_inx));
+            // clang-format off
+            potato::graphics::set_debug_name(
+              pools[mem_inx].back().pool.memory,
+              internal::device,
+              std::format("Pool [mem_inx {} pool_inx {}]", mem_inx, pools[mem_inx].size() - 1));
+            // clang-format on
         }
 
         // recurse

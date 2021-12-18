@@ -2,6 +2,7 @@
 #define POTATO_GRAPHICS_MEMORY_ALLOCATOR_LINEAR_HPP
 
 #include "../internal.hpp"
+#include "graphics/utils/debug_name.hpp"
 #include "linear.hpp"
 
 #include <list>
