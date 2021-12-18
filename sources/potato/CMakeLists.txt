@@ -7,13 +7,14 @@ add_library(potato_lib STATIC ${POTATO_CPP} ${POTATO_HPP})
 
 target_include_directories(potato_lib
                         PUBLIC      "${CMAKE_CURRENT_BINARY_DIR}/version"
-                        PUBLIC      "${Vulkan_INCLUDE_DIR}"
                         PRIVATE     "${CMAKE_CURRENT_SOURCE_DIR}/graphics"
                         PRIVATE     "${CMAKE_CURRENT_SOURCE_DIR}/core"
                         PRIVATE     "${CMAKE_CURRENT_SOURCE_DIR}"
                         INTERFACE   "${CMAKE_CURRENT_SOURCE_DIR}"
 )
 
+target_link_libraries(potato_lib PRIVATE pch)
+
 configure_file("version.hpp.in" "version/version.hpp" @ONLY NEWLINE_STYLE LF)
 
-target_precompile_headers(potato_lib PUBLIC "graphics/vkinclude/vulkan.hpp")
+target_precompile_headers(potato_lib REUSE_FROM pch)

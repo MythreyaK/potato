@@ -1,5 +1,6 @@
 #include "device.hpp"
 
+#include "memory/vma.hpp"
 #include "surface/surface.hpp"
 
 #include <core/utils.hpp>
@@ -33,10 +34,13 @@ namespace potato::graphics {
       : create_info { pick_device(instance, surface) }
       , physical { create_info.device }
       , logical { create_device(create_info) }
-      , queues { get_queues(*logical, create_info) } {}
+      , queues { get_queues(*logical, create_info) } {
+        vma::init(physical, *logical);
+    }
 
     device::~device() {
         logical->waitIdle();
+        vma::deinit();
     }
 
 #pragma region UTILS
@@ -117,8 +121,8 @@ namespace potato::graphics {
         }
         else {
             std::cout << std::format("Picked [{}]\n",
-                                     suitable_devices[0].device_name);
-            return suitable_devices[0];
+                                     suitable_devices.back().device_name);
+            return suitable_devices.back();
         }
     }
 

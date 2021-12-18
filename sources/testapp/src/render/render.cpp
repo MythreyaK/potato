@@ -1,8 +1,6 @@
 #include "render.hpp"
 
-#include <glm/glm.hpp>
 #include <graphics/pipeline.hpp>
-#include <graphics/vkinclude/vulkan.hpp>
 #include <tuple>
 
 namespace testapp {

@@ -6,8 +6,6 @@ set(CMAKE_C_STANDARD 17)
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-find_package(Vulkan REQUIRED FATAL_ERROR)
-
 string(TOUPPER ${CMAKE_BUILD_TYPE} UC_CMAKE_BUILD_TYPE)
 
 if (UC_CMAKE_BUILD_TYPE MATCHES "DEBUG")
@@ -32,6 +30,11 @@ set(SOURCES_SUB_DIR "${PROJECT_SOURCE_DIR}/sources")
 
 # Dependencies
 set(DEPS_DIR "${PROJECT_SOURCE_DIR}/third-party")
+
+include("cmake/packages.cmake")
+
+find_package(glm        REQUIRED FATAL_ERROR)
+find_package(Vulkan     REQUIRED FATAL_ERROR)
 
 # Deps
 add_subdirectory("${DEPS_DIR}")

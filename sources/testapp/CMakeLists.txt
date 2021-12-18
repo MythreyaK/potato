@@ -6,6 +6,8 @@ add_executable(app "main.cpp")
 
 target_link_libraries(app PUBLIC testapp)
 
+target_precompile_headers(app REUSE_FROM pch)
+
 configure_file("icon.bin" "${CMAKE_CURRENT_BINARY_DIR}/icon.bin" COPYONLY)
 
 # if (MSVC)

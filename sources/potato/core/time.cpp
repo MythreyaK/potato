@@ -4,8 +4,9 @@
 #include <iostream>
 
 namespace {
-    static potato::chrono::clock_type GLOBAL_CLOCK {};
-}
+    static potato::chrono::clock_type      GLOBAL_CLOCK {};
+    constexpr potato::chrono::milliseconds MAX_FRAME_TIME { 30 };
+}  // namespace
 
 namespace potato::chrono {
 
@@ -37,7 +38,7 @@ namespace potato::chrono {
 
         m_prev_time = GLOBAL_CLOCK.now();
 
-        return time_delta;
+        return time_delta > MAX_FRAME_TIME ? MAX_FRAME_TIME : time_delta;
     }
 
 }  // namespace potato::chrono

@@ -1,18 +1,12 @@
 #ifndef GLFW_HPP
 #define GLFW_HPP
 
+#include "glfwinclude.hpp"
+
 #include <chrono>
 #include <iostream>
 #include <string>
 #include <vector>
-
-extern "C" {
-    struct GLFWwindow;
-    struct VkSurfaceKHR_T;
-    struct VkInstance_T;
-    typedef VkInstance_T*   VkInstance;
-    typedef VkSurfaceKHR_T* VkSurfaceKHR;
-}
 
 namespace glfw {
 
@@ -24,10 +18,12 @@ namespace glfw {
 
     class window {
       private:
+        static bool init_success;
+        static bool init_complete;
         GLFWwindow* window_handle;
         bool        is_iconified { false };
 
-        bool init_glfw(int w, int h, const std::string& title);
+        static bool init_glfw();
 
         static void _on_scroll(GLFWwindow*, double xoffset, double yoffset);
         static void _on_codepoint(GLFWwindow*, unsigned int codepoint);
@@ -72,6 +68,35 @@ namespace glfw {
         virtual void on_codepoint(unsigned int codepoint);
         virtual void on_window_resized(int new_width, int new_height);
         virtual void on_window_refresh();
+    };
+
+    enum class im {
+        CURSOR               = GLFW_CURSOR,
+        STICKY_KEYS          = GLFW_STICKY_KEYS,
+        STICKY_MOUSE_BUTTONS = GLFW_STICKY_MOUSE_BUTTONS,
+        LOCK_KEY_MODS        = GLFW_LOCK_KEY_MODS,
+        RAW_MOUSE_MOTION     = GLFW_RAW_MOUSE_MOTION,
+    };
+
+    enum class cm {
+        NORMAL   = GLFW_CURSOR_NORMAL,
+        HIDDEN   = GLFW_CURSOR_HIDDEN,
+        DISABLED = GLFW_CURSOR_DISABLED,
+    };
+
+    enum class kaction {
+        PRESS   = GLFW_PRESS,
+        REPEAT  = GLFW_REPEAT,
+        RELEASE = GLFW_RELEASE,
+    };
+
+    enum class kmod {
+        SHIFT     = GLFW_MOD_SHIFT,
+        CONTROL   = GLFW_MOD_CONTROL,
+        ALT       = GLFW_MOD_ALT,
+        SUPER     = GLFW_MOD_SUPER,
+        CAPS_LOCK = GLFW_MOD_CAPS_LOCK,
+        NUM_LOCK  = GLFW_MOD_NUM_LOCK,
     };
 }  // namespace glfw
 

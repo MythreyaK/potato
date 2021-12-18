@@ -32,10 +32,6 @@ namespace potato::graphics {
         device(device&&) = default;
         device& operator=(device&&) = default;
 
-        vk::Image create_image(const vk::ImageCreateInfo&,
-                               vk::MemoryPropertyFlags,
-                               vk::DeviceMemory&) const;
-
         uint32_t find_mem_type(vk::MemoryPropertyFlags props,
                                vk::MemoryPropertyFlags bit_flags) const;
 
@@ -43,12 +39,6 @@ namespace potato::graphics {
         find_supported_format(const std::vector<vk::Format>& candidates,
                               vk::ImageTiling                tiling,
                               vk::FormatFeatureFlags         features) const;
-
-        void create_buffer(vk::DeviceSize,
-                           vk::BufferUsageFlags,
-                           vk::MemoryPropertyFlags,
-                           vk::Buffer&,
-                           vk::DeviceMemory&) const;
     };
 
 }  // namespace potato::graphics

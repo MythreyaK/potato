@@ -15,9 +15,9 @@
 #include <vulkan/vulkan.hpp>
 
 namespace VULKAN_HPP_NAMESPACE {
-    std::string to_string(const vk::ConformanceVersion&);
+    std::string to_string(const ConformanceVersion&);
 }
 
-static vk::DynamicLoader dynamicLoader;
+extern VULKAN_HPP_NAMESPACE::DynamicLoader dynamicLoader;
 
 #endif  // !VKINCLUDE_HPP

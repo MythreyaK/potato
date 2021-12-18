@@ -5,7 +5,6 @@
 #include "primitive.hpp"
 
 #include <graphics/pipeline.hpp>
-#include <graphics/vkinclude/vulkan.hpp>
 
 namespace testapp {
 

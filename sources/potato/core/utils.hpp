@@ -11,6 +11,12 @@
 namespace potato::utils {
 
     template<typename T>
+    requires std::integral<T>
+    constexpr size_t pow2(T a) {
+        return 1ull << a;
+    }
+
+    template<typename T>
     concept has_size = requires(T a) {
         a.size();
     };
