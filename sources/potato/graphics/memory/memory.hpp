@@ -10,7 +10,9 @@ namespace vma {
 
     template<typename sub_t>
     concept allocator_suballoc = requires(sub_t a) {
-        { a.memory() } -> std::same_as<vk::DeviceMemory>;
+        {
+            a.memory()
+            } -> std::same_as<vk::DeviceMemory>;
     };
 
     template<typename class_type>

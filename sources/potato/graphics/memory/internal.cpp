@@ -5,6 +5,5 @@ namespace vma::internal {
     vk::Device         device;
 }  // namespace vma::internal
 
-
 namespace vma {
 }

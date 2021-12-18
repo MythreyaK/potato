@@ -2,7 +2,6 @@
 
 namespace potato::graphics {
 
-
     vk::Format
     device::find_supported_format(const std::vector<vk::Format>& candidates,
                                   vk::ImageTiling                tiling,

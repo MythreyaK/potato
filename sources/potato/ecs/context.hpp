@@ -54,7 +54,7 @@ namespace ecs {
         }
 
         entity create_entity();
-        void remove_entity(const entity&);
+        void   remove_entity(const entity&);
     };
 
 }  // namespace ecs

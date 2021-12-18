@@ -35,8 +35,8 @@ namespace potato::graphics {
       , physical { create_info.device }
       , logical { create_device(create_info) }
       , queues { get_queues(*logical, create_info) } {
-          vma::init(physical, *logical);
-      }
+        vma::init(physical, *logical);
+    }
 
     device::~device() {
         logical->waitIdle();

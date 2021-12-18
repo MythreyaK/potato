@@ -27,15 +27,15 @@ namespace ecs {
     // // allow move
     entity::entity(entity&& other) {
         // when moving entity, do a normal move, but make entity_id 0
-        entity_id = other.entity_id;
-        entity_context = other.entity_context;
+        entity_id       = other.entity_id;
+        entity_context  = other.entity_context;
         other.entity_id = 0;
     }
 
     entity& entity::operator=(entity&& other) {
         // when moving entity, do a normal move, but make entity_id 0
-        entity_id = other.entity_id;
-        entity_context = other.entity_context;
+        entity_id       = other.entity_id;
+        entity_context  = other.entity_context;
         other.entity_id = 0;
         return *this;
     }

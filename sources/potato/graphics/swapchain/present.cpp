@@ -11,9 +11,10 @@ namespace potato::graphics {
         static constexpr auto tmax { std::numeric_limits<uint64_t>::max() };
 
         // wait for the fence for the current frame before trying to acquire it
-        std::ignore = m_device->logical->waitForFences(m_in_flight_fence[m_current_frame],
-                                         true,
-                                         tmax);
+        std::ignore =
+          m_device->logical->waitForFences(m_in_flight_fence[m_current_frame],
+                                           true,
+                                           tmax);
 
         auto [result, value] { m_device->logical->acquireNextImageKHR(
           m_swapchain,                         // swapchain to acquire from

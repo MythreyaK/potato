@@ -137,5 +137,4 @@ namespace glfw {
 
 }  // namespace glfw
 
-
 #endif

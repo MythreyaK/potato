@@ -35,7 +35,6 @@ namespace units {
             constexpr operator rep() {
                 return m_size;
             }
-
         };
 
         using bit  = std::ratio<1, 1>;

@@ -67,9 +67,9 @@ namespace testapp {
         // std::memcpy(data, mesh.data(), buffer_size);
         // device->logical->unmapMemory(vertex_device_mem);
         vertex_bufer = std::move(device->logical->createBuffer({
-            .size = buffer_size,
-            .usage = vk::BufferUsageFlagBits::eVertexBuffer,
-            .sharingMode = vk::SharingMode::eExclusive,
+          .size        = buffer_size,
+          .usage       = vk::BufferUsageFlagBits::eVertexBuffer,
+          .sharingMode = vk::SharingMode::eExclusive,
         }));
 
         auto mem_req { device->logical->getBufferMemoryRequirements(
