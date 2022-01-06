@@ -1,6 +1,6 @@
 # Compile shaders
 
-cmake_minimum_required (VERSION 3.20)
+cmake_minimum_required (VERSION 3.22)
 
 file(GLOB_RECURSE SHADERS RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} CONFIGURE_DEPENDS *.vert *.frag)
 
